@@ -1,89 +1,81 @@
-Projeto Zoro ⚔️
+Projeto Zoro v3.1 ⚔️
 
-Aplicativo de acompanhamento de treinos de musculação focado em alta densidade e perda de peso, desenvolvido especificamente para a metodologia de treino em máquinas (Panobianco Academia).
+Aplicativo profissional de monitoramento de treinos de musculação, focado em alta densidade, progressão de carga e gamificação. Desenvolvido com tecnologias web modernas para uma experiência app-like fluida e responsiva.
 
 📋 Visão Geral
 
-O Projeto Zoro é uma Single Page Application (SPA) desenvolvida com tecnologias web fundamentais (HTML, CSS, JS) para garantir máxima compatibilidade e performance em dispositivos móveis. O objetivo é gerenciar uma rotina de treinos ABCDEF (6 dias/semana) com controle estrito de intervalos de descanso e progressão de cargas.
+O Projeto Zoro evoluiu para uma plataforma completa de gestão de performance física. Além do cronograma de treinos ABCDEF, a versão v3.1 introduz elementos de RPG (Gamificação), personalização visual (Temas) e métricas avançadas de volume de carga (Tonagem), mantendo a arquitetura leve e sem dependências de build complexas.
 
 🚀 Tecnologias Utilizadas
 
-Core: HTML5, JavaScript (ES6+), CSS3.
+Core: HTML5 Semântico, JavaScript (ES6+ Modular), CSS3.
 
-Estilização: Tailwind CSS (via CDN para prototipagem ágil).
+Estilização: Tailwind CSS (via CDN) + CSS Custom Properties para temas dinâmicos.
 
-Ícones: Lucide Icons.
+Ícones: Lucide Icons (Leves e vetoriais).
 
-Tipografia: Inter & JetBrains Mono (Google Fonts).
+Fontes: Inter (UI) & JetBrains Mono (Dados/Números).
 
-Persistência: localStorage (Armazenamento local do navegador).
+Persistência: localStorage com gestão de estado reativa.
 
-⚙️ Funcionalidades
+✨ Novas Funcionalidades (v3.1)
 
-Divisão de Treino ABCDEF:
+🎮 Gamificação & Ranks
 
-A: Peitoral & Abdômen
+Transforme o treino em uma jornada de RPG. Ganhe XP a cada série concluída e suba de nível:
 
-B: Dorsais & Lombar
+Ranks: Aprendiz ➔ Caçador de Piratas ➔ Supernova ➔ Shichibukai ➔ Yonkou ➔ Rei do Inferno.
 
-C: Quadríceps & Panturrilhas
+Barra de Progresso: Visualização em tempo real do XP necessário para o próximo nível.
 
-D: Ombros & Trapézio
+🎨 Sistema de Temas (Personagens)
 
-E: Bíceps & Tríceps
+Personalize a interface com base nos seus personagens favoritos:
 
-F: Posterior & Glúteos
+Zoro (Padrão): Verde Neon & Preto.
 
-Sistema de Cronômetro Inteligente:
+Luffy: Vermelho Intenso.
 
-Timer automático de 45s após a conclusão de cada série.
+Sanji: Azul Profundo.
 
-Alerta sonoro (Oscillator API) e visual ao fim do descanso.
+Ace: Laranja Fogo.
 
-Opção de adicionar tempo extra (+15s) e controles de pausa/reset.
+📊 Métricas Avançadas
 
-Gestão de Cargas (Sobrecarga Progressiva):
+Tonagem (Volume Load): Cálculo automático do peso total levantado no treino (Séries × Repetições Estimadas × Carga).
 
-Input dedicado para registro de peso (kg) por exercício.
+Calendário de Consistência: Heatmap semanal para monitorar sua frequência (Meta: 6/7 dias).
 
-Persistência automática dos dados para acompanhamento da evolução.
+Conclusão de Missão: Feedback visual e sonoro ao finalizar 100% do treino diário.
 
-Monitoramento de Cardio:
+⚙️ Funcionalidades Core Melhoradas
 
-Checkbox diário para protocolo de cardio pós-treino (20min HIIT/Inclinado).
+Timer Inteligente: Cronômetro de 45s automático com opção de Mute e adição rápida de tempo (+10s).
 
-Integração visual com o status do treino (Barra de progresso).
+Notas Técnicas: Campo de texto persistente por exercício para registrar ajustes de máquina (banco, pino, pegada).
 
-UX Mobile-First:
-
-Tema Dark Mode (zinc-950) para economia de bateria e conforto visual na academia.
-
-Navegação otimizada para toque (Touch-friendly).
-
-Feedback visual de progresso e conclusão de séries.
+Backup de Dados: Exportação e Importação de progresso via arquivo JSON (segurança contra limpeza de cache).
 
 📂 Estrutura do Projeto
 
-projeto-zoro/
-├── index.html     # Estrutura semântica e container da SPA
-├── style.css      # Estilizações customizadas e animações
-├── script.js      # Lógica de estado, roteamento e persistência de dados
-└── README.md      # Documentação do projeto
+projeto-zoro-v3/
+├── index.html     # Estrutura, Modais e Layout App Shell
+├── style.css      # Variáveis de Tema (:root), Animações e Glassmorphism
+├── script.js      # Lógica de Estado (Store), Roteamento e Regras de Negócio
+└── README.md      # Documentação Técnica
 
 
-🛠️ Como Executar
+🛠️ Como Executar Localmente
 
-Este projeto não requer dependências npm ou build steps complexos, visando simplicidade de manutenção.
+Download: Baixe os arquivos index.html, style.css e script.js para uma mesma pasta.
 
-Clone este repositório ou baixe os arquivos.
+Execução:
 
-Certifique-se de que os arquivos index.html, style.css e script.js estão na mesma pasta raiz.
+Simples: Abra o index.html diretamente no seu navegador.
 
-Abra o arquivo index.html diretamente em seu navegador preferido (Chrome, Edge, Safari).
+Recomendado (VS Code): Instale a extensão "Live Server", clique com o botão direito no index.html e selecione "Open with Live Server".
 
-Recomendado: Utilize a extensão "Live Server" no VS Code para simular um ambiente de servidor local e evitar bloqueios de CORS em alguns navegadores.
-
-Para simular a experiência mobile no Desktop, abra o DevTools (F12) e alterne para o modo de dispositivo (Ctrl+Shift+M).
+Modo Mobile: No navegador Desktop, pressione F12 para abrir o DevTools e ative a simulação de dispositivo móvel (Ctrl+Shift+M) para visualizar a interface responsiva.
 
 🔒 Direitos Autorais
 
