@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projeto Zoro v4.1</title>
+    <title>Projeto Zoro v4.7</title>
     
     <!-- Favicon Personalizado (Espadas Cruzadas) -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚔️</text></svg>">
@@ -20,9 +20,38 @@
     <!-- CSS Externo -->
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="min-h-screen flex justify-center bg-black selection:bg-zinc-700 selection:text-white">
+<body class="min-h-screen flex justify-center bg-black selection:bg-zinc-700 selection:text-white overflow-hidden">
 
-    <div id="app-container" class="w-full max-w-md bg-zinc-950 min-h-screen relative shadow-2xl overflow-hidden flex flex-col">
+    <!-- FUNDO TEMÁTICO DE ACADEMIA (Gym FX) -->
+    <div class="background-fx">
+        <!-- Textura de Grade -->
+        <div class="gym-grid"></div>
+        
+        <!-- Ícones Flutuantes (SVG Inline para performance) -->
+        <!-- Haltere (Topo Esquerda) -->
+        <div class="gym-bg-icon icon-dumbell">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                <path d="m6.5 6.5 11 11"/><path d="m21 21-1-1"/><path d="m3 3 1 1"/><path d="m18 22 4-4"/><path d="m2 6 4-4"/><path d="m3 10 7.9-7.9a2.1 2.1 0 0 1 3 3L6.9 12a2.1 2.1 0 0 1-3-3Z"/><path d="m14 17 7.9-7.9a2.1 2.1 0 0 1 3 3L17 19a2.1 2.1 0 0 1-3-3Z"/>
+            </svg>
+        </div>
+        
+        <!-- Anilha (Centro Direita) -->
+        <div class="gym-bg-icon icon-plate">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><path d="M12 2v3"/><path d="M12 19v3"/><path d="M2 12h3"/><path d="M19 12h3"/>
+            </svg>
+        </div>
+
+        <!-- Peso Russo/Kettlebell (Baixo Esquerda) -->
+        <div class="gym-bg-icon icon-kettle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+            </svg>
+        </div>
+    </div>
+
+    <!-- App Container -->
+    <div id="app-container" class="w-full max-w-md bg-zinc-950/85 backdrop-blur-md min-h-screen relative shadow-2xl overflow-hidden flex flex-col border-x border-zinc-900">
         
         <!-- Header Fixo (Dinâmico) -->
         <header id="main-header" class="glass-header sticky top-0 z-30 px-4 py-4 flex items-center justify-between hidden">
@@ -31,11 +60,11 @@
 
         <!-- Conteúdo Principal -->
         <main id="main-content" class="flex-1 overflow-y-auto pb-24 pt-4 scroll-smooth">
-            <!-- Views (Home, Detail, Stats, Tools, Music) são renderizadas aqui -->
+            <!-- Views (Home, Detail, Stats, Tools) são renderizadas aqui -->
         </main>
 
         <!-- Navbar Fixa (5 Itens) -->
-        <nav id="bottom-nav" class="fixed bottom-0 w-full max-w-md bg-zinc-900/95 backdrop-blur border-t border-zinc-800 px-2 py-3 flex justify-around items-center z-40">
+        <nav id="bottom-nav" class="fixed bottom-0 w-full max-w-md bg-zinc-900/90 backdrop-blur-md border-t border-zinc-800 px-2 py-3 flex justify-around items-center z-40">
             <!-- 1. Treinos -->
             <button onclick="router.navigate('home')" class="nav-btn flex flex-col items-center gap-1 text-zinc-400 p-2 rounded-xl transition-all active:scale-95 group hover:text-white">
                 <i data-lucide="dumbbell" class="w-5 h-5 group-hover:stroke-[var(--theme-color)] transition-colors"></i>
@@ -50,15 +79,15 @@
 
             <!-- 3. Ferramentas (Central - Destaque) -->
             <div class="relative -top-5">
-                <button onclick="router.navigate('tools')" class="h-14 w-14 rounded-full flex items-center justify-center border-4 border-zinc-950 z-50 bg-theme shadow-[0_0_15px_var(--theme-glow)] transition-all active:scale-90 hover:brightness-110">
+                <button onclick="router.navigate('tools')" class="h-14 w-14 rounded-full flex items-center justify-center border-4 border-zinc-950 z-50 bg-theme shadow-[0_0_20px_var(--theme-glow)] transition-all active:scale-90 hover:brightness-110">
                     <i data-lucide="swords" class="w-6 h-6 text-black"></i>
                 </button>
             </div>
 
-            <!-- 4. Música (Novo) -->
-            <button onclick="router.navigate('music')" class="nav-btn flex flex-col items-center gap-1 text-zinc-400 p-2 rounded-xl transition-all active:scale-95 group hover:text-white">
-                <i data-lucide="music" class="w-5 h-5 group-hover:stroke-[var(--theme-color)] transition-colors"></i>
-                <span class="text-[9px] font-bold group-hover:text-[var(--theme-color)] transition-colors">MUSIC</span>
+            <!-- 4. Histórico -->
+            <button onclick="router.navigate('history')" class="nav-btn flex flex-col items-center gap-1 text-zinc-400 p-2 rounded-xl transition-all active:scale-95 group hover:text-white">
+                <i data-lucide="calendar" class="w-5 h-5 group-hover:stroke-[var(--theme-color)] transition-colors"></i>
+                <span class="text-[9px] font-bold group-hover:text-[var(--theme-color)] transition-colors">HIST</span>
             </button>
 
             <!-- 5. Ajustes -->
@@ -170,7 +199,7 @@
                 </div>
                 
                 <div class="mt-8 text-center pt-4 border-t border-zinc-800/50">
-                    <p class="text-zinc-700 text-[10px]">Projeto Zoro v4.1 • Fernando Rodrigues</p>
+                    <p class="text-zinc-700 text-[10px]">Projeto Zoro v4.7 • Fernando Rodrigues</p>
                 </div>
             </div>
         </div>

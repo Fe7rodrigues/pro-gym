@@ -1,7 +1,7 @@
 /**
- * PROJETO ZORO V4.1 - CORE LOGIC
+ * PROJETO ZORO V4.7 - CORE LOGIC
  * Autor: Fernando Rodrigues
- * Inovações: Music Player Integration & Stats
+ * Inovações: Tutoriais de Execução Panobianco (Fast Fit) + Lembrete Thermo Flame
  */
 
 // --- CONFIGURAÇÃO ---
@@ -18,54 +18,56 @@ const RANKS = [
     { name: "Yonkou", minXP: 1000 }, { name: "Rei do Inferno", minXP: 2000 }
 ];
 
+// --- DADOS DO TREINO (ABCDEF) - VÍDEOS PANOBIANCO ---
+// Prioridade: Canal Oficial Panobianco (Série Fast Fit)
 const WORKOUT_PLAN = [
     { id: 'day-a', letter: 'A', title: 'Peitoral & Abdômen', focus: 'Empurrar', exercises: [
-        { id: 'a1', name: 'Supino Máquina', sets: 4, reps: '8-10', rest: 45 },
-        { id: 'a2', name: 'Peck Deck', sets: 4, reps: '8-10', rest: 45 },
-        { id: 'a3', name: 'Supino Inclinado', sets: 4, reps: '8-10', rest: 45 },
-        { id: 'a4', name: 'Cross Over', sets: 4, reps: '8-10', rest: 45 },
-        { id: 'a5', name: 'Abd. Machine', sets: 4, reps: '15-20', rest: 45 },
-        { id: 'a6', name: 'Rotação Tronco', sets: 4, reps: '15-20', rest: 45 }
+        { id: 'a1', name: 'Supino Máquina', machine: 'Kikos Pro Concept II', sets: 4, reps: '8-10', rest: 45, youtube: 'UfYsjtao108' }, // Fast Fit - Supino Máquina
+        { id: 'a2', name: 'Peck Deck', machine: 'Kikos Pro Station TTMS25', sets: 4, reps: '8-10', rest: 45, youtube: 'a5XwjsD3AOI' }, // Genérico PT-BR (Panobianco não listado)
+        { id: 'a3', name: 'Supino Inclinado', machine: 'Kikos Pro Titanium TTS12', sets: 4, reps: '8-10', rest: 45, youtube: '_OodPWexj_g' }, // Genérico Máquina
+        { id: 'a4', name: 'Cross Over', machine: 'Kikos Pro Titanium TTMS20', sets: 4, reps: '8-10', rest: 45, youtube: '7UC_8lsE2w0' }, // Genérico Polia
+        { id: 'a5', name: 'Abd. Machine', machine: 'Kikos Pro Station TTFW60', sets: 4, reps: '15-20', rest: 45, youtube: 'qWtYjH0enBA' }, // Genérico Máquina
+        { id: 'a6', name: 'Rotação Tronco', machine: 'Kikos Torso Rotation', sets: 4, reps: '15-20', rest: 45, youtube: 'tDBYMZxwXQ8' }  // Genérico
     ]},
     { id: 'day-b', letter: 'B', title: 'Dorsais & Lombar', focus: 'Puxar', exercises: [
-        { id: 'b1', name: 'Puxada Alta', sets: 4, reps: '8-10', rest: 45 },
-        { id: 'b2', name: 'Puxada Triângulo', sets: 4, reps: '8-10', rest: 45 },
-        { id: 'b3', name: 'Remada Baixa', sets: 4, reps: '8-10', rest: 45 },
-        { id: 'b4', name: 'Remada Máquina', sets: 4, reps: '8-10', rest: 45 },
-        { id: 'b5', name: 'Pulldown', sets: 4, reps: '8-10', rest: 45 },
-        { id: 'b6', name: 'Extensão Lombar', sets: 4, reps: '12-15', rest: 60 }
+        { id: 'b1', name: 'Puxada Alta', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: 'UO70dS2tTyQ' }, // Fast Fit - Puxada Triângulo (Adaptável)
+        { id: 'b2', name: 'Puxada Triângulo', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: 'UO70dS2tTyQ' }, // Fast Fit - Puxada Triângulo
+        { id: 'b3', name: 'Remada Baixa', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: 'MwyrOd_vwB8' }, // Fast Fit - Remada Baixa Supinada
+        { id: 'b4', name: 'Remada Máquina', machine: 'Kikos Pro Plate Load', sets: 4, reps: '8-10', rest: 45, youtube: 'TeFo51Q_Nsc' }, // Genérico Máquina
+        { id: 'b5', name: 'Pulldown', machine: 'Kikos Crossover Polia', sets: 4, reps: '8-10', rest: 45, youtube: 'Jgei5V3dE48' }, // Genérico
+        { id: 'b6', name: 'Extensão Lombar', machine: 'Kikos Banco Lombar', sets: 4, reps: '12-15', rest: 60, youtube: 'ph3pddpKzzw' } // Genérico
     ]},
     { id: 'day-c', letter: 'C', title: 'Quadríceps & Pant.', focus: 'Pernas Ant.', exercises: [
-        { id: 'c1', name: 'Leg Press 45º', sets: 4, reps: '8-10', rest: 60 },
-        { id: 'c2', name: 'Hack Machine', sets: 4, reps: '8-10', rest: 60 },
-        { id: 'c3', name: 'Cad. Extensora', sets: 4, reps: '8-10', rest: 45 },
-        { id: 'c4', name: 'Leg Horizontal', sets: 4, reps: '8-10', rest: 45 },
-        { id: 'c5', name: 'Pant. Sentado', sets: 4, reps: '15-20', rest: 30 },
-        { id: 'c6', name: 'Pant. Leg Press', sets: 4, reps: '15-20', rest: 30 }
+        { id: 'c1', name: 'Leg Press 45º', machine: 'Kikos Plate Load PR70', sets: 4, reps: '8-10', rest: 60, youtube: 'uJu3Yph10cI' }, // Fast Fit - Leg Press 45
+        { id: 'c2', name: 'Hack Machine', machine: 'Kikos Pro Station TTPL79', sets: 4, reps: '8-10', rest: 60, youtube: 'O8gOJu9ph2E' }, // Fast Fit - Agachamento Hack
+        { id: 'c3', name: 'Cad. Extensora', machine: 'Kikos Plate Load PR71', sets: 4, reps: '8-10', rest: 45, youtube: '46WfkM7rRF4' }, // Genérico PT-BR (Alta qualidade)
+        { id: 'c4', name: 'Leg Horizontal', machine: 'Kikos Pro Titanium TTS70', sets: 4, reps: '8-10', rest: 45, youtube: 'gTo0HfVcLxo' }, // Fast Fit - Leg Horizontal
+        { id: 'c5', name: 'Pant. Sentado', machine: 'Kikos Pro Station TTPL77', sets: 4, reps: '15-20', rest: 30, youtube: 'JbyjNymZOt0' }, // Genérico
+        { id: 'c6', name: 'Pant. Leg Press', machine: 'Kikos Plate Load PR70', sets: 4, reps: '15-20', rest: 30, youtube: 'uJu3Yph10cI' } // Mesmo vídeo do Leg 45
     ]},
     { id: 'day-d', letter: 'D', title: 'Ombros & Trapézio', focus: 'Deltóides', exercises: [
-        { id: 'd1', name: 'Desenv. Máq.', sets: 4, reps: '8-10', rest: 45 },
-        { id: 'd2', name: 'Elev. Lateral', sets: 4, reps: '8-10', rest: 45 },
-        { id: 'd3', name: 'Elev. Frontal', sets: 4, reps: '8-10', rest: 45 },
-        { id: 'd4', name: 'Peck Deck Inv.', sets: 4, reps: '8-10', rest: 45 },
-        { id: 'd5', name: 'Remada Alta', sets: 4, reps: '8-10', rest: 45 },
-        { id: 'd6', name: 'Encolhimento', sets: 4, reps: '12-15', rest: 45 }
+        { id: 'd1', name: 'Desenv. Máq.', machine: 'Kikos Pro Station TTFW16', sets: 4, reps: '8-10', rest: 45, youtube: '7z31DogTlC8' }, // Fast Fit - Desenv. Smith
+        { id: 'd2', name: 'Elev. Lateral', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: 'jMyZZJMlwSg' }, // Fast Fit - Elevação Latero Frontal
+        { id: 'd3', name: 'Elev. Frontal', machine: 'Kikos Crossover', sets: 4, reps: '8-10', rest: 45, youtube: 'hRJ6tz5_iSA' }, // Genérico Cabo
+        { id: 'd4', name: 'Peck Deck Inv.', machine: 'Kikos Peck Deck', sets: 4, reps: '8-10', rest: 45, youtube: '5_iV9Q5Q55g' }, // Genérico
+        { id: 'd5', name: 'Remada Alta', machine: 'Kikos Crossover', sets: 4, reps: '8-10', rest: 45, youtube: '2F8_gJ9o_cM' }, // Genérico Cabo
+        { id: 'd6', name: 'Encolhimento', machine: 'Kikos Smith Machine', sets: 4, reps: '12-15', rest: 45, youtube: '8j2Gj_6I5xI' }  // Genérico Smith
     ]},
     { id: 'day-e', letter: 'E', title: 'Bíceps & Tríceps', focus: 'Braços', exercises: [
-        { id: 'e1', name: 'Tríceps Pulley', sets: 4, reps: '8-10', rest: 45 },
-        { id: 'e2', name: 'Tríceps Corda', sets: 4, reps: '8-10', rest: 45 },
-        { id: 'e3', name: 'Tríceps Máq.', sets: 4, reps: '8-10', rest: 45 },
-        { id: 'e4', name: 'Rosca Scott', sets: 4, reps: '8-10', rest: 45 },
-        { id: 'e5', name: 'Rosca Direta', sets: 4, reps: '8-10', rest: 45 },
-        { id: 'e6', name: 'Rosca Martelo', sets: 4, reps: '8-10', rest: 45 }
+        { id: 'e1', name: 'Tríceps Pulley', machine: 'Kikos Crossover', sets: 4, reps: '8-10', rest: 45, youtube: 'ga8dtLyTj1M' }, // Fast Fit - Tríceps Unilateral (Adaptável)
+        { id: 'e2', name: 'Tríceps Corda', machine: 'Kikos Crossover', sets: 4, reps: '8-10', rest: 45, youtube: 'vB5OHsJ3ECE' }, // Genérico Corda
+        { id: 'e3', name: 'Tríceps Máq.', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: '3_9d1g7o_cM' }, // Genérico Máquina
+        { id: 'e4', name: 'Rosca Scott', machine: 'Kikos Pro Scott', sets: 4, reps: '8-10', rest: 45, youtube: '2jDrDoW1Z0o' }, // Genérico Máquina
+        { id: 'e5', name: 'Rosca Direta', machine: 'Kikos Crossover Baixo', sets: 4, reps: '8-10', rest: 45, youtube: 'vhcJP86SEos' }, // Fast Fit - Bíceps Unilateral Polia
+        { id: 'e6', name: 'Rosca Martelo', machine: 'Kikos Crossover Corda', sets: 4, reps: '8-10', rest: 45, youtube: 'zC3nLlEpt4w' } // Genérico Corda
     ]},
     { id: 'day-f', letter: 'F', title: 'Posterior & Glúteos', focus: 'Cadeia Post.', exercises: [
-        { id: 'f1', name: 'Mesa Flexora', sets: 4, reps: '8-10', rest: 45 },
-        { id: 'f2', name: 'Cad. Flexora', sets: 4, reps: '8-10', rest: 45 },
-        { id: 'f3', name: 'Cad. Abdutora', sets: 4, reps: '12-15', rest: 45 },
-        { id: 'f4', name: 'Glúteo Máq.', sets: 4, reps: '8-10', rest: 45 },
-        { id: 'f5', name: 'Leg 45º Alto', sets: 4, reps: '8-10', rest: 60 },
-        { id: 'f6', name: 'Cad. Adutora', sets: 4, reps: '12-15', rest: 45 }
+        { id: 'f1', name: 'Mesa Flexora', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: '2piLtfoXX6k' }, // Genérico Mesa
+        { id: 'f2', name: 'Cad. Flexora', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: 'Y1o8iPiBI7k' }, // Fast Fit - Cadeira Flexora
+        { id: 'f3', name: 'Cad. Abdutora', machine: 'Kikos Pro Station', sets: 4, reps: '12-15', rest: 45, youtube: 'Hs-9c39_rjo' }, // Fast Fit - Cadeira Abdutora
+        { id: 'f4', name: 'Glúteo Máq.', machine: 'Kikos Glute Machine', sets: 4, reps: '8-10', rest: 45, youtube: 'Z8gztZ1_t9A' }, // Fast Fit - Glúteos 4 Apoios Máquina
+        { id: 'f5', name: 'Leg 45º Alto', machine: 'Kikos Plate Load PR70', sets: 4, reps: '8-10', rest: 60, youtube: 'uJu3Yph10cI' }, // Fast Fit - Leg Press 45
+        { id: 'f6', name: 'Cad. Adutora', machine: 'Kikos Pro Station', sets: 4, reps: '12-15', rest: 45, youtube: 'p3g4wAsu0R4' } // Genérico Adutora
     ]}
 ];
 
@@ -73,21 +75,23 @@ const WORKOUT_PLAN = [
 const store = {
     data: { 
         completedSets: {}, weights: {}, notes: {}, cardioHistory: {}, workoutHistory: {}, 
-        settings: { theme: 'zoro', soundEnabled: true, playlist: '37i9dQZF1DX76Wlfdnj7AP' }, // Default Gym Playlist
-        xp: 0 
+        settings: { theme: 'zoro', soundEnabled: true }, 
+        xp: 0,
+        visibleVideos: {} // Renomeado para clareza
     },
     load() {
         const saved = localStorage.getItem('zoro_v4_data');
         if (saved) { 
-            this.data = { ...this.data, ...JSON.parse(saved) }; 
-            // Migração de dados para garantir que configurações existam
-            if(!this.data.settings) this.data.settings = { theme: 'zoro', soundEnabled: true, playlist: '37i9dQZF1DX76Wlfdnj7AP' }; 
+            const parsed = JSON.parse(saved);
+            this.data = { ...this.data, ...parsed, visibleVideos: {} }; 
+            if(!this.data.settings) this.data.settings = { theme: 'zoro', soundEnabled: true }; 
         }
         themeManager.apply(this.data.settings.theme);
     },
     save() {
-        this.data.xp = Object.values(this.data.completedSets).filter(Boolean).length;
-        localStorage.setItem('zoro_v4_data', JSON.stringify(this.data));
+        const { visibleVideos, ...dataToSave } = this.data;
+        dataToSave.xp = Object.values(this.data.completedSets).filter(Boolean).length;
+        localStorage.setItem('zoro_v4_data', JSON.stringify(dataToSave));
     }
 };
 
@@ -127,19 +131,6 @@ const utils = {
     }
 };
 
-// --- MUSIC MANAGER (Novo) ---
-const musicManager = {
-    updatePlaylist() {
-        const url = document.getElementById('spotify-input').value;
-        const id = url.split('playlist/')[1]?.split('?')[0] || url.split('album/')[1]?.split('?')[0] || url;
-        if(id) {
-            store.data.settings.playlist = id;
-            store.save();
-            router.renderMusic(document.getElementById('main-content'));
-        }
-    }
-};
-
 const timer = {
     interval: null, timeLeft: 0, defaultTime: 45, isActive: false, audioCtx: null,
     initAudio() { if(!this.audioCtx) this.audioCtx = new (window.AudioContext || window.webkitAudioContext)(); },
@@ -165,7 +156,7 @@ const timer = {
         clearInterval(this.interval);
         this.interval = setInterval(() => {
             if (this.timeLeft > 0) { this.timeLeft--; this.render(); } 
-            else { this.beep(); if(navigator.vibrate) navigator.vibrate([200, 100, 200]); this.pause(); this.render(); }
+            else { this.beep(); if(navigator.vibrate) navigator.vibrate([200, 100, 200]); this.timeLeft = 0; this.pause(); this.render(); }
         }, 1000);
         this.updateBtn(true);
     },
@@ -238,7 +229,6 @@ const router = {
         else if (route === 'detail') { header.classList.remove('hidden'); nav.classList.add('hidden'); this.renderDetail(app, params); }
         else if (route === 'stats') { header.classList.add('hidden'); nav.classList.remove('hidden'); this.renderStats(app); }
         else if (route === 'tools') { header.classList.add('hidden'); nav.classList.remove('hidden'); this.renderTools(app); }
-        else if (route === 'music') { header.classList.add('hidden'); nav.classList.remove('hidden'); this.renderMusic(app); }
         else if (route === 'history') { header.classList.add('hidden'); nav.classList.remove('hidden'); app.innerHTML = '<div class="p-10 text-center text-zinc-500 flex flex-col items-center justify-center h-full"><i data-lucide="calendar-off" class="w-12 h-12 mb-4 opacity-50"></i><p>Histórico completo em breve...</p></div>'; }
         
         lucide.createIcons();
@@ -268,6 +258,18 @@ const router = {
                     <div class="h-2 bg-zinc-900 rounded-full overflow-hidden border border-zinc-800"><div class="h-full bg-theme animate-progress shadow-[0_0_10px_var(--theme-glow)]" style="--target-width: ${pct}%"></div></div>
                 </div>
                 <div class="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-4 mb-6 backdrop-blur-sm"><div class="flex justify-between mb-3"><h3 class="text-xs font-bold text-zinc-400 uppercase">Consistência</h3></div><div class="flex justify-between">${days}</div></div>
+                
+                <!-- Thermo Flame Reminder (New) -->
+                <div class="bg-gradient-to-r from-red-900/20 to-orange-900/20 border border-red-500/30 p-4 rounded-2xl flex items-center gap-4 mb-6 backdrop-blur-sm">
+                    <div class="bg-red-500/20 p-2 rounded-lg">
+                        <i data-lucide="flame" class="w-6 h-6 text-red-500"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-red-200 font-bold text-sm">Thermo Flame Ativo</h4>
+                        <p class="text-red-400/60 text-xs">Lembrete: Tomar 30min antes do treino.</p>
+                    </div>
+                </div>
+
                 <div class="grid gap-3">${WORKOUT_PLAN.map(day => {
                     let done = 0; day.exercises.forEach(ex => { for(let i=0;i<4;i++) if(store.data.completedSets[`${ex.id}-${i}`]) done++; });
                     const p = Math.round((done/(day.exercises.length*4))*100);
@@ -302,12 +304,27 @@ const router = {
         c.innerHTML = `<div class="px-4 space-y-4 animate-slide-up pb-10">
             ${w.exercises.map((ex, i) => {
                 const hasNote = (store.data.notes[ex.id]||'').trim().length > 0;
-                return `<div class="bg-zinc-900 rounded-2xl p-4 border border-zinc-800 relative shadow-sm">
+                const isVideoVisible = store.data.visibleVideos && store.data.visibleVideos[ex.id];
+                const vidBtnClass = isVideoVisible ? 'text-theme border-theme bg-theme/10' : 'text-zinc-500 border-zinc-700 hover:text-white';
+                
+                // YouTube Content
+                const videoContent = isVideoVisible ? `
+                    <div class="mt-3 w-full rounded-xl overflow-hidden bg-black aspect-video border border-zinc-800 animate-fade-in relative group flex items-center justify-center">
+                         <iframe class="w-full h-full" src="https://www.youtube.com/embed/${ex.youtube}?rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        <div class="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/90 to-transparent flex justify-between items-end pointer-events-none">
+                            <span class="text-[9px] text-zinc-300 font-mono bg-black/50 px-1 rounded truncate max-w-[120px]">${ex.machine || 'Kikos Generica'}</span>
+                        </div>
+                    </div>
+                ` : '';
+
+                return `<div class="bg-zinc-900 rounded-2xl p-4 border border-zinc-800 relative shadow-sm transition-all">
                     <div class="flex justify-between items-start mb-3">
-                        <div class="flex-1 pr-2"><span class="text-zinc-500 text-[10px] font-bold uppercase mb-0.5 block">0${i+1} // ${ex.name}</span>
+                        <div class="flex-1 pr-2">
+                            <span class="text-zinc-500 text-[10px] font-bold uppercase mb-0.5 block">0${i+1} // ${ex.name}</span>
                             <div class="flex items-center gap-2 mt-1">
                                 <div class="relative"><input type="number" value="${store.data.weights[ex.id]||''}" onchange="actions.weight('${ex.id}',this.value)" class="input-dark w-16 py-1 px-2 text-sm font-bold rounded-lg text-center" placeholder="kg"></div>
                                 <button onclick="notesManager.open('${ex.id}')" class="relative w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center ${hasNote?'text-theme':'text-zinc-500'} border border-zinc-700 hover:border-theme transition-colors"><i data-lucide="clipboard" class="w-4 h-4"></i>${hasNote?'<span class="has-note-indicator"></span>':''}</button>
+                                <button onclick="actions.toggleVideo('${ex.id}')" class="relative w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center border transition-colors ${vidBtnClass}"><i data-lucide="play-circle" class="w-4 h-4"></i></button>
                             </div>
                         </div>
                         <div class="flex gap-2 justify-end">
@@ -315,7 +332,8 @@ const router = {
                             <div class="bg-zinc-950 px-2 py-1 rounded-md border border-zinc-800 inline-flex items-center gap-1"><i data-lucide="timer" class="w-3 h-3 text-theme"></i><span class="text-xs font-mono font-bold text-zinc-300">${ex.rest}s</span></div>
                         </div>
                     </div>
-                    <div class="grid grid-cols-4 gap-2">${[0,1,2,3].map(j => {
+                    ${videoContent}
+                    <div class="grid grid-cols-4 gap-2 mt-3">${[0,1,2,3].map(j => {
                         const done = store.data.completedSets[`${ex.id}-${j}`];
                         return `<button onclick="actions.toggle('${ex.id}',${j},${ex.rest})" class="btn-set h-10 rounded-lg flex flex-col items-center justify-center gap-0.5 ${done?'active':'bg-zinc-950 border-zinc-800 text-zinc-600'}"><span class="text-[9px] font-bold">SET ${j+1}</span></button>`;
                     }).join('')}</div>
@@ -335,6 +353,9 @@ const router = {
                 <button onclick="actions.finish()" class="w-full max-w-sm bg-theme hover:brightness-110 text-black font-bold py-4 rounded-2xl shadow-lg shadow-theme/20 flex items-center justify-center gap-2 transition-all transform hover:scale-105 animate-bounce-subtle"><i data-lucide="trophy" class="w-6 h-6"></i>CONCLUIR MISSÃO</button>
             </div><div class="h-24"></div>` : '<div class="h-10"></div>'}
         </div>`;
+        
+        // Re-run icons creation after updating innerHTML
+        lucide.createIcons();
     },
 
     renderStats(c) {
@@ -380,25 +401,6 @@ const router = {
                 <div id="plate-result" class="flex flex-wrap gap-2 justify-center bg-zinc-950 p-3 rounded-lg border border-zinc-800 min-h-[50px] items-center"><span class="text-zinc-600 text-xs">Anilhas aparecerão aqui</span></div>
             </div><div class="h-10"></div>
         </div>`;
-    },
-
-    renderMusic(c) {
-        c.innerHTML = `
-        <div class="px-4 animate-fade-in pt-6">
-            <h1 class="text-2xl font-bold text-white mb-6">Music Player</h1>
-            <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 mb-4 shadow-sm">
-                <h3 class="text-xs font-bold text-zinc-400 uppercase mb-4">Configurar Playlist</h3>
-                <div class="flex gap-2 mb-4">
-                    <input type="text" id="spotify-input" class="w-full input-dark rounded-lg p-2 text-xs" placeholder="Cole o link da Playlist do Spotify">
-                    <button onclick="musicManager.updatePlaylist()" class="bg-theme text-black font-bold p-2 rounded-lg transition-colors"><i data-lucide="save" class="w-4 h-4"></i></button>
-                </div>
-                <p class="text-[10px] text-zinc-500 mb-4">Ex: https://open.spotify.com/playlist/37i9dQZF1DX76Wlfdnj7AP</p>
-            </div>
-            <div class="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden h-[400px] shadow-lg">
-                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/${store.data.settings.playlist || '37i9dQZF1DX76Wlfdnj7AP'}?utm_source=generator&theme=0" width="100%" height="100%" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-            </div>
-            <div class="h-10"></div>
-        </div>`;
     }
 };
 
@@ -417,6 +419,11 @@ const actions = {
     },
     weight(ex, v) { store.data.weights[ex] = v; store.save(); router.renderDetail(document.getElementById('main-content'), router.currentParams); },
     cardio() { const d = utils.getTodayDate(); store.data.cardioHistory[d] = !store.data.cardioHistory[d]; store.save(); router.renderDetail(document.getElementById('main-content'), router.currentParams); },
+    toggleVideo(exId) { // Atualizado para Video
+        if(!store.data.visibleVideos) store.data.visibleVideos = {};
+        store.data.visibleVideos[exId] = !store.data.visibleVideos[exId];
+        router.renderDetail(document.getElementById('main-content'), router.currentParams);
+    },
     reset(id) {
         if(!confirm('Resetar treino?')) return;
         const w = WORKOUT_PLAN.find(x => x.id === id); let rm = 0;

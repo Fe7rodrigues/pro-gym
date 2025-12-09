@@ -1,103 +1,96 @@
-Projeto Zoro v4.1 ⚔️
+# Projeto Zoro v4.7 ⚔️
 
-Aplicativo profissional de monitoramento de treinos de musculação, focado em alta densidade, progressão de carga e inteligência de dados. Desenvolvido com tecnologias web modernas para uma experiência app-like fluida e responsiva.
+Aplicativo profissional de monitoramento de treinos de musculação, focado em alta densidade, progressão de carga e execução técnica precisa. Desenvolvido com tecnologias web modernas para uma experiência app-like fluida, agora com uma interface futurista imersiva.
 
-📋 Visão Geral
+---
 
-O Projeto Zoro evoluiu para uma plataforma completa de gestão de performance física. Além do cronograma de treinos ABCDEF, a versão v4.1 consolida ferramentas analíticas avançadas e introduz funcionalidades de entretenimento para manter o foco durante o treino.
+## 📋 Visão Geral
 
-🚀 Tecnologias Utilizadas
+O Projeto Zoro atingiu um novo patamar de sofisticação na versão **4.7**. Projetado especificamente para a rede **Panobianco Academia**, o app mapeia os equipamentos exatos da marca **Kikos** e oferece tutoriais em vídeo integrados para cada movimento.  
+A interface foi totalmente redesenhada com uma estética **Cyberpunk/Retrowave**, focada em performance e motivação visual.
 
-Core: HTML5 Semântico, JavaScript (ES6+ Modular), CSS3.
+---
 
-Estilização: Tailwind CSS (via CDN) + CSS Custom Properties.
+## 🚀 Tecnologias Utilizadas
 
-Ícones: Lucide Icons.
+**Core:** HTML5 Semântico, JavaScript (ES6+ Modular), CSS3 Avançado  
+**Estilização:** Tailwind CSS + CSS Custom Properties & Keyframes  
+**Ícones:** Lucide Icons  
+**Mídia:** YouTube IFrame API (Embeds)  
+**Persistência:** localStorage com gestão de estado reativa  
 
-Fontes: Inter (UI) & JetBrains Mono (Dados/Números).
+---
 
-Persistência: localStorage com gestão de estado reativa.
+## ✨ Novas Funcionalidades (v4.7)
 
-✨ Novas Funcionalidades (v4.1)
+### 🎥 Tutoriais de Execução (YouTube Integration)
 
-🎵 Player de Música Integrado (Music)
+**Aprenda a forma correta sem sair do app:**
 
-Mantenha o foco sem sair do app:
+- **Vídeos Integrados:** Players do YouTube embutidos em cada card de exercício.  
+- **Curadoria Panobianco:** Prioridade para vídeos da série *Fast Fit* do canal oficial da Panobianco.
 
-Spotify Embed: Player embutido para controle de playlists diretamente na interface.
+---
 
-Persistência: Salve o link da sua playlist favorita (Gym Phonk, Metal, etc.) e o app lembrará dela na próxima sessão.
+### 🏋️ Mapeamento de Equipamentos KIKOS
 
-📊 Dashboard Analítico (Stats)
+**Treine com precisão cirúrgica:**
 
-Visualização gráfica de dados sem bibliotecas externas:
+- **Identificação de Máquinas:** Cada exercício exibe o modelo exato do equipamento Kikos (ex.: *Kikos Plate Load PR70*, *Pro Station TTMS25*) da unidade.
 
-Gráfico de Volume Semanal: Monitoramento visual da "Tonagem" (Kg totais levantados) dia a dia.
+---
 
-Métricas de Frequência: Contadores de treinos totais e séries realizadas.
+### 🌌 Interface Futurista (Cyberpunk UI)
 
-🧮 Ferramentas Técnicas (Tools)
+**Uma experiência visual gamificada e energética:**
 
-Utilitários matemáticos para otimização do treino:
+- **Fundo Animado:** Grid 3D em movimento constante estilo *Retrowave*.  
+- **Efeitos Neon:** Botões e indicadores com brilho intenso e sombras coloridas dinâmicas.  
+- **Responsividade:** Animações otimizadas via GPU para desempenho fluido em 60fps.
 
-Calculadora de Anilhas (Plate Math): Algoritmo que determina a combinação exata de anilhas para atingir uma carga alvo na barra olímpica.
+---
 
-Estimativa de 1RM: Cálculo automático da Repetição Máxima (1RM) teórica usando a fórmula de Epley.
+## 🔥 Funcionalidades de Suporte
 
-🎮 Gamificação Avançada
+- **Lembrete Thermo Flame:** Cartão dedicado para lembrar a suplementação pré-treino.  
+- **Temas de Personagem:** Escolha entre Zoro (Verde), Luffy (Vermelho), Sanji (Azul) ou Ace (Laranja).
 
-Transforme o treino em uma jornada de RPG:
+---
 
-Sistema de XP: Ganhe experiência a cada série concluída.
+## 📊 Ferramentas Analíticas & Utilitários
 
-Ranks: Evolua de Aprendiz ➔ Caçador ➔ Supernova ➔ Shichibukai ➔ Yonkou ➔ Rei do Inferno.
+- **Dashboard de Stats:** Gráfico de barras em CSS para volume semanal.  
+- **Calculadora de Anilhas:** Algoritmo para montagem rápida de barras olímpicas.  
+- **Estimativa de 1RM:** Cálculo automático de carga máxima teórica.  
+- **Timer Háptico:** Cronômetro com vibração e controle sonoro.
 
-Barra de Progresso: Visualização em tempo real do progresso para o próximo nível.
+---
 
-🎨 Sistema de Temas
+## 📂 Estrutura do Projeto
 
-Personalize a interface com base nos seus personagens favoritos:
-
-Zoro (Padrão): Verde Neon & Preto.
-
-Luffy: Vermelho Intenso.
-
-Sanji: Azul Profundo.
-
-Ace: Laranja Fogo.
-
-⚙️ Funcionalidades Core
-
-Timer Inteligente: Cronômetro de 45s automático com opção de Mute, feedback háptico (vibração) e adição rápida de tempo.
-
-Notas Técnicas: Campo de texto persistente por exercício para registrar ajustes de máquina.
-
-Backup de Dados: Exportação e Importação de progresso via arquivo JSON.
-
-Consistência: Heatmap semanal na tela inicial.
-
-📂 Estrutura do Projeto
-
-projeto-zoro-v4.1/
-├── index.html     # App Shell, Modais, Views (Home, Detail, Stats, Tools, Music)
-├── style.css      # Estilos, Animações, Gráficos CSS e Variáveis de Tema
-├── script.js      # Lógica de Negócio, Math Utils, Store e Roteamento
-└── README.md      # Documentação Técnica
+projeto-zoro-v4.7/
+├── index.html # App Shell, Modais, Views e Player de Vídeo
+├── style.css # Estilos Cyberpunk, Animações 3D e Variáveis
+├── script.js # Lógica de Negócio, YouTube Mapping e Store
+└── README.md # Documentação Técnica
 
 
-🛠️ Como Executar Localmente
+---
 
-Download: Baixe os arquivos index.html, style.css e script.js para uma mesma pasta.
+## 🛠️ Como Executar Localmente
 
-Execução:
+**Download:**  
+Baixe os arquivos *index.html*, *style.css* e *script.js* para a mesma pasta.
 
-Simples: Abra o index.html diretamente no seu navegador.
+**Execução:**
 
-Recomendado (VS Code): Instale a extensão "Live Server", clique com o botão direito no index.html e selecione "Open with Live Server".
+- **Simples:** Abra o arquivo *index.html* diretamente no navegador.  
+- **Recomendado (Dev):** Use a extensão **Live Server** no VS Code para hot-reload.  
+- **Modo Mobile:** No navegador desktop, pressione **F12 > Ctrl+Shift+M** para simular toque.
 
-Modo Mobile: No navegador Desktop, pressione F12 para abrir o DevTools e ative a simulação de dispositivo móvel (Ctrl+Shift+M) para visualizar a interface responsiva.
+---
 
-🔒 Direitos Autorais
+## 🔒 Direitos Autorais
 
-Todos os direitos reservados a Fernando Rodrigues.
+Todos os direitos reservados a **Fernando Rodrigues**.  
 © 2025
