@@ -2,8 +2,10 @@ const CACHE_NAME = 'zoro-app-v5';
 const ASSETS = [
     './',
     './index.html',
-    './style.css',
-    './script.js',
+    './css/style.css',
+    './js/script.js',
+    './assets/img/icon.png',
+    './assets/img/logo.png',
     'https://cdn.tailwindcss.com',
     'https://unpkg.com/lucide@latest'
 ];

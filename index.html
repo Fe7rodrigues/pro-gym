@@ -1,132 +1,282 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content"
+    />
     <title>Projeto Zoro v5.0</title>
-    
+
     <!-- PWA Setup -->
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#09090b">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="https://placehold.co/192x192/000000/22c55e?text=Z"> 
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%2309090b'/%3E%3Cpath d='M112 112h288L112 400h288' stroke='%2322c55e' stroke-width='64' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#09090b" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+
+    <!-- Ícone para iOS (Tela Inicial) -->
+    <link rel="apple-touch-icon" href="assets/img/icon.png" />
+
+    <!-- Favicon (Aba do Navegador) -->
+    <link rel="icon" type="image/png" href="assets/img/logo.png" />
 
     <!-- Libs -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    
-    <!-- CSS (Caminho Atualizado) -->
-    <link rel="stylesheet" href="css/style.css">
-</head>
-<body class="selection:bg-green-900 selection:text-white">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
 
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body class="selection:bg-green-900 selection:text-white">
     <div class="background-fx"><div class="gym-grid"></div></div>
 
     <div id="app-container">
-        <!-- Header -->
-        <header id="main-header" class="glass-header px-4 py-4 flex items-center justify-between hidden">
-            <!-- Injetado via JS -->
-        </header>
+      <!-- Header -->
+      <header
+        id="main-header"
+        class="glass-header px-4 py-4 flex items-center justify-between hidden"
+      >
+        <!-- Injetado via JS -->
+      </header>
 
-        <!-- Main Content -->
-        <main id="main-content">
-            <!-- Views -->
-        </main>
+      <!-- Main Content -->
+      <main id="main-content">
+        <!-- Views -->
+      </main>
 
-        <!-- Navbar -->
-        <nav id="bottom-nav" class="flex justify-around items-center">
-            <button onclick="router.navigate('home')" class="nav-btn group"><i data-lucide="dumbbell" class="icon-nav"></i><span class="label-nav">TREINOS</span></button>
-            <button onclick="router.navigate('stats')" class="nav-btn group"><i data-lucide="bar-chart-2" class="icon-nav"></i><span class="label-nav">STATS</span></button>
-            <div class="relative -top-6">
-                <button onclick="router.navigate('tools')" class="h-14 w-14 rounded-full flex items-center justify-center bg-zinc-900 border-2 border-[var(--theme-color)] shadow-[0_0_15px_var(--theme-glow)] active:scale-90 transition-all">
-                    <i data-lucide="swords" class="w-6 h-6 text-[var(--theme-color)]"></i>
+      <!-- Navbar -->
+      <nav id="bottom-nav" class="flex justify-around items-center">
+        <button onclick="router.navigate('home')" class="nav-btn group">
+          <i data-lucide="dumbbell" class="icon-nav"></i
+          ><span class="label-nav">TREINOS</span>
+        </button>
+        <button onclick="router.navigate('stats')" class="nav-btn group">
+          <i data-lucide="bar-chart-2" class="icon-nav"></i
+          ><span class="label-nav">STATS</span>
+        </button>
+        <div class="relative -top-6">
+          <button
+            onclick="router.navigate('tools')"
+            class="h-14 w-14 rounded-full flex items-center justify-center bg-zinc-900 border-2 border-[var(--theme-color)] shadow-[0_0_15px_var(--theme-glow)] active:scale-90 transition-all"
+          >
+            <i
+              data-lucide="swords"
+              class="w-6 h-6 text-[var(--theme-color)]"
+            ></i>
+          </button>
+        </div>
+        <button onclick="router.navigate('achievements')" class="nav-btn group">
+          <i data-lucide="medal" class="icon-nav"></i
+          ><span class="label-nav">BADGES</span>
+        </button>
+        <button onclick="settings.open()" class="nav-btn group">
+          <i data-lucide="settings" class="icon-nav"></i
+          ><span class="label-nav">AJUSTES</span>
+        </button>
+      </nav>
+
+      <!-- MODAL: Timer -->
+      <div
+        id="timer-modal"
+        class="hidden fixed bottom-24 left-4 right-4 bg-[#111] border border-zinc-800 rounded-2xl shadow-2xl p-4 z-50 animate-slide-up"
+      >
+        <div class="flex justify-between items-center mb-2">
+          <span
+            class="text-[var(--theme-color)] text-xs font-bold uppercase tracking-wider flex items-center gap-2"
+          >
+            <span
+              class="w-2 h-2 rounded-full bg-[var(--theme-color)] animate-pulse"
+            ></span>
+            Descanso
+          </span>
+          <div class="flex gap-3">
+            <button
+              onclick="timer.toggleMute()"
+              id="btn-mute"
+              class="text-zinc-500 hover:text-white"
+            >
+              <i data-lucide="volume-2" class="w-4 h-4"></i>
+            </button>
+            <button
+              onclick="timer.close()"
+              class="text-zinc-500 hover:text-white"
+            >
+              <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+        <div
+          id="timer-display"
+          class="text-5xl font-mono text-white text-center font-bold mb-4"
+        >
+          00:45
+        </div>
+        <div class="grid grid-cols-3 gap-2">
+          <button
+            onclick="timer.toggle()"
+            id="timer-toggle-btn"
+            class="h-10 rounded-lg bg-[var(--theme-color)] text-black flex items-center justify-center font-bold"
+          >
+            <i data-lucide="pause" class="w-5 h-5"></i>
+          </button>
+          <button
+            onclick="timer.addTime(10)"
+            class="h-10 rounded-lg bg-zinc-800 text-zinc-300 font-bold text-xs border border-zinc-700"
+          >
+            +10s
+          </button>
+          <button
+            onclick="timer.reset()"
+            class="h-10 rounded-lg bg-zinc-800 text-zinc-300 flex items-center justify-center border border-zinc-700"
+          >
+            <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- MODAL: Notas -->
+      <div
+        id="notes-modal"
+        class="hidden modal-overlay animate-fade-in fixed inset-0 z-50 flex items-center justify-center bg-black/80"
+      >
+        <div
+          class="bg-[#111] w-full max-w-sm rounded-2xl border border-zinc-800 p-5 shadow-2xl"
+        >
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-white">Anotações</h3>
+            <button onclick="notesManager.close()" class="text-zinc-500">
+              <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+          </div>
+          <textarea
+            id="note-input"
+            class="w-full h-32 input-dark rounded-xl p-3 text-sm resize-none mb-4"
+            placeholder="Ex: Banco 3, Pegada neutra..."
+          ></textarea>
+          <button
+            onclick="notesManager.save()"
+            class="w-full bg-[var(--theme-color)] text-black font-bold py-3 rounded-xl"
+          >
+            SALVAR
+          </button>
+        </div>
+      </div>
+
+      <!-- MODAL: Ajustes -->
+      <div
+        id="settings-modal"
+        class="hidden modal-overlay animate-fade-in fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80"
+      >
+        <div
+          class="bg-[#111] w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl border-t sm:border border-zinc-800 p-6 shadow-2xl max-h-[80vh] overflow-y-auto"
+        >
+          <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-bold text-white">Configurações</h3>
+            <button
+              onclick="settings.close()"
+              class="p-2 bg-zinc-800 rounded-full text-zinc-400"
+            >
+              <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+          </div>
+
+          <h4 class="text-xs font-bold text-zinc-500 uppercase mb-3">Tema</h4>
+          <div class="grid grid-cols-4 gap-2 mb-6">
+            <button
+              onclick="themeManager.setTheme('zoro')"
+              class="h-10 bg-green-600 rounded-lg border-2 border-transparent focus:border-white relative overflow-hidden group"
+            >
+              <span
+                class="absolute inset-0 flex items-center justify-center font-bold text-[10px] text-black/50 uppercase"
+                >Zoro</span
+              >
+            </button>
+            <button
+              onclick="themeManager.setTheme('luffy')"
+              class="h-10 bg-red-600 rounded-lg border-2 border-transparent focus:border-white relative overflow-hidden group"
+            >
+              <span
+                class="absolute inset-0 flex items-center justify-center font-bold text-[10px] text-black/50 uppercase"
+                >Luffy</span
+              >
+            </button>
+            <button
+              onclick="themeManager.setTheme('sanji')"
+              class="h-10 bg-blue-600 rounded-lg border-2 border-transparent focus:border-white relative overflow-hidden group"
+            >
+              <span
+                class="absolute inset-0 flex items-center justify-center font-bold text-[10px] text-black/50 uppercase"
+                >Sanji</span
+              >
+            </button>
+            <button
+              onclick="themeManager.setTheme('ace')"
+              class="h-10 bg-orange-500 rounded-lg border-2 border-transparent focus:border-white relative overflow-hidden group"
+            >
+              <span
+                class="absolute inset-0 flex items-center justify-center font-bold text-[10px] text-black/50 uppercase"
+                >Ace</span
+              >
+            </button>
+          </div>
+
+          <div class="space-y-3">
+            <div class="p-4 bg-zinc-900 rounded-xl border border-zinc-800">
+              <h4 class="font-bold text-zinc-300 mb-3 text-sm">Dados</h4>
+              <div class="flex gap-2">
+                <button
+                  onclick="settings.exportData()"
+                  class="flex-1 bg-zinc-800 py-2 rounded text-xs font-bold text-white border border-zinc-700"
+                >
+                  EXPORTAR
                 </button>
+                <label
+                  class="flex-1 bg-zinc-800 py-2 rounded text-xs font-bold text-white border border-zinc-700 text-center cursor-pointer"
+                >
+                  IMPORTAR
+                  <input
+                    type="file"
+                    class="hidden"
+                    onchange="settings.importData(this)"
+                  />
+                </label>
+              </div>
             </div>
-            <button onclick="router.navigate('achievements')" class="nav-btn group"><i data-lucide="medal" class="icon-nav"></i><span class="label-nav">BADGES</span></button>
-            <button onclick="settings.open()" class="nav-btn group"><i data-lucide="settings" class="icon-nav"></i><span class="label-nav">AJUSTES</span></button>
-        </nav>
 
-        <!-- MODAL: Timer -->
-        <div id="timer-modal" class="hidden fixed bottom-24 left-4 right-4 bg-[#111] border border-zinc-800 rounded-2xl shadow-2xl p-4 z-50 animate-slide-up">
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-[var(--theme-color)] text-xs font-bold uppercase tracking-wider flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-[var(--theme-color)] animate-pulse"></span> Descanso
-                </span>
-                <div class="flex gap-3">
-                    <button onclick="timer.toggleMute()" id="btn-mute" class="text-zinc-500 hover:text-white"><i data-lucide="volume-2" class="w-4 h-4"></i></button>
-                    <button onclick="timer.close()" class="text-zinc-500 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
-                </div>
+            <button
+              onclick="settings.clearAll()"
+              class="w-full py-3 text-red-500 text-xs font-bold border border-red-900/30 rounded-xl hover:bg-red-900/10"
+            >
+              RESETAR TUDO
+            </button>
+
+            <!-- Footer -->
+            <div class="mt-8 text-center pt-4 border-t border-zinc-800/50">
+              <p
+                class="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mb-1"
+              >
+                Todos os direitos reservados a
+                <span class="text-[var(--theme-color)]"
+                  >Fernando Rodrigues</span
+                >
+              </p>
+              <p class="text-zinc-600 text-[9px] font-mono">
+                © 2025 • Projeto Zoro v5.0
+              </p>
             </div>
-            <div id="timer-display" class="text-5xl font-mono text-white text-center font-bold mb-4">00:45</div>
-            <div class="grid grid-cols-3 gap-2">
-                <button onclick="timer.toggle()" id="timer-toggle-btn" class="h-10 rounded-lg bg-[var(--theme-color)] text-black flex items-center justify-center font-bold"><i data-lucide="pause" class="w-5 h-5"></i></button>
-                <button onclick="timer.addTime(10)" class="h-10 rounded-lg bg-zinc-800 text-zinc-300 font-bold text-xs border border-zinc-700">+10s</button>
-                <button onclick="timer.reset()" class="h-10 rounded-lg bg-zinc-800 text-zinc-300 flex items-center justify-center border border-zinc-700"><i data-lucide="rotate-ccw" class="w-5 h-5"></i></button>
-            </div>
+          </div>
         </div>
-
-        <!-- MODAL: Notas -->
-        <div id="notes-modal" class="hidden modal-overlay animate-fade-in">
-            <div class="bg-[#111] w-full max-w-sm rounded-2xl border border-zinc-800 p-5 shadow-2xl">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-bold text-white">Anotações</h3>
-                    <button onclick="notesManager.close()" class="text-zinc-500"><i data-lucide="x" class="w-6 h-6"></i></button>
-                </div>
-                <textarea id="note-input" class="w-full h-32 input-dark rounded-xl p-3 text-sm resize-none mb-4" placeholder="Ex: Banco 3, Pegada neutra..."></textarea>
-                <button onclick="notesManager.save()" class="w-full bg-[var(--theme-color)] text-black font-bold py-3 rounded-xl">SALVAR</button>
-            </div>
-        </div>
-
-        <!-- MODAL: Ajustes -->
-        <div id="settings-modal" class="hidden modal-overlay animate-fade-in items-end sm:items-center">
-            <div class="bg-[#111] w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl border-t sm:border border-zinc-800 p-6 shadow-2xl max-h-[80vh] overflow-y-auto">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-bold text-white">Configurações</h3>
-                    <button onclick="settings.close()" class="p-2 bg-zinc-800 rounded-full text-zinc-400"><i data-lucide="x" class="w-5 h-5"></i></button>
-                </div>
-                
-                <h4 class="text-xs font-bold text-zinc-500 uppercase mb-3">Tema</h4>
-                <div class="grid grid-cols-4 gap-2 mb-6">
-                    <button onclick="themeManager.setTheme('zoro')" class="h-10 bg-green-600 rounded-lg border-2 border-transparent focus:border-white relative overflow-hidden group"><span class="absolute inset-0 flex items-center justify-center font-bold text-[10px] text-black/50 uppercase">Zoro</span></button>
-                    <button onclick="themeManager.setTheme('luffy')" class="h-10 bg-red-600 rounded-lg border-2 border-transparent focus:border-white relative overflow-hidden group"><span class="absolute inset-0 flex items-center justify-center font-bold text-[10px] text-black/50 uppercase">Luffy</span></button>
-                    <button onclick="themeManager.setTheme('sanji')" class="h-10 bg-blue-600 rounded-lg border-2 border-transparent focus:border-white relative overflow-hidden group"><span class="absolute inset-0 flex items-center justify-center font-bold text-[10px] text-black/50 uppercase">Sanji</span></button>
-                    <button onclick="themeManager.setTheme('ace')" class="h-10 bg-orange-500 rounded-lg border-2 border-transparent focus:border-white relative overflow-hidden group"><span class="absolute inset-0 flex items-center justify-center font-bold text-[10px] text-black/50 uppercase">Ace</span></button>
-                </div>
-
-                <div class="space-y-3">
-                    <div class="p-4 bg-zinc-900 rounded-xl border border-zinc-800">
-                        <h4 class="font-bold text-zinc-300 mb-3 text-sm">Dados</h4>
-                        <div class="flex gap-2">
-                            <button onclick="settings.exportData()" class="flex-1 bg-zinc-800 py-2 rounded text-xs font-bold text-white border border-zinc-700">EXPORTAR</button>
-                            <label class="flex-1 bg-zinc-800 py-2 rounded text-xs font-bold text-white border border-zinc-700 text-center cursor-pointer">
-                                IMPORTAR <input type="file" class="hidden" onchange="settings.importData(this)">
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <button onclick="settings.clearAll()" class="w-full py-3 text-red-500 text-xs font-bold border border-red-900/30 rounded-xl hover:bg-red-900/10">RESETAR TUDO</button>
-
-                    <!-- Footer de Direitos Autorais -->
-                    <div class="mt-8 text-center pt-4 border-t border-zinc-800/50">
-                        <p class="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mb-1">
-                            Todos os direitos reservados a <span class="text-[var(--theme-color)]">Fernando Rodrigues</span>
-                        </p>
-                        <p class="text-zinc-600 text-[9px] font-mono">
-                            © 2025 • Projeto Zoro v5.0
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+      </div>
     </div>
 
-    <!-- Script (Caminho Atualizado) -->
+    <!-- Script Local -->
     <script src="js/script.js"></script>
-</body>
+  </body>
 </html>

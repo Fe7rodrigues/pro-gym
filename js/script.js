@@ -26,7 +26,7 @@ const RANKS = [
     { name: "Yonkou", minXP: 1000 }, { name: "Rei do Inferno", minXP: 2000 }
 ];
 
-// --- DADOS DO TREINO (Mapeamento Kikos + YouTube) ---
+// --- DADOS DO TREINO ---
 const WORKOUT_PLAN = [
     { id: 'day-a', letter: 'A', title: 'Peitoral & Abdômen', focus: 'Empurrar', exercises: [
         { id: 'a1', name: 'Supino Máquina', machine: 'Kikos Pro Concept II', sets: 4, reps: '8-10', rest: 45, youtube: 'UfYsjtao108' },
@@ -78,11 +78,10 @@ const WORKOUT_PLAN = [
     ]}
 ];
 
-// --- HELPERS (Funções Auxiliares para Badges e Dados) ---
+// --- HELPERS ---
 function checkWeeklyConsistency(s) {
     const today = new Date();
     let count = 0;
-    // Verifica os últimos 7 dias
     for(let i=0; i<7; i++) {
         const d = new Date(today); d.setDate(today.getDate()-i);
         if(s.workoutHistory[d.toISOString().split('T')[0]]) count++;
@@ -98,15 +97,15 @@ function checkMaxLoad(s) {
     return max;
 }
 
-// --- STORE (Gerenciamento de Estado) ---
+// --- STORE ---
 const store = {
     data: { 
         completedSets: {}, 
         weights: {}, 
-        prevWeights: {}, // Armazena cargas anteriores para calcular Delta
+        prevWeights: {},
         notes: {}, 
         cardioHistory: {}, 
-        workoutHistory: {}, // Histórico diário: { 'YYYY-MM-DD': 'day-a' }
+        workoutHistory: {},
         settings: { theme: 'zoro', soundEnabled: true }, 
         xp: 0, 
         visibleVideos: {} 
@@ -117,7 +116,7 @@ const store = {
             const parsed = JSON.parse(saved);
             this.data = { ...this.data, ...parsed, visibleVideos: {} }; 
             if(!this.data.settings) this.data.settings = { theme: 'zoro', soundEnabled: true };
-            if(!this.data.prevWeights) this.data.prevWeights = {}; // Inicializa se não existir
+            if(!this.data.prevWeights) this.data.prevWeights = {};
         }
         themeManager.apply(this.data.settings.theme);
     },
@@ -142,33 +141,27 @@ const themeManager = {
         store.data.settings.theme = key; 
         this.apply(key); 
         store.save();
-        // Atualiza a home se estiver visível para refletir cor instantaneamente
-        if (document.getElementById('main-header').classList.contains('hidden')) {
+        if (document.getElementById('main-header') && document.getElementById('main-header').classList.contains('hidden')) {
             router.renderHome(document.getElementById('main-content'));
         }
     }
 };
 
-// --- UTILS (Cálculos e Datas) ---
+// --- UTILS ---
 const utils = {
     getTodayDate: () => new Date().toISOString().split('T')[0],
-    
     getRank(xp) { return [...RANKS].reverse().find(r => xp >= r.minXP) || RANKS[0]; },
     getNextRank(xp) { return RANKS.find(r => r.minXP > xp); },
-    
-    // Gera dados para o Heatmap (últimos 100 dias)
     getHeatmapData() {
         const data = [];
         const today = new Date();
         for(let i=100; i>=0; i--) {
             const d = new Date(today); d.setDate(today.getDate() - i);
             const iso = d.toISOString().split('T')[0];
-            // Valor 3 = verde intenso (treinou), 0 = vazio
             data.push({ date: d, iso: iso, value: store.data.workoutHistory[iso] ? 3 : 0 });
         }
         return data;
     },
-    
     calculate1RM(w, r) { return Math.round(w * (1 + r/30)); },
     calculatePlates(target) {
         let rem = (target - 20) / 2; if(rem <= 0) return [];
@@ -176,13 +169,10 @@ const utils = {
         for(let p of plates) { while(rem >= p) { res.push(p); rem -= p; } }
         return res;
     },
-
-    // Calcula a diferença de carga
     getDelta(exId) {
         const curr = parseFloat(store.data.weights[exId]) || 0;
         const prev = parseFloat(store.data.prevWeights[exId]) || 0;
         if (prev === 0 || curr === 0) return null;
-        
         const diff = curr - prev;
         if(diff > 0) return `<span class="delta-tag delta-pos">▲ +${diff}kg</span>`;
         if(diff < 0) return `<span class="delta-tag delta-neg">▼ ${diff}kg</span>`;
@@ -190,8 +180,7 @@ const utils = {
     }
 };
 
-// --- MODULES (Timer, Notas, Config) ---
-
+// --- MODULES ---
 const timer = {
     interval: null, timeLeft: 0, defaultTime: 45, isActive: false, audioCtx: null,
     initAudio() { if(!this.audioCtx) this.audioCtx = new (window.AudioContext || window.webkitAudioContext)(); },
@@ -214,6 +203,7 @@ const timer = {
     start(s) {
         this.initAudio(); this.timeLeft = s; this.defaultTime = s; this.isActive = true;
         document.getElementById('timer-modal').classList.remove('hidden'); this.updateMuteIcon(); this.render(); this.run();
+        lucide.createIcons();
     },
     run() {
         clearInterval(this.interval);
@@ -236,7 +226,10 @@ const timer = {
     },
     updateBtn(p) {
         const btn = document.getElementById('timer-toggle-btn');
-        if(btn) { btn.innerHTML = p ? '<i data-lucide="pause" class="w-5 h-5 fill-current"></i>' : '<i data-lucide="play" class="w-5 h-5 fill-current"></i>'; lucide.createIcons(); }
+        if(btn) { 
+            btn.innerHTML = p ? '<i data-lucide="pause" class="w-5 h-5 fill-current"></i>' : '<i data-lucide="play" class="w-5 h-5 fill-current"></i>'; 
+            lucide.createIcons(); 
+        }
     }
 };
 
@@ -248,7 +241,7 @@ const notesManager = {
 };
 
 const settings = {
-    open() { document.getElementById('settings-modal').classList.remove('hidden'); },
+    open() { document.getElementById('settings-modal').classList.remove('hidden'); lucide.createIcons(); },
     close() { document.getElementById('settings-modal').classList.add('hidden'); },
     clearAll() { if(confirm('RESETAR TUDO?')) { localStorage.removeItem('zoro_v5_data'); location.reload(); } },
     exportData() {
@@ -306,7 +299,6 @@ const router = {
             txt = `${store.data.xp} / ${next.minXP} XP`;
         }
 
-        // Thermo Flame + Treinos
         c.innerHTML = `
             <div class="px-4 animate-fade-in pb-10">
                 <!-- Rank Header -->
@@ -318,7 +310,7 @@ const router = {
                     <div class="h-2 bg-zinc-900 rounded-full overflow-hidden border border-zinc-800"><div class="h-full bg-theme animate-progress shadow-[0_0_10px_var(--theme-glow)]" style="--target-width: ${pct}%"></div></div>
                 </div>
 
-                <!-- Thermo Flame Reminder -->
+                <!-- Reminder -->
                 <div class="bg-gradient-to-r from-red-900/20 to-orange-900/20 border border-red-500/30 p-4 rounded-2xl flex items-center gap-4 mb-6 backdrop-blur-sm">
                     <div class="bg-red-500/20 p-2 rounded-lg"><i data-lucide="flame" class="w-6 h-6 text-red-500"></i></div>
                     <div><h4 class="text-red-200 font-bold text-sm">Thermo Flame Ativo</h4><p class="text-red-400/60 text-xs">Lembrete: Tomar 30min antes.</p></div>
@@ -339,6 +331,7 @@ const router = {
                 }).join('')}</div>
                 <div class="h-10"></div>
             </div>`;
+        lucide.createIcons();
     },
 
     renderDetail(c, p) {
@@ -354,13 +347,15 @@ const router = {
             <button onclick="router.navigate('home')" class="p-2 -ml-2 text-zinc-400 hover:text-white transition-colors"><i data-lucide="chevron-left" class="w-6 h-6"></i></button>
             <div class="text-center"><h2 class="text-white font-bold text-sm tracking-wide uppercase">Treino ${w.letter}</h2><span class="text-[9px] text-zinc-500 font-mono block">Volume: ${load.toLocaleString()}kg</span></div>
             <button onclick="actions.reset('${w.id}')" class="p-2 -mr-2 text-zinc-600 hover:text-red-500 transition-colors"><i data-lucide="rotate-ccw" class="w-5 h-5"></i></button>`;
+        
+        lucide.createIcons();
 
         c.innerHTML = `<div class="px-4 space-y-4 animate-slide-up pb-10">
             ${w.exercises.map((ex, i) => {
                 const hasNote = (store.data.notes[ex.id]||'').trim().length > 0;
                 const isVideoVisible = store.data.visibleVideos && store.data.visibleVideos[ex.id];
                 const vidBtnClass = isVideoVisible ? 'text-theme border-theme bg-theme/10' : 'text-zinc-500 border-zinc-700 hover:text-white';
-                const delta = utils.getDelta(ex.id) || ''; // Delta Indicator
+                const delta = utils.getDelta(ex.id) || ''; 
 
                 const videoContent = isVideoVisible ? `
                     <div class="mt-3 w-full rounded-xl overflow-hidden bg-black aspect-video border border-zinc-800 animate-fade-in relative group flex items-center justify-center">
@@ -409,10 +404,11 @@ const router = {
                 <button onclick="actions.finish()" class="w-full max-w-sm bg-theme hover:brightness-110 text-black font-bold py-4 rounded-2xl shadow-lg shadow-theme/20 flex items-center justify-center gap-2 transition-all transform hover:scale-105 animate-bounce-subtle"><i data-lucide="trophy" class="w-6 h-6"></i>CONCLUIR MISSÃO</button>
             </div><div class="h-24"></div>` : '<div class="h-10"></div>'}
         </div>`;
+        
+        lucide.createIcons();
     },
 
     renderStats(c) {
-        // Heatmap
         const heatmapData = utils.getHeatmapData();
         const cells = heatmapData.map(d => {
             let lvl = '';
@@ -438,6 +434,7 @@ const router = {
                 <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4"><span class="text-xs text-zinc-500 block mb-1">Séries Totais</span><span class="text-2xl font-bold text-theme font-mono">${store.data.xp}</span></div>
             </div><div class="h-10"></div>
         </div>`;
+        lucide.createIcons();
     },
 
     renderAchievements(c) {
@@ -462,6 +459,7 @@ const router = {
             </div>
             <div class="h-10"></div>
         </div>`;
+        lucide.createIcons();
     },
 
     renderTools(c) {
@@ -484,6 +482,7 @@ const router = {
                 <div id="plate-result" class="flex flex-wrap gap-2 justify-center bg-zinc-950 p-3 rounded-lg border border-zinc-800 min-h-[50px] items-center"><span class="text-zinc-600 text-xs">Anilhas aparecerão aqui</span></div>
             </div><div class="h-10"></div>
         </div>`;
+        lucide.createIcons();
     }
 };
 
@@ -495,11 +494,12 @@ const actions = {
             store.data.xp = (store.data.xp || 0) + 1;
             timer.start(rest);
             const today = utils.getTodayDate();
-            store.data.workoutHistory[today] = (store.data.workoutHistory[today] || 0) + 1; // Incrementa intensidade
+            store.data.workoutHistory[today] = (store.data.workoutHistory[today] || 0) + 1; 
         } else {
             store.data.xp = Math.max(0, (store.data.xp || 0) - 1);
         }
-        store.save(); router.renderDetail(document.getElementById('main-content'), router.currentParams);
+        store.save(); 
+        router.renderDetail(document.getElementById('main-content'), router.currentParams);
     },
     weight(ex, v) { 
         if(!store.data.prevWeights[ex]) store.data.prevWeights[ex] = store.data.weights[ex] || 0;
@@ -522,7 +522,6 @@ const actions = {
     finish() { alert('Treino Concluído! +100XP'); router.navigate('home'); }
 };
 
-// Registro de Service Worker para PWA
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('service-worker.js')
