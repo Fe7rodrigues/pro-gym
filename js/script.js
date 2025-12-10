@@ -1,5 +1,5 @@
 /**
- * PRO GYM APP V1.0
+ * PRO GYM APP V1.1
  * Copyright (c) 2025 Fernando Rodrigues. Todos os direitos reservados.
  * Descrição: Sistema profissional de gestão de treinos.
  * Theme: Clean Dark & Technical
@@ -9,70 +9,84 @@
 const THEMES = {
     performance: { color: '#3b82f6', hover: '#2563eb', glow: 'rgba(59, 130, 246, 0.5)', bgSoft: 'rgba(59, 130, 246, 0.1)' }, // Azul (Padrão)
     hypertrophy: { color: '#ef4444', hover: '#dc2626', glow: 'rgba(239, 68, 68, 0.5)', bgSoft: 'rgba(239, 68, 68, 0.1)' }, // Vermelho
-    stamina:     { color: '#10b981', hover: '#059669', glow: 'rgba(16, 185, 129, 0.5)', bgSoft: 'rgba(16, 185, 129, 0.1)' }, // Verde
-    strength:    { color: '#f97316', hover: '#ea580c', glow: 'rgba(249, 115, 22, 0.5)', bgSoft: 'rgba(249, 115, 22, 0.1)' }  // Laranja
+    stamina: { color: '#10b981', hover: '#059669', glow: 'rgba(16, 185, 129, 0.5)', bgSoft: 'rgba(16, 185, 129, 0.1)' }, // Verde
+    strength: { color: '#f97316', hover: '#ea580c', glow: 'rgba(249, 115, 22, 0.5)', bgSoft: 'rgba(249, 115, 22, 0.1)' }, // Laranja
+    energy: { color: '#FD0963', hover: '#D00750', glow: 'rgba(253, 9, 99, 0.6)', bgSoft: 'rgba(253, 9, 99, 0.15)' },   // Rosa Neon
+    cosmos: { color: '#8B5CF6', hover: '#3C0A6D', glow: 'rgba(139, 92, 246, 0.6)', bgSoft: 'rgba(60, 10, 109, 0.25)' } // Roxo (Ajustado para legibilidade em texto, mantendo a base escura)
 };
 
 // --- SISTEMA DE PROGRESSÃO ---
 const RANKS = [
-    { name: "Iniciante", minXP: 0 }, 
+    { name: "Iniciante", minXP: 0 },
     { name: "Praticante", minXP: 50 },
-    { name: "Intermediário", minXP: 200 }, 
+    { name: "Intermediário", minXP: 200 },
     { name: "Avançado", minXP: 500 },
-    { name: "Elite", minXP: 1000 }, 
+    { name: "Elite", minXP: 1000 },
     { name: "Pro", minXP: 2000 }
 ];
 
 // --- PLANO DE TREINO (DADOS RESTAURADOS A-F) ---
 const WORKOUT_PLAN = [
-    { id: 'day-a', letter: 'A', title: 'Peitoral & Abdômen', focus: 'Chest Focus', exercises: [
-        { id: 'a1', name: 'Supino Máquina', machine: 'Kikos Pro Concept II', sets: 4, reps: '8-10', rest: 45, youtube: 'UfYsjtao108' },
-        { id: 'a2', name: 'Peck Deck', machine: 'Kikos Pro Station TTMS25', sets: 4, reps: '8-10', rest: 45, youtube: 'a5XwjsD3AOI' },
-        { id: 'a3', name: 'Supino Inclinado', machine: 'Kikos Pro Titanium TTS12', sets: 4, reps: '8-10', rest: 45, youtube: '_OodPWexj_g' },
-        { id: 'a4', name: 'Cross Over', machine: 'Kikos Pro Titanium TTMS20', sets: 4, reps: '8-10', rest: 45, youtube: '7UC_8lsE2w0' },
-        { id: 'a5', name: 'Abdominal Máquina', machine: 'Kikos Pro Station TTFW60', sets: 4, reps: '15-20', rest: 45, youtube: 'qWtYjH0enBA' },
-        { id: 'a6', name: 'Rotação de Tronco', machine: 'Kikos Torso Rotation', sets: 4, reps: '15-20', rest: 45, youtube: 'tDBYMZxwXQ8' }
-    ]},
-    { id: 'day-b', letter: 'B', title: 'Dorsais & Lombar', focus: 'Back Focus', exercises: [
-        { id: 'b1', name: 'Puxada Alta', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: 'UO70dS2tTyQ' },
-        { id: 'b2', name: 'Puxada Triângulo', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: 'UO70dS2tTyQ' },
-        { id: 'b3', name: 'Remada Baixa', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: 'MwyrOd_vwB8' },
-        { id: 'b4', name: 'Remada Máquina', machine: 'Kikos Pro Plate Load', sets: 4, reps: '8-10', rest: 45, youtube: 'TeFo51Q_Nsc' },
-        { id: 'b5', name: 'Pulldown', machine: 'Kikos Crossover Polia', sets: 4, reps: '8-10', rest: 45, youtube: 'Jgei5V3dE48' },
-        { id: 'b6', name: 'Extensão Lombar', machine: 'Kikos Banco Lombar', sets: 4, reps: '12-15', rest: 60, youtube: 'ph3pddpKzzw' }
-    ]},
-    { id: 'day-c', letter: 'C', title: 'Quadríceps & Pant.', focus: 'Quads Focus', exercises: [
-        { id: 'c1', name: 'Leg Press 45º', machine: 'Kikos Plate Load PR70', sets: 4, reps: '8-10', rest: 60, youtube: 'uJu3Yph10cI' },
-        { id: 'c2', name: 'Hack Machine', machine: 'Kikos Pro Station TTPL79', sets: 4, reps: '8-10', rest: 60, youtube: 'O8gOJu9ph2E' },
-        { id: 'c3', name: 'Cadeira Extensora', machine: 'Kikos Plate Load PR71', sets: 4, reps: '8-10', rest: 45, youtube: '46WfkM7rRF4' },
-        { id: 'c4', name: 'Leg Horizontal', machine: 'Kikos Pro Titanium TTS70', sets: 4, reps: '8-10', rest: 45, youtube: 'gTo0HfVcLxo' },
-        { id: 'c5', name: 'Panturrilha Sentado', machine: 'Kikos Pro Station TTPL77', sets: 4, reps: '15-20', rest: 30, youtube: 'JbyjNymZOt0' },
-        { id: 'c6', name: 'Panturrilha Leg', machine: 'Kikos Plate Load PR70', sets: 4, reps: '15-20', rest: 30, youtube: 'uJu3Yph10cI' }
-    ]},
-    { id: 'day-d', letter: 'D', title: 'Ombros & Trapézio', focus: 'Delts Focus', exercises: [
-        { id: 'd1', name: 'Desenv. Máquina', machine: 'Kikos Pro Station TTFW16', sets: 4, reps: '8-10', rest: 45, youtube: '7z31DogTlC8' },
-        { id: 'd2', name: 'Elevação Lateral', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: 'jMyZZJMlwSg' },
-        { id: 'd3', name: 'Elevação Frontal', machine: 'Kikos Crossover', sets: 4, reps: '8-10', rest: 45, youtube: 'hRJ6tz5_iSA' },
-        { id: 'd4', name: 'Crucifixo Inverso', machine: 'Kikos Peck Deck', sets: 4, reps: '8-10', rest: 45, youtube: '5_iV9Q5Q55g' },
-        { id: 'd5', name: 'Remada Alta', machine: 'Kikos Crossover', sets: 4, reps: '8-10', rest: 45, youtube: '2F8_gJ9o_cM' },
-        { id: 'd6', name: 'Encolhimento', machine: 'Kikos Smith Machine', sets: 4, reps: '12-15', rest: 45, youtube: '8j2Gj_6I5xI' }
-    ]},
-    { id: 'day-e', letter: 'E', title: 'Bíceps & Tríceps', focus: 'Arms Focus', exercises: [
-        { id: 'e1', name: 'Tríceps Pulley', machine: 'Kikos Crossover', sets: 4, reps: '8-10', rest: 45, youtube: 'ga8dtLyTj1M' },
-        { id: 'e2', name: 'Tríceps Corda', machine: 'Kikos Crossover', sets: 4, reps: '8-10', rest: 45, youtube: 'vB5OHsJ3ECE' },
-        { id: 'e3', name: 'Tríceps Máquina', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: '3_9d1g7o_cM' },
-        { id: 'e4', name: 'Rosca Scott', machine: 'Kikos Pro Scott', sets: 4, reps: '8-10', rest: 45, youtube: '2jDrDoW1Z0o' },
-        { id: 'e5', name: 'Rosca Direta', machine: 'Kikos Crossover Baixo', sets: 4, reps: '8-10', rest: 45, youtube: 'vhcJP86SEos' },
-        { id: 'e6', name: 'Rosca Martelo', machine: 'Kikos Crossover Corda', sets: 4, reps: '8-10', rest: 45, youtube: 'zC3nLlEpt4w' }
-    ]},
-    { id: 'day-f', letter: 'F', title: 'Posterior & Glúteos', focus: 'Glutes Focus', exercises: [
-        { id: 'f1', name: 'Mesa Flexora', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: '2piLtfoXX6k' },
-        { id: 'f2', name: 'Cadeira Flexora', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: 'Y1o8iPiBI7k' },
-        { id: 'f3', name: 'Cadeira Abdutora', machine: 'Kikos Pro Station', sets: 4, reps: '12-15', rest: 45, youtube: 'Hs-9c39_rjo' },
-        { id: 'f4', name: 'Glúteo Máquina', machine: 'Kikos Glute Machine', sets: 4, reps: '8-10', rest: 45, youtube: 'Z8gztZ1_t9A' },
-        { id: 'f5', name: 'Leg 45º Alto', machine: 'Kikos Plate Load PR70', sets: 4, reps: '8-10', rest: 60, youtube: 'uJu3Yph10cI' },
-        { id: 'f6', name: 'Cadeira Adutora', machine: 'Kikos Pro Station', sets: 4, reps: '12-15', rest: 45, youtube: 'p3g4wAsu0R4' }
-    ]}
+    {
+        id: 'day-a', letter: 'A', title: 'Peitoral & Abdômen', focus: 'Chest Focus', exercises: [
+            { id: 'a1', name: 'Supino Máquina', machine: 'Kikos Pro Concept II', sets: 4, reps: '8-10', rest: 45, youtube: 'UfYsjtao108' },
+            { id: 'a2', name: 'Peck Deck', machine: 'Kikos Pro Station TTMS25', sets: 4, reps: '8-10', rest: 45, youtube: 'a5XwjsD3AOI' },
+            { id: 'a3', name: 'Supino Inclinado', machine: 'Kikos Pro Titanium TTS12', sets: 4, reps: '8-10', rest: 45, youtube: '_OodPWexj_g' },
+            { id: 'a4', name: 'Cross Over', machine: 'Kikos Pro Titanium TTMS20', sets: 4, reps: '8-10', rest: 45, youtube: '7UC_8lsE2w0' },
+            { id: 'a5', name: 'Abdominal Máquina', machine: 'Kikos Pro Station TTFW60', sets: 4, reps: '15-20', rest: 45, youtube: 'qWtYjH0enBA' },
+            { id: 'a6', name: 'Rotação de Tronco', machine: 'Kikos Torso Rotation', sets: 4, reps: '15-20', rest: 45, youtube: 'tDBYMZxwXQ8' }
+        ]
+    },
+    {
+        id: 'day-b', letter: 'B', title: 'Dorsais & Lombar', focus: 'Back Focus', exercises: [
+            { id: 'b1', name: 'Puxada Alta', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: 'UO70dS2tTyQ' },
+            { id: 'b2', name: 'Puxada Triângulo', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: 'UO70dS2tTyQ' },
+            { id: 'b3', name: 'Remada Baixa', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: 'MwyrOd_vwB8' },
+            { id: 'b4', name: 'Remada Máquina', machine: 'Kikos Pro Plate Load', sets: 4, reps: '8-10', rest: 45, youtube: 'TeFo51Q_Nsc' },
+            { id: 'b5', name: 'Pulldown', machine: 'Kikos Crossover Polia', sets: 4, reps: '8-10', rest: 45, youtube: 'Jgei5V3dE48' },
+            { id: 'b6', name: 'Extensão Lombar', machine: 'Kikos Banco Lombar', sets: 4, reps: '12-15', rest: 60, youtube: 'ph3pddpKzzw' }
+        ]
+    },
+    {
+        id: 'day-c', letter: 'C', title: 'Quadríceps & Pant.', focus: 'Quads Focus', exercises: [
+            { id: 'c1', name: 'Leg Press 45º', machine: 'Kikos Plate Load PR70', sets: 4, reps: '8-10', rest: 60, youtube: 'uJu3Yph10cI' },
+            { id: 'c2', name: 'Hack Machine', machine: 'Kikos Pro Station TTPL79', sets: 4, reps: '8-10', rest: 60, youtube: 'O8gOJu9ph2E' },
+            { id: 'c3', name: 'Cadeira Extensora', machine: 'Kikos Plate Load PR71', sets: 4, reps: '8-10', rest: 45, youtube: '46WfkM7rRF4' },
+            { id: 'c4', name: 'Leg Horizontal', machine: 'Kikos Pro Titanium TTS70', sets: 4, reps: '8-10', rest: 45, youtube: 'gTo0HfVcLxo' },
+            { id: 'c5', name: 'Panturrilha Sentado', machine: 'Kikos Pro Station TTPL77', sets: 4, reps: '15-20', rest: 30, youtube: 'JbyjNymZOt0' },
+            { id: 'c6', name: 'Panturrilha Leg', machine: 'Kikos Plate Load PR70', sets: 4, reps: '15-20', rest: 30, youtube: 'uJu3Yph10cI' }
+        ]
+    },
+    {
+        id: 'day-d', letter: 'D', title: 'Ombros & Trapézio', focus: 'Delts Focus', exercises: [
+            { id: 'd1', name: 'Desenv. Máquina', machine: 'Kikos Pro Station TTFW16', sets: 4, reps: '8-10', rest: 45, youtube: '7z31DogTlC8' },
+            { id: 'd2', name: 'Elevação Lateral', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: 'jMyZZJMlwSg' },
+            { id: 'd3', name: 'Elevação Frontal', machine: 'Kikos Crossover', sets: 4, reps: '8-10', rest: 45, youtube: 'hRJ6tz5_iSA' },
+            { id: 'd4', name: 'Crucifixo Inverso', machine: 'Kikos Peck Deck', sets: 4, reps: '8-10', rest: 45, youtube: '5_iV9Q5Q55g' },
+            { id: 'd5', name: 'Remada Alta', machine: 'Kikos Crossover', sets: 4, reps: '8-10', rest: 45, youtube: '2F8_gJ9o_cM' },
+            { id: 'd6', name: 'Encolhimento', machine: 'Kikos Smith Machine', sets: 4, reps: '12-15', rest: 45, youtube: '8j2Gj_6I5xI' }
+        ]
+    },
+    {
+        id: 'day-e', letter: 'E', title: 'Bíceps & Tríceps', focus: 'Arms Focus', exercises: [
+            { id: 'e1', name: 'Tríceps Pulley', machine: 'Kikos Crossover', sets: 4, reps: '8-10', rest: 45, youtube: 'ga8dtLyTj1M' },
+            { id: 'e2', name: 'Tríceps Corda', machine: 'Kikos Crossover', sets: 4, reps: '8-10', rest: 45, youtube: 'vB5OHsJ3ECE' },
+            { id: 'e3', name: 'Tríceps Máquina', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: '3_9d1g7o_cM' },
+            { id: 'e4', name: 'Rosca Scott', machine: 'Kikos Pro Scott', sets: 4, reps: '8-10', rest: 45, youtube: '2jDrDoW1Z0o' },
+            { id: 'e5', name: 'Rosca Direta', machine: 'Kikos Crossover Baixo', sets: 4, reps: '8-10', rest: 45, youtube: 'vhcJP86SEos' },
+            { id: 'e6', name: 'Rosca Martelo', machine: 'Kikos Crossover Corda', sets: 4, reps: '8-10', rest: 45, youtube: 'zC3nLlEpt4w' }
+        ]
+    },
+    {
+        id: 'day-f', letter: 'F', title: 'Posterior & Glúteos', focus: 'Glutes Focus', exercises: [
+            { id: 'f1', name: 'Mesa Flexora', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: '2piLtfoXX6k' },
+            { id: 'f2', name: 'Cadeira Flexora', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: 'Y1o8iPiBI7k' },
+            { id: 'f3', name: 'Cadeira Abdutora', machine: 'Kikos Pro Station', sets: 4, reps: '12-15', rest: 45, youtube: 'Hs-9c39_rjo' },
+            { id: 'f4', name: 'Glúteo Máquina', machine: 'Kikos Glute Machine', sets: 4, reps: '8-10', rest: 45, youtube: 'Z8gztZ1_t9A' },
+            { id: 'f5', name: 'Leg 45º Alto', machine: 'Kikos Plate Load PR70', sets: 4, reps: '8-10', rest: 60, youtube: 'uJu3Yph10cI' },
+            { id: 'f6', name: 'Cadeira Adutora', machine: 'Kikos Pro Station', sets: 4, reps: '12-15', rest: 45, youtube: 'p3g4wAsu0R4' }
+        ]
+    }
 ];
 
 // --- HELPERS ---
@@ -80,18 +94,18 @@ function checkWeeklyConsistency(s) {
     const today = new Date();
     let count = 0;
     const history = s.workoutHistory || {};
-    for(let i=0; i<7; i++) {
-        const d = new Date(today); d.setDate(today.getDate()-i);
-        if(history[d.toISOString().split('T')[0]]) count++;
+    for (let i = 0; i < 7; i++) {
+        const d = new Date(today); d.setDate(today.getDate() - i);
+        if (history[d.toISOString().split('T')[0]]) count++;
     }
     return count;
 }
 function checkMaxLoad(s) {
     let max = 0;
     if (s.weights) {
-        Object.values(s.weights).forEach(w => { 
+        Object.values(s.weights).forEach(w => {
             const val = parseFloat(w);
-            if(!isNaN(val) && val > max) max = val; 
+            if (!isNaN(val) && val > max) max = val;
         });
     }
     return max;
@@ -105,31 +119,31 @@ const BADGES = [
     { id: 'pro_status', icon: 'trophy', title: 'Status Pro', desc: 'Atingiu nível Elite (2000 XP).', check: (s) => (s.xp || 0) >= 2000 }
 ];
 
-// --- STORE (Novo Namespace: pro_gym_app_v1) ---
+// --- STORE (Namespace: pro_gym_app_v1) ---
 const store = {
-    data: { 
-        completedSets: {}, weights: {}, prevWeights: {}, notes: {}, cardioHistory: {}, workoutHistory: {}, 
-        settings: { theme: 'performance', soundEnabled: true }, 
-        xp: 0, visibleVideos: {} 
+    data: {
+        completedSets: {}, weights: {}, prevWeights: {}, notes: {}, cardioHistory: {}, workoutHistory: {},
+        settings: { theme: 'performance', soundEnabled: true },
+        xp: 0, visibleVideos: {}
     },
     load() {
         const saved = localStorage.getItem('pro_gym_app_v1');
-        if (saved) { 
+        if (saved) {
             try {
                 const parsed = JSON.parse(saved);
                 if (parsed && typeof parsed === 'object') {
                     this.data = { ...this.data, ...parsed };
                 }
-                
+
                 // Validações de Integridade
-                if (!this.data.visibleVideos) this.data.visibleVideos = {}; 
+                if (!this.data.visibleVideos) this.data.visibleVideos = {};
                 if (!this.data.settings) this.data.settings = { theme: 'performance', soundEnabled: true };
                 if (!this.data.prevWeights) this.data.prevWeights = {};
                 if (!this.data.weights) this.data.weights = {};
                 if (!this.data.workoutHistory) this.data.workoutHistory = {};
                 if (!this.data.completedSets || Array.isArray(this.data.completedSets)) this.data.completedSets = {};
                 if (typeof this.data.xp !== 'number') this.data.xp = 0;
-                
+
             } catch (e) {
                 console.error("Erro no load (Reset):", e);
             }
@@ -148,7 +162,7 @@ const themeManager = {
     apply(key) {
         const t = THEMES[key] || THEMES['performance'];
         const r = document.documentElement.style;
-        if(t) {
+        if (t) {
             r.setProperty('--theme-color', t.color);
             r.setProperty('--theme-hover', t.hover);
             r.setProperty('--theme-glow', t.glow);
@@ -156,10 +170,9 @@ const themeManager = {
         }
     },
     setTheme(key) {
-        store.data.settings.theme = key; 
-        this.apply(key); 
+        store.data.settings.theme = key;
+        this.apply(key);
         store.save();
-        // Recarrega se estiver na home para atualizar gráficos
         if (document.getElementById('main-header') && document.getElementById('main-header').classList.contains('hidden')) {
             router.renderHome(document.getElementById('main-content'));
         }
@@ -168,43 +181,43 @@ const themeManager = {
 
 const utils = {
     getTodayDate: () => new Date().toISOString().split('T')[0],
-    
+
     getFormattedDate: () => {
         const date = new Date();
         const options = { weekday: 'long', day: 'numeric', month: 'long' };
         try {
             const str = date.toLocaleDateString('pt-BR', options);
             return str.charAt(0).toUpperCase() + str.slice(1);
-        } catch(e) { return "Hoje"; }
+        } catch (e) { return "Hoje"; }
     },
 
     getWeekDays: () => {
-        const d = []; 
+        const d = [];
         const today = new Date();
-        const dayOfWeek = today.getDay(); 
-        const diff = today.getDate() - dayOfWeek + (dayOfWeek == 0 ? -6 : 1); 
+        const dayOfWeek = today.getDay();
+        const diff = today.getDate() - dayOfWeek + (dayOfWeek == 0 ? -6 : 1);
         const monday = new Date(today.setDate(diff));
 
-        for(let i=0; i<7; i++) {
-            const date = new Date(monday); 
+        for (let i = 0; i < 7; i++) {
+            const date = new Date(monday);
             date.setDate(monday.getDate() + i);
-            d.push({ 
-                obj: date, 
-                iso: date.toISOString().split('T')[0], 
-                lbl: date.toLocaleDateString('pt-BR', {weekday:'narrow'}).toUpperCase() 
+            d.push({
+                obj: date,
+                iso: date.toISOString().split('T')[0],
+                lbl: date.toLocaleDateString('pt-BR', { weekday: 'narrow' }).toUpperCase()
             });
         }
         return d;
     },
-    
+
     getRank(xp) { return [...RANKS].reverse().find(r => (xp || 0) >= r.minXP) || RANKS[0]; },
     getNextRank(xp) { return RANKS.find(r => r.minXP > (xp || 0)); },
-    
+
     getDelta(exId) {
         const curr = parseFloat(store.data.weights[exId]) || 0;
         const prev = parseFloat(store.data.prevWeights[exId]) || 0;
         if (prev === 0 || curr === 0) return null;
-        
+
         const diff = curr - prev;
         const roundedDiff = Math.round(diff * 10) / 10;
         if (diff === 0) return `<span class="delta-tag delta-neu">▬</span>`;
@@ -215,50 +228,50 @@ const utils = {
     getHeatmapData() {
         const data = [];
         const today = new Date();
-        const history = store.data.workoutHistory || {}; 
-        
-        for(let i=100; i>=0; i--) {
+        const history = store.data.workoutHistory || {};
+
+        for (let i = 100; i >= 0; i--) {
             const d = new Date(today); d.setDate(today.getDate() - i);
             const iso = d.toISOString().split('T')[0];
             data.push({ date: d, iso: iso, value: history[iso] ? 3 : 0 });
         }
         return data;
     },
-    
-    calculate1RM(w, r) { return Math.round(w * (1 + r/30)); },
+
+    calculate1RM(w, r) { return Math.round(w * (1 + r / 30)); },
     calculatePlates(target) {
-        let rem = (target - 20) / 2; if(rem <= 0) return [];
+        let rem = (target - 20) / 2; if (rem <= 0) return [];
         const plates = [25, 20, 15, 10, 5, 2.5, 1.25], res = [];
-        for(let p of plates) { while(rem >= p) { res.push(p); rem -= p; } }
+        for (let p of plates) { while (rem >= p) { res.push(p); rem -= p; } }
         return res;
     }
 };
 
 // --- MODULES ---
-const safeIcons = () => { if(typeof lucide !== 'undefined') lucide.createIcons(); };
+const safeIcons = () => { if (typeof lucide !== 'undefined') lucide.createIcons(); };
 
 const timer = {
     interval: null, timeLeft: 0, defaultTime: 45, isActive: false, audioCtx: null,
-    initAudio() { if(!this.audioCtx && (window.AudioContext || window.webkitAudioContext)) this.audioCtx = new (window.AudioContext || window.webkitAudioContext)(); },
+    initAudio() { if (!this.audioCtx && (window.AudioContext || window.webkitAudioContext)) this.audioCtx = new (window.AudioContext || window.webkitAudioContext)(); },
     toggleMute() { store.data.settings.soundEnabled = !store.data.settings.soundEnabled; store.save(); this.updateMuteIcon(); },
     updateMuteIcon() {
         const btn = document.getElementById('btn-mute');
-        if(btn) {
-            btn.innerHTML = store.data.settings.soundEnabled 
-                ? '<i data-lucide="volume-2" class="w-4 h-4"></i>' 
+        if (btn) {
+            btn.innerHTML = store.data.settings.soundEnabled
+                ? '<i data-lucide="volume-2" class="w-4 h-4"></i>'
                 : '<i data-lucide="volume-x" class="w-4 h-4 text-red-500"></i>';
             safeIcons();
         }
     },
     beep() {
-        if(!store.data.settings.soundEnabled || !this.audioCtx) return;
+        if (!store.data.settings.soundEnabled || !this.audioCtx) return;
         try {
             const osc = this.audioCtx.createOscillator(); const gain = this.audioCtx.createGain();
             osc.connect(gain); gain.connect(this.audioCtx.destination);
             osc.frequency.value = 800; gain.gain.value = 0.1;
             osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, this.audioCtx.currentTime + 0.5);
             osc.stop(this.audioCtx.currentTime + 0.5);
-        } catch(e) {}
+        } catch (e) { }
     },
     start(s) {
         this.initAudio(); this.timeLeft = s; this.defaultTime = s; this.isActive = true;
@@ -268,8 +281,8 @@ const timer = {
     run() {
         clearInterval(this.interval);
         this.interval = setInterval(() => {
-            if (this.timeLeft > 0) { this.timeLeft--; this.render(); } 
-            else { this.beep(); if(navigator.vibrate) navigator.vibrate([200, 100, 200]); this.timeLeft = 0; this.pause(); this.render(); }
+            if (this.timeLeft > 0) { this.timeLeft--; this.render(); }
+            else { this.beep(); if (navigator.vibrate) navigator.vibrate([200, 100, 200]); this.timeLeft = 0; this.pause(); this.render(); }
         }, 1000);
         this.updateBtn(true);
     },
@@ -279,16 +292,16 @@ const timer = {
     addTime(s) { this.timeLeft += s; this.render(); },
     close() { this.pause(); document.getElementById('timer-modal').classList.add('hidden'); },
     render() {
-        const el = document.getElementById('timer-display'); if(!el) return;
+        const el = document.getElementById('timer-display'); if (!el) return;
         const m = Math.floor(this.timeLeft / 60); const s = this.timeLeft % 60;
-        el.innerText = `${m<10?'0'+m:m}:${s<10?'0'+s:s}`;
+        el.innerText = `${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
         el.classList.toggle('text-theme', this.timeLeft === 0);
     },
     updateBtn(p) {
         const btn = document.getElementById('timer-toggle-btn');
-        if(btn) { 
-            btn.innerHTML = p ? '<i data-lucide="pause" class="w-6 h-6 fill-current"></i>' : '<i data-lucide="play" class="w-6 h-6 fill-current"></i>'; 
-            safeIcons(); 
+        if (btn) {
+            btn.innerHTML = p ? '<i data-lucide="pause" class="w-6 h-6 fill-current"></i>' : '<i data-lucide="play" class="w-6 h-6 fill-current"></i>';
+            safeIcons();
         }
     }
 };
@@ -303,16 +316,16 @@ const notesManager = {
 const settings = {
     open() { document.getElementById('settings-modal').classList.remove('hidden'); },
     close() { document.getElementById('settings-modal').classList.add('hidden'); },
-    clearAll() { if(confirm('ATENÇÃO: Deseja apagar todo o histórico e começar do zero?')) { localStorage.removeItem('pro_gym_app_v1'); location.reload(); } },
+    clearAll() { if (confirm('ATENÇÃO: Deseja apagar todo o histórico e começar do zero?')) { localStorage.removeItem('pro_gym_app_v1'); location.reload(); } },
     exportData() {
-        const blob = new Blob([JSON.stringify(store.data)], {type: 'application/json'});
+        const blob = new Blob([JSON.stringify(store.data)], { type: 'application/json' });
         const url = URL.createObjectURL(blob); const a = document.createElement('a');
         a.href = url; a.download = `progym_backup_${utils.getTodayDate()}.json`; a.click();
     },
     importData(i) {
-        const f = i.files[0]; if(!f) return;
+        const f = i.files[0]; if (!f) return;
         const r = new FileReader();
-        r.onload = e => { try { store.data = JSON.parse(e.target.result); store.save(); alert('Dados importados com sucesso.'); location.reload(); } catch(e) { alert('Arquivo de dados inválido.'); } };
+        r.onload = e => { try { store.data = JSON.parse(e.target.result); store.save(); alert('Dados importados com sucesso.'); location.reload(); } catch (e) { alert('Arquivo de dados inválido.'); } };
         r.readAsText(f);
     }
 };
@@ -339,16 +352,16 @@ const router = {
         const app = document.getElementById('main-content');
         const header = document.getElementById('main-header');
         const nav = document.getElementById('bottom-nav');
-        if(!app) return;
+        if (!app) return;
 
         app.innerHTML = '';
-        
+
         if (route === 'home') { header.classList.add('hidden'); nav.classList.remove('hidden'); this.renderHome(app); }
         else if (route === 'detail') { header.classList.remove('hidden'); nav.classList.add('hidden'); this.renderDetail(app, params); }
         else if (route === 'stats') { header.classList.add('hidden'); nav.classList.remove('hidden'); this.renderStats(app); }
         else if (route === 'tools') { header.classList.add('hidden'); nav.classList.remove('hidden'); this.renderTools(app); }
         else if (route === 'achievements') { header.classList.add('hidden'); nav.classList.remove('hidden'); this.renderAchievements(app); }
-        
+
         safeIcons();
     },
 
@@ -357,7 +370,7 @@ const router = {
         const rank = utils.getRank(xp);
         const next = utils.getNextRank(xp);
         let pct = 100, txt = `MAX LEVEL`;
-        if(next) {
+        if (next) {
             pct = Math.min(100, Math.round(((xp - rank.minXP) / (next.minXP - rank.minXP)) * 100));
             txt = `${xp} / ${next.minXP} XP`;
         }
@@ -415,13 +428,13 @@ const router = {
 
                 <div class="space-y-3">
                     ${WORKOUT_PLAN.map(day => {
-                        let done = 0; 
-                        const sets = store.data.completedSets || {};
-                        day.exercises.forEach(ex => { for(let i=0;i<4;i++) if(sets[`${ex.id}-${i}`]) done++; });
-                        const p = Math.round((done/(day.exercises.length*4))*100);
-                        const isComplete = p === 100;
-                        
-                        return `
+            let done = 0;
+            const sets = store.data.completedSets || {};
+            day.exercises.forEach(ex => { for (let i = 0; i < 4; i++) if (sets[`${ex.id}-${i}`]) done++; });
+            const p = Math.round((done / (day.exercises.length * 4)) * 100);
+            const isComplete = p === 100;
+
+            return `
                         <button onclick="router.navigate('detail', {id: '${day.id}'})" class="w-full group relative overflow-hidden bg-zinc-900 border ${isComplete ? 'border-[var(--theme-color)]' : 'border-zinc-800'} p-5 rounded-2xl text-left transition-all active:scale-[0.99] hover:border-zinc-700 shadow-sm">
                             <div class="absolute left-0 top-0 bottom-0 bg-[var(--theme-color)] opacity-5 transition-all duration-700" style="width: ${p}%"></div>
                             <div class="flex items-center gap-4 relative z-10">
@@ -437,20 +450,20 @@ const router = {
                                 </div>
                             </div>
                         </button>`;
-                    }).join('')}
+        }).join('')}
                 </div>
                 <div class="h-10"></div>
             </div>`;
     },
 
     renderDetail(c, p) {
-        const w = WORKOUT_PLAN.find(x => x.id === p.id); if(!w) return;
+        const w = WORKOUT_PLAN.find(x => x.id === p.id); if (!w) return;
         let load = 0, setsDone = 0, totalSets = w.exercises.length * 4;
         const sets = store.data.completedSets || {};
 
         w.exercises.forEach(ex => {
             const wt = parseFloat((store.data.weights && store.data.weights[ex.id]) || 0);
-            for(let i=0;i<4;i++) if(sets[`${ex.id}-${i}`]) { load += wt; setsDone++; }
+            for (let i = 0; i < 4; i++) if (sets[`${ex.id}-${i}`]) { load += wt; setsDone++; }
         });
 
         document.getElementById('main-header').innerHTML = `
@@ -467,27 +480,27 @@ const router = {
 
         c.innerHTML = `<div class="px-4 space-y-4 animate-slide-up pb-10">
             ${w.exercises.map((ex, i) => {
-                const hasNote = (store.data.notes && store.data.notes[ex.id]||'').trim().length > 0;
-                const isVideoVisible = store.data.visibleVideos && store.data.visibleVideos[ex.id];
-                const vidBtnClass = isVideoVisible ? 'text-[var(--theme-color)] border-[var(--theme-color)] bg-[var(--theme-bg-soft)]' : 'text-zinc-500 border-zinc-700 hover:text-white hover:border-zinc-500';
-                const delta = utils.getDelta(ex.id) || ''; 
+            const hasNote = (store.data.notes && store.data.notes[ex.id] || '').trim().length > 0;
+            const isVideoVisible = store.data.visibleVideos && store.data.visibleVideos[ex.id];
+            const vidBtnClass = isVideoVisible ? 'text-[var(--theme-color)] border-[var(--theme-color)] bg-[var(--theme-bg-soft)]' : 'text-zinc-500 border-zinc-700 hover:text-white hover:border-zinc-500';
+            const delta = utils.getDelta(ex.id) || '';
 
-                const videoContent = isVideoVisible ? `
+            const videoContent = isVideoVisible ? `
                     <div class="mt-4 w-full rounded-lg overflow-hidden bg-black aspect-video border border-zinc-800 animate-fade-in relative shadow-lg">
                          <iframe class="w-full h-full" src="https://www.youtube.com/embed/${ex.youtube}?rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                     </div>` : '';
 
-                return `
+            return `
                 <div class="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 shadow-sm transition-all hover:border-zinc-700">
                     <div class="flex justify-between items-start mb-4">
                         <div class="flex-1 pr-4">
-                            <span class="text-zinc-500 text-[10px] font-bold uppercase mb-1 block tracking-wider">Exercício 0${i+1}</span>
+                            <span class="text-zinc-500 text-[10px] font-bold uppercase mb-1 block tracking-wider">Exercício 0${i + 1}</span>
                             <h3 class="text-white font-bold text-sm leading-snug mb-2">${ex.name}</h3>
                             <p class="text-zinc-600 text-[10px] font-mono mb-3 truncate max-w-[200px]">${ex.machine || 'Peso Livre'}</p>
                             
                             <div class="flex items-center gap-2">
                                 <div class="relative flex items-center">
-                                    <input type="number" value="${(store.data.weights && store.data.weights[ex.id])||''}" onchange="actions.weight('${ex.id}',this.value)" class="input-dark w-20 py-1.5 px-2 text-sm font-bold rounded-lg text-center" placeholder="kg">
+                                    <input type="number" value="${(store.data.weights && store.data.weights[ex.id]) || ''}" onchange="actions.weight('${ex.id}',this.value)" class="input-dark w-20 py-1.5 px-2 text-sm font-bold rounded-lg text-center" placeholder="kg">
                                 </div>
                                 ${delta}
                             </div>
@@ -495,7 +508,7 @@ const router = {
                         
                         <div class="flex flex-col gap-2 items-end">
                             <div class="flex gap-2 mb-1">
-                                <button onclick="notesManager.open('${ex.id}')" class="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center ${hasNote?'text-[var(--theme-color)] border-[var(--theme-color)]':'text-zinc-500'} transition-all hover:bg-zinc-800"><i data-lucide="file-text" class="w-4 h-4"></i>${hasNote?'<span class="has-note-indicator"></span>':''}</button>
+                                <button onclick="notesManager.open('${ex.id}')" class="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center ${hasNote ? 'text-[var(--theme-color)] border-[var(--theme-color)]' : 'text-zinc-500'} transition-all hover:bg-zinc-800"><i data-lucide="file-text" class="w-4 h-4"></i>${hasNote ? '<span class="has-note-indicator"></span>' : ''}</button>
                                 <button onclick="actions.toggleVideo('${ex.id}')" class="w-8 h-8 rounded-lg bg-zinc-900 border flex items-center justify-center transition-all ${vidBtnClass}"><i data-lucide="play" class="w-4 h-4 fill-current"></i></button>
                             </div>
                             <div class="flex gap-2">
@@ -508,16 +521,16 @@ const router = {
                     ${videoContent}
                     
                     <div class="grid grid-cols-4 gap-2 mt-4 pt-4 border-t border-zinc-800/50">
-                        ${[0,1,2,3].map(j => {
-                            const done = sets[`${ex.id}-${j}`];
-                            const animClass = (p.animSet === `${ex.id}-${j}`) ? 'animate-pop' : '';
-                            return `<button onclick="actions.toggle('${ex.id}',${j},${ex.rest})" class="btn-set h-10 rounded-lg flex flex-col items-center justify-center gap-0.5 ${done?'active':''} ${animClass} text-zinc-500 hover:text-zinc-300">
-                                <span class="text-[9px] font-bold uppercase tracking-wide">Set ${j+1}</span>
+                        ${[0, 1, 2, 3].map(j => {
+                const done = sets[`${ex.id}-${j}`];
+                const animClass = (p.animSet === `${ex.id}-${j}`) ? 'animate-pop' : '';
+                return `<button onclick="actions.toggle('${ex.id}',${j},${ex.rest})" class="btn-set h-10 rounded-lg flex flex-col items-center justify-center gap-0.5 ${done ? 'active' : ''} ${animClass} text-zinc-500 hover:text-zinc-300">
+                                <span class="text-[9px] font-bold uppercase tracking-wide">Set ${j + 1}</span>
                             </button>`;
-                        }).join('')}
+            }).join('')}
                     </div>
                 </div>`
-            }).join('')}
+        }).join('')}
             
             <div class="bg-gradient-to-br from-zinc-900 to-zinc-950 rounded-2xl p-6 border border-zinc-800 mt-8 relative overflow-hidden group shadow-lg">
                 <div class="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity transform scale-150 pointer-events-none"><i data-lucide="activity" class="w-24 h-24"></i></div>
@@ -526,7 +539,7 @@ const router = {
                         <h3 class="text-white font-bold text-lg">Cardio Final</h3>
                         <p class="text-zinc-400 text-xs mt-1">20min • Zona 2 (60-70% FCM)</p>
                     </div>
-                    <button onclick="actions.cardio()" class="w-14 h-14 rounded-full border-2 ${store.data.cardioHistory && store.data.cardioHistory[utils.getTodayDate()]?'bg-[var(--theme-color)] border-[var(--theme-color)] text-white shadow-[0_0_20px_var(--theme-glow)]':'border-zinc-700 text-transparent hover:border-zinc-500'} flex items-center justify-center transition-all">
+                    <button onclick="actions.cardio()" class="w-14 h-14 rounded-full border-2 ${store.data.cardioHistory && store.data.cardioHistory[utils.getTodayDate()] ? 'bg-[var(--theme-color)] border-[var(--theme-color)] text-white shadow-[0_0_20px_var(--theme-glow)]' : 'border-zinc-700 text-transparent hover:border-zinc-500'} flex items-center justify-center transition-all">
                         <i data-lucide="check" class="w-8 h-8"></i>
                     </button>
                 </div>
@@ -667,53 +680,53 @@ const router = {
 const actions = {
     toggle(ex, i, rest) {
         if (!store.data.completedSets) store.data.completedSets = {};
-        const k = `${ex}-${i}`; 
-        const d = !store.data.completedSets[k]; 
+        const k = `${ex}-${i}`;
+        const d = !store.data.completedSets[k];
         store.data.completedSets[k] = d;
         const animId = d ? k : null;
-        
-        if(d) {
-            if(navigator.vibrate) navigator.vibrate(50);
+
+        if (d) {
+            if (navigator.vibrate) navigator.vibrate(50);
             store.data.xp = (store.data.xp || 0) + 1;
             timer.start(rest);
             const today = utils.getTodayDate();
             if (!store.data.workoutHistory) store.data.workoutHistory = {};
-            store.data.workoutHistory[today] = (store.data.workoutHistory[today] || 0) + 1; 
+            store.data.workoutHistory[today] = (store.data.workoutHistory[today] || 0) + 1;
         } else {
             store.data.xp = Math.max(0, (store.data.xp || 0) - 1);
         }
-        
-        store.save(); 
+
+        store.save();
         const newParams = { ...router.currentParams, animSet: animId };
         router.renderDetail(document.getElementById('main-content'), newParams);
     },
-    weight(ex, v) { 
-        if(!store.data.weights) store.data.weights = {};
-        if(!store.data.prevWeights) store.data.prevWeights = {};
-        if(!store.data.prevWeights[ex]) store.data.prevWeights[ex] = store.data.weights[ex] || 0;
-        store.data.weights[ex] = v; 
-        store.save(); 
-        router.renderDetail(document.getElementById('main-content'), router.currentParams); 
+    weight(ex, v) {
+        if (!store.data.weights) store.data.weights = {};
+        if (!store.data.prevWeights) store.data.prevWeights = {};
+        if (!store.data.prevWeights[ex]) store.data.prevWeights[ex] = store.data.weights[ex] || 0;
+        store.data.weights[ex] = v;
+        store.save();
+        router.renderDetail(document.getElementById('main-content'), router.currentParams);
     },
-    cardio() { 
+    cardio() {
         if (!store.data.cardioHistory) store.data.cardioHistory = {};
-        const d = utils.getTodayDate(); 
-        store.data.cardioHistory[d] = !store.data.cardioHistory[d]; 
-        store.save(); 
-        router.renderDetail(document.getElementById('main-content'), router.currentParams); 
+        const d = utils.getTodayDate();
+        store.data.cardioHistory[d] = !store.data.cardioHistory[d];
+        store.save();
+        router.renderDetail(document.getElementById('main-content'), router.currentParams);
     },
     toggleVideo(exId) {
-        if(!store.data.visibleVideos) store.data.visibleVideos = {};
+        if (!store.data.visibleVideos) store.data.visibleVideos = {};
         store.data.visibleVideos[exId] = !store.data.visibleVideos[exId];
         router.renderDetail(document.getElementById('main-content'), router.currentParams);
     },
     reset(id) {
-        if(!confirm('Reiniciar esta sessão de treino?')) return;
+        if (!confirm('Reiniciar esta sessão de treino?')) return;
         const w = WORKOUT_PLAN.find(x => x.id === id); let rm = 0;
-        if(w && store.data.completedSets) {
-            w.exercises.forEach(ex => { for(let i=0;i<4;i++) if(store.data.completedSets[`${ex.id}-${i}`]) { rm++; delete store.data.completedSets[`${ex.id}-${i}`]; } });
-            store.data.xp = Math.max(0, (store.data.xp || 0) - rm); 
-            store.save(); 
+        if (w && store.data.completedSets) {
+            w.exercises.forEach(ex => { for (let i = 0; i < 4; i++) if (store.data.completedSets[`${ex.id}-${i}`]) { rm++; delete store.data.completedSets[`${ex.id}-${i}`]; } });
+            store.data.xp = Math.max(0, (store.data.xp || 0) - rm);
+            store.save();
             router.renderDetail(document.getElementById('main-content'), router.currentParams);
         }
     },
@@ -738,8 +751,8 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-document.addEventListener('DOMContentLoaded', () => { 
-    initApp(); 
-    store.load(); 
-    router.navigate('home'); 
+document.addEventListener('DOMContentLoaded', () => {
+    initApp();
+    store.load();
+    router.navigate('home');
 });
