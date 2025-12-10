@@ -72,6 +72,7 @@ Estrutura completa para alta frequência semanal.
 
 ## 📂 Estrutura do Projeto
 
+```
 pro-gym-app/
 ├── css/
 │ └── style.css # Variáveis de Tema, Glassmorphism e Animações
@@ -85,7 +86,9 @@ pro-gym-app/
 ├── manifest.json # Configuração do PWA (Nome, Cores, Ícones)
 ├── service-worker.js # Cache Estratégico (Offline First)
 └── README.md # Documentação Técnica
+```
 ---
+
 
 ## 🛠️ Instalação e Execução
 
