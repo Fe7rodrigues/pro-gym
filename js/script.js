@@ -1,7 +1,7 @@
 /**
- * PROJETO ZORO V5.0 - ULTIMATE EDITION
+ * PROJETO ZORO V5.0 - ULTIMATE EDITION (STABLE)
  * Autor: Fernando Rodrigues
- * Inovações: Heatmap, Badges, Delta Load, PWA Support
+ * Fix: Inicialização robusta e tratamento de erros de dados
  */
 
 // --- CONFIGURAÇÃO ---
@@ -11,14 +11,6 @@ const THEMES = {
     sanji: { color: '#3b82f6', hover: '#2563eb', glow: 'rgba(59, 130, 246, 0.5)', bgSoft: 'rgba(59, 130, 246, 0.1)' },
     ace:   { color: '#f97316', hover: '#ea580c', glow: 'rgba(249, 115, 22, 0.5)', bgSoft: 'rgba(249, 115, 22, 0.1)' }
 };
-
-// Novas Conquistas (Badges)
-const BADGES = [
-    { id: 'first_blood', icon: 'sword', title: 'Primeiro Sangue', desc: 'Concluiu o primeiro treino.', check: (s) => s.xp >= 1 },
-    { id: 'consistency_week', icon: 'flame', title: 'Semana de Fogo', desc: 'Treinou 6 dias em uma semana.', check: (s) => checkWeeklyConsistency(s) >= 6 },
-    { id: 'heavy_lifter', icon: 'weight', title: 'Tanque de Guerra', desc: 'Registrou carga > 100kg.', check: (s) => checkMaxLoad(s) >= 100 },
-    { id: 'veteran', icon: 'medal', title: 'Veterano', desc: 'Nível Rei do Inferno atingido.', check: (s) => s.xp >= 2000 }
-];
 
 const RANKS = [
     { name: "Aprendiz", minXP: 0 }, { name: "Caçador", minXP: 50 },
@@ -84,99 +76,146 @@ function checkWeeklyConsistency(s) {
     let count = 0;
     for(let i=0; i<7; i++) {
         const d = new Date(today); d.setDate(today.getDate()-i);
-        if(s.workoutHistory[d.toISOString().split('T')[0]]) count++;
+        if(s.workoutHistory && s.workoutHistory[d.toISOString().split('T')[0]]) count++;
     }
     return count;
 }
-
 function checkMaxLoad(s) {
     let max = 0;
-    Object.values(s.weights).forEach(w => { 
-        if(parseFloat(w) > max) max = parseFloat(w); 
-    });
+    if (s.weights) {
+        Object.values(s.weights).forEach(w => { 
+            if(parseFloat(w) > max) max = parseFloat(w); 
+        });
+    }
     return max;
 }
+
+// Definição Completa das Badges
+const BADGES = [
+    { id: 'first_blood', icon: 'sword', title: 'Primeiro Sangue', desc: 'Concluiu o primeiro treino.', check: (s) => (s.xp || 0) >= 1 },
+    { id: 'consistency_week', icon: 'flame', title: 'Semana de Fogo', desc: 'Treinou 6 dias em uma semana.', check: (s) => checkWeeklyConsistency(s) >= 6 },
+    { id: 'heavy_lifter', icon: 'weight', title: 'Tanque de Guerra', desc: 'Registrou carga > 100kg.', check: (s) => checkMaxLoad(s) >= 100 },
+    { id: 'veteran', icon: 'medal', title: 'Veterano', desc: 'Nível Rei do Inferno atingido.', check: (s) => (s.xp || 0) >= 2000 }
+];
 
 // --- STORE ---
 const store = {
     data: { 
-        completedSets: {}, 
-        weights: {}, 
-        prevWeights: {},
-        notes: {}, 
-        cardioHistory: {}, 
-        workoutHistory: {},
+        completedSets: {}, weights: {}, prevWeights: {}, notes: {}, cardioHistory: {}, workoutHistory: {}, 
         settings: { theme: 'zoro', soundEnabled: true }, 
-        xp: 0, 
-        visibleVideos: {} 
+        xp: 0, visibleVideos: {} 
     },
     load() {
         const saved = localStorage.getItem('zoro_v5_data');
         if (saved) { 
-            const parsed = JSON.parse(saved);
-            this.data = { ...this.data, ...parsed, visibleVideos: {} }; 
-            if(!this.data.settings) this.data.settings = { theme: 'zoro', soundEnabled: true };
-            if(!this.data.prevWeights) this.data.prevWeights = {};
+            try {
+                const parsed = JSON.parse(saved);
+                this.data = { ...this.data, ...parsed };
+                // Garante que nenhum campo crítico seja undefined
+                this.data.visibleVideos = {}; 
+                if (!this.data.settings) this.data.settings = { theme: 'zoro', soundEnabled: true };
+                if (!this.data.prevWeights) this.data.prevWeights = {};
+                if (!this.data.workoutHistory) this.data.workoutHistory = {};
+                if (typeof this.data.xp !== 'number') this.data.xp = 0;
+            } catch (e) {
+                console.error("Erro no load, usando defaults.", e);
+            }
         }
         themeManager.apply(this.data.settings.theme);
     },
     save() {
+        const completedCount = Object.values(this.data.completedSets || {}).filter(Boolean).length;
+        this.data.xp = completedCount;
         const { visibleVideos, ...dataToSave } = this.data;
-        dataToSave.xp = Object.values(this.data.completedSets).filter(Boolean).length;
         localStorage.setItem('zoro_v5_data', JSON.stringify(dataToSave));
     }
 };
 
-// --- THEME MANAGER ---
 const themeManager = {
     apply(key) {
         const t = THEMES[key] || THEMES['zoro'];
         const r = document.documentElement.style;
-        r.setProperty('--theme-color', t.color);
-        r.setProperty('--theme-hover', t.hover);
-        r.setProperty('--theme-glow', t.glow);
-        r.setProperty('--theme-bg-soft', t.bgSoft);
+        if(t) {
+            r.setProperty('--theme-color', t.color);
+            r.setProperty('--theme-hover', t.hover);
+            r.setProperty('--theme-glow', t.glow);
+            r.setProperty('--theme-bg-soft', t.bgSoft);
+        }
     },
     setTheme(key) {
         store.data.settings.theme = key; 
         this.apply(key); 
         store.save();
+        // Recarrega a home se estiver visível
         if (document.getElementById('main-header') && document.getElementById('main-header').classList.contains('hidden')) {
             router.renderHome(document.getElementById('main-content'));
         }
     }
 };
 
-// --- UTILS ---
 const utils = {
     getTodayDate: () => new Date().toISOString().split('T')[0],
-    getRank(xp) { return [...RANKS].reverse().find(r => xp >= r.minXP) || RANKS[0]; },
-    getNextRank(xp) { return RANKS.find(r => r.minXP > xp); },
+    
+    getFormattedDate: () => {
+        const date = new Date();
+        const options = { weekday: 'long', day: 'numeric', month: 'long' };
+        const str = date.toLocaleDateString('pt-BR', options);
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    },
+
+    getWeekDays: () => {
+        const d = []; 
+        const today = new Date();
+        const dayOfWeek = today.getDay(); 
+        const diff = today.getDate() - dayOfWeek + (dayOfWeek == 0 ? -6 : 1); 
+        const monday = new Date(today.setDate(diff));
+
+        for(let i=0; i<7; i++) {
+            const date = new Date(monday); 
+            date.setDate(monday.getDate() + i);
+            d.push({ 
+                obj: date, 
+                iso: date.toISOString().split('T')[0], 
+                lbl: date.toLocaleDateString('pt-BR', {weekday:'narrow'}).toUpperCase() 
+            });
+        }
+        return d;
+    },
+    
+    getRank(xp) { return [...RANKS].reverse().find(r => (xp || 0) >= r.minXP) || RANKS[0]; },
+    getNextRank(xp) { return RANKS.find(r => r.minXP > (xp || 0)); },
+    
+    getDelta(exId) {
+        const curr = parseFloat(store.data.weights[exId]) || 0;
+        const prev = parseFloat(store.data.prevWeights[exId]) || 0;
+        if (prev === 0 || curr === 0) return null;
+        
+        const diff = curr - prev;
+        const roundedDiff = Math.round(diff * 10) / 10;
+        if (diff === 0) return `<span class="delta-tag delta-neu">▬</span>`;
+        if (diff > 0) return `<span class="delta-tag delta-pos">▲ +${roundedDiff}kg</span>`;
+        return `<span class="delta-tag delta-neg">▼ ${roundedDiff}kg</span>`;
+    },
+
     getHeatmapData() {
         const data = [];
         const today = new Date();
+        const history = store.data.workoutHistory || {}; 
+        
         for(let i=100; i>=0; i--) {
             const d = new Date(today); d.setDate(today.getDate() - i);
             const iso = d.toISOString().split('T')[0];
-            data.push({ date: d, iso: iso, value: store.data.workoutHistory[iso] ? 3 : 0 });
+            data.push({ date: d, iso: iso, value: history[iso] ? 3 : 0 });
         }
         return data;
     },
+    
     calculate1RM(w, r) { return Math.round(w * (1 + r/30)); },
     calculatePlates(target) {
         let rem = (target - 20) / 2; if(rem <= 0) return [];
         const plates = [25, 20, 15, 10, 5, 2.5, 1.25], res = [];
         for(let p of plates) { while(rem >= p) { res.push(p); rem -= p; } }
         return res;
-    },
-    getDelta(exId) {
-        const curr = parseFloat(store.data.weights[exId]) || 0;
-        const prev = parseFloat(store.data.prevWeights[exId]) || 0;
-        if (prev === 0 || curr === 0) return null;
-        const diff = curr - prev;
-        if(diff > 0) return `<span class="delta-tag delta-pos">▲ +${diff}kg</span>`;
-        if(diff < 0) return `<span class="delta-tag delta-neg">▼ ${diff}kg</span>`;
-        return `<span class="delta-tag delta-neu">▬</span>`;
     }
 };
 
@@ -187,10 +226,12 @@ const timer = {
     toggleMute() { store.data.settings.soundEnabled = !store.data.settings.soundEnabled; store.save(); this.updateMuteIcon(); },
     updateMuteIcon() {
         const btn = document.getElementById('btn-mute');
-        if(btn) btn.innerHTML = store.data.settings.soundEnabled 
-            ? '<i data-lucide="volume-2" class="w-4 h-4"></i>' 
-            : '<i data-lucide="volume-x" class="w-4 h-4 text-red-500"></i>';
-        lucide.createIcons();
+        if(btn) {
+            btn.innerHTML = store.data.settings.soundEnabled 
+                ? '<i data-lucide="volume-2" class="w-4 h-4"></i>' 
+                : '<i data-lucide="volume-x" class="w-4 h-4 text-red-500"></i>';
+            lucide.createIcons();
+        }
     },
     beep() {
         if(!store.data.settings.soundEnabled || !this.audioCtx) return;
@@ -241,7 +282,7 @@ const notesManager = {
 };
 
 const settings = {
-    open() { document.getElementById('settings-modal').classList.remove('hidden'); lucide.createIcons(); },
+    open() { document.getElementById('settings-modal').classList.remove('hidden'); },
     close() { document.getElementById('settings-modal').classList.add('hidden'); },
     clearAll() { if(confirm('RESETAR TUDO?')) { localStorage.removeItem('zoro_v5_data'); location.reload(); } },
     exportData() {
@@ -267,7 +308,7 @@ const tools = {
         const t = parseFloat(document.getElementById('plate-target').value) || 0;
         const plates = utils.calculatePlates(t);
         const container = document.getElementById('plate-result');
-        container.innerHTML = plates.length ? plates.map(p => `<span class="bg-zinc-800 border border-zinc-700 px-2 py-1 rounded text-xs font-bold text-white">${p}</span>`).join('') : '<span class="text-zinc-500 text-xs">Insira a carga total</span>';
+        container.innerHTML = plates.length ? plates.map(p => `<span class="bg-zinc-800 border border-zinc-700 px-2 py-1 rounded text-xs font-bold text-white shadow-sm">${p}</span>`).join('') : '<span class="text-zinc-500 text-xs">Insira a carga total</span>';
     }
 };
 
@@ -291,16 +332,28 @@ const router = {
     },
 
     renderHome(c) {
-        const rank = utils.getRank(store.data.xp);
-        const next = utils.getNextRank(store.data.xp);
-        let pct = 100, txt = `${store.data.xp} XP (Máx)`;
+        const xp = store.data.xp || 0;
+        const rank = utils.getRank(xp);
+        const next = utils.getNextRank(xp);
+        let pct = 100, txt = `${xp} XP (Máx)`;
         if(next) {
-            pct = Math.min(100, Math.round(((store.data.xp - rank.minXP) / (next.minXP - rank.minXP)) * 100));
-            txt = `${store.data.xp} / ${next.minXP} XP`;
+            pct = Math.min(100, Math.round(((xp - rank.minXP) / (next.minXP - rank.minXP)) * 100));
+            txt = `${xp} / ${next.minXP} XP`;
         }
+
+        const days = utils.getWeekDays().map(d => {
+            const done = store.data.workoutHistory && store.data.workoutHistory[d.iso];
+            return `<div class="flex flex-col items-center gap-1"><div class="w-8 h-10 rounded border flex items-center justify-center text-xs font-bold transition-all ${done ? 'bg-theme border-theme text-black shadow-[0_0_10px_var(--theme-glow)]' : 'bg-zinc-900 border-zinc-800 text-zinc-600'}">${done ? '<i data-lucide="check" class="w-4 h-4"></i>' : d.lbl}</div></div>`;
+        }).join('');
 
         c.innerHTML = `
             <div class="px-4 animate-fade-in pb-10">
+                <!-- Date Header -->
+                <div class="mb-4">
+                    <h2 class="text-xl font-bold text-white leading-none">${utils.getFormattedDate()}</h2>
+                    <p class="text-xs text-zinc-500 mt-1">Bem-vindo, guerreiro.</p>
+                </div>
+
                 <!-- Rank Header -->
                 <div class="mb-6 pt-2">
                     <div class="flex justify-between items-end mb-2">
@@ -310,14 +363,17 @@ const router = {
                     <div class="h-2 bg-zinc-900 rounded-full overflow-hidden border border-zinc-800"><div class="h-full bg-theme animate-progress shadow-[0_0_10px_var(--theme-glow)]" style="--target-width: ${pct}%"></div></div>
                 </div>
 
-                <!-- Reminder -->
+                <!-- Consistency -->
+                <div class="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-4 mb-6 backdrop-blur-sm"><div class="flex justify-between mb-3"><h3 class="text-xs font-bold text-zinc-400 uppercase">Consistência</h3></div><div class="flex justify-between">${days}</div></div>
+                
+                <!-- Thermo Flame Reminder -->
                 <div class="bg-gradient-to-r from-red-900/20 to-orange-900/20 border border-red-500/30 p-4 rounded-2xl flex items-center gap-4 mb-6 backdrop-blur-sm">
                     <div class="bg-red-500/20 p-2 rounded-lg"><i data-lucide="flame" class="w-6 h-6 text-red-500"></i></div>
                     <div><h4 class="text-red-200 font-bold text-sm">Thermo Flame Ativo</h4><p class="text-red-400/60 text-xs">Lembrete: Tomar 30min antes.</p></div>
                 </div>
 
                 <div class="grid gap-3">${WORKOUT_PLAN.map(day => {
-                    let done = 0; day.exercises.forEach(ex => { for(let i=0;i<4;i++) if(store.data.completedSets[`${ex.id}-${i}`]) done++; });
+                    let done = 0; day.exercises.forEach(ex => { for(let i=0;i<4;i++) if(store.data.completedSets && store.data.completedSets[`${ex.id}-${i}`]) done++; });
                     const p = Math.round((done/(day.exercises.length*4))*100);
                     const isComplete = p === 100;
                     return `<button onclick="router.navigate('detail', {id: '${day.id}'})" class="relative w-full bg-zinc-900 border ${isComplete?'border-theme':'border-zinc-800'} p-4 rounded-2xl text-left overflow-hidden group active:scale-[0.98] transition-all hover:border-zinc-700">
@@ -331,28 +387,25 @@ const router = {
                 }).join('')}</div>
                 <div class="h-10"></div>
             </div>`;
-        lucide.createIcons();
     },
 
     renderDetail(c, p) {
         const w = WORKOUT_PLAN.find(x => x.id === p.id); if(!w) return;
-        let load = 0; let totalSets = w.exercises.length * 4; let setsDone = 0;
+        let load = 0; 
         
         w.exercises.forEach(ex => {
-            const wt = parseFloat(store.data.weights[ex.id]) || 0;
-            for(let i=0;i<4;i++) if(store.data.completedSets[`${ex.id}-${i}`]) { load += wt * 10; setsDone++; }
+            const wt = parseFloat(store.data.weights && store.data.weights[ex.id]) || 0;
+            for(let i=0;i<4;i++) if(store.data.completedSets && store.data.completedSets[`${ex.id}-${i}`]) { load += wt * 10; }
         });
 
         document.getElementById('main-header').innerHTML = `
             <button onclick="router.navigate('home')" class="p-2 -ml-2 text-zinc-400 hover:text-white transition-colors"><i data-lucide="chevron-left" class="w-6 h-6"></i></button>
             <div class="text-center"><h2 class="text-white font-bold text-sm tracking-wide uppercase">Treino ${w.letter}</h2><span class="text-[9px] text-zinc-500 font-mono block">Volume: ${load.toLocaleString()}kg</span></div>
             <button onclick="actions.reset('${w.id}')" class="p-2 -mr-2 text-zinc-600 hover:text-red-500 transition-colors"><i data-lucide="rotate-ccw" class="w-5 h-5"></i></button>`;
-        
-        lucide.createIcons();
 
         c.innerHTML = `<div class="px-4 space-y-4 animate-slide-up pb-10">
             ${w.exercises.map((ex, i) => {
-                const hasNote = (store.data.notes[ex.id]||'').trim().length > 0;
+                const hasNote = (store.data.notes && store.data.notes[ex.id]||'').trim().length > 0;
                 const isVideoVisible = store.data.visibleVideos && store.data.visibleVideos[ex.id];
                 const vidBtnClass = isVideoVisible ? 'text-theme border-theme bg-theme/10' : 'text-zinc-500 border-zinc-700 hover:text-white';
                 const delta = utils.getDelta(ex.id) || ''; 
@@ -371,7 +424,7 @@ const router = {
                             <span class="text-zinc-500 text-[10px] font-bold uppercase mb-0.5 block">0${i+1} // ${ex.name}</span>
                             <div class="flex items-center gap-2 mt-1">
                                 <div class="relative flex items-center">
-                                    <input type="number" value="${store.data.weights[ex.id]||''}" onchange="actions.weight('${ex.id}',this.value)" class="input-dark w-16 py-1 px-2 text-sm font-bold rounded-lg text-center" placeholder="kg">
+                                    <input type="number" value="${(store.data.weights && store.data.weights[ex.id])||''}" onchange="actions.weight('${ex.id}',this.value)" class="input-dark w-16 py-1 px-2 text-sm font-bold rounded-lg text-center" placeholder="kg">
                                     ${delta}
                                 </div>
                                 <button onclick="notesManager.open('${ex.id}')" class="relative w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center ${hasNote?'text-theme':'text-zinc-500'} border border-zinc-700 hover:border-theme transition-colors"><i data-lucide="clipboard" class="w-4 h-4"></i>${hasNote?'<span class="has-note-indicator"></span>':''}</button>
@@ -385,8 +438,9 @@ const router = {
                     </div>
                     ${videoContent}
                     <div class="grid grid-cols-4 gap-2 mt-3">${[0,1,2,3].map(j => {
-                        const done = store.data.completedSets[`${ex.id}-${j}`];
-                        return `<button onclick="actions.toggle('${ex.id}',${j},${ex.rest})" class="btn-set h-10 rounded-lg flex flex-col items-center justify-center gap-0.5 ${done?'active':'bg-zinc-950 border-zinc-800 text-zinc-600'}"><span class="text-[9px] font-bold">SET ${j+1}</span></button>`;
+                        const done = store.data.completedSets && store.data.completedSets[`${ex.id}-${j}`];
+                        const animClass = (p.animSet === `${ex.id}-${j}`) ? 'animate-pop' : '';
+                        return `<button onclick="actions.toggle('${ex.id}',${j},${ex.rest})" class="btn-set h-10 rounded-lg flex flex-col items-center justify-center gap-0.5 ${done?'active':''} ${animClass} bg-zinc-950 border-zinc-800 text-zinc-600"><span class="text-[9px] font-bold">SET ${j+1}</span></button>`;
                     }).join('')}</div>
                 </div>`
             }).join('')}
@@ -395,7 +449,7 @@ const router = {
                 <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity"><i data-lucide="flame" class="w-24 h-24"></i></div>
                 <div class="flex items-center justify-between relative z-10">
                     <div><h3 class="text-white font-bold text-lg">Cardio Finish</h3><p class="text-zinc-400 text-xs">20 min Esteira • Thermo Flame</p></div>
-                    <button onclick="actions.cardio()" class="w-12 h-12 rounded-full border-2 ${store.data.cardioHistory[utils.getTodayDate()]?'bg-theme border-theme text-black':'border-zinc-700 text-transparent'} flex items-center justify-center transition-all shadow-[0_0_15px_var(--theme-glow)]"><i data-lucide="check" class="w-6 h-6"></i></button>
+                    <button onclick="actions.cardio()" class="w-12 h-12 rounded-full border-2 ${store.data.cardioHistory && store.data.cardioHistory[utils.getTodayDate()]?'bg-theme border-theme text-black':'border-zinc-700 text-transparent'} flex items-center justify-center transition-all shadow-[0_0_15px_var(--theme-glow)]"><i data-lucide="check" class="w-6 h-6"></i></button>
                 </div>
             </div>
 
@@ -488,26 +542,48 @@ const router = {
 
 const actions = {
     toggle(ex, i, rest) {
-        const k = `${ex}-${i}`; const d = !store.data.completedSets[k]; store.data.completedSets[k] = d;
+        if (!store.data.completedSets) store.data.completedSets = {};
+        
+        const k = `${ex}-${i}`; 
+        const d = !store.data.completedSets[k]; 
+        store.data.completedSets[k] = d;
+        
+        // Passa o ID da animação no params para renderizar APENAS esse com a classe
+        const animId = d ? k : null;
+        
         if(d) {
             if(navigator.vibrate) navigator.vibrate(50);
             store.data.xp = (store.data.xp || 0) + 1;
             timer.start(rest);
             const today = utils.getTodayDate();
+            if (!store.data.workoutHistory) store.data.workoutHistory = {};
             store.data.workoutHistory[today] = (store.data.workoutHistory[today] || 0) + 1; 
         } else {
             store.data.xp = Math.max(0, (store.data.xp || 0) - 1);
         }
+        
         store.save(); 
-        router.renderDetail(document.getElementById('main-content'), router.currentParams);
+        
+        // Atualiza params com animSet
+        const newParams = { ...router.currentParams, animSet: animId };
+        router.renderDetail(document.getElementById('main-content'), newParams);
     },
     weight(ex, v) { 
+        if(!store.data.weights) store.data.weights = {};
+        if(!store.data.prevWeights) store.data.prevWeights = {};
+        
         if(!store.data.prevWeights[ex]) store.data.prevWeights[ex] = store.data.weights[ex] || 0;
         store.data.weights[ex] = v; 
         store.save(); 
         router.renderDetail(document.getElementById('main-content'), router.currentParams); 
     },
-    cardio() { const d = utils.getTodayDate(); store.data.cardioHistory[d] = !store.data.cardioHistory[d]; store.save(); router.renderDetail(document.getElementById('main-content'), router.currentParams); },
+    cardio() { 
+        if (!store.data.cardioHistory) store.data.cardioHistory = {};
+        const d = utils.getTodayDate(); 
+        store.data.cardioHistory[d] = !store.data.cardioHistory[d]; 
+        store.save(); 
+        router.renderDetail(document.getElementById('main-content'), router.currentParams); 
+    },
     toggleVideo(exId) {
         if(!store.data.visibleVideos) store.data.visibleVideos = {};
         store.data.visibleVideos[exId] = !store.data.visibleVideos[exId];
@@ -516,12 +592,28 @@ const actions = {
     reset(id) {
         if(!confirm('Resetar treino?')) return;
         const w = WORKOUT_PLAN.find(x => x.id === id); let rm = 0;
-        w.exercises.forEach(ex => { for(let i=0;i<4;i++) if(store.data.completedSets[`${ex.id}-${i}`]) { rm++; delete store.data.completedSets[`${ex.id}-${i}`]; } });
-        store.data.xp = Math.max(0, store.data.xp - rm); store.save(); router.renderDetail(document.getElementById('main-content'), router.currentParams);
+        w.exercises.forEach(ex => { for(let i=0;i<4;i++) if(store.data.completedSets && store.data.completedSets[`${ex.id}-${i}`]) { rm++; delete store.data.completedSets[`${ex.id}-${i}`]; } });
+        store.data.xp = Math.max(0, (store.data.xp || 0) - rm); 
+        store.save(); 
+        router.renderDetail(document.getElementById('main-content'), router.currentParams);
     },
     finish() { alert('Treino Concluído! +100XP'); router.navigate('home'); }
 };
 
+// --- SPLASH SCREEN LOGIC ---
+function initApp() {
+    const splash = document.getElementById('splash-screen');
+    if (splash) {
+        setTimeout(() => {
+            splash.style.opacity = '0';
+            setTimeout(() => {
+                splash.style.display = 'none';
+            }, 500); // Wait for transition to finish
+        }, 2000); // Show splash for 2 seconds
+    }
+}
+
+// Registro de Service Worker para PWA
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('service-worker.js')
@@ -530,4 +622,8 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-document.addEventListener('DOMContentLoaded', () => { store.load(); router.navigate('home'); });
+document.addEventListener('DOMContentLoaded', () => { 
+    initApp(); // Inicia o Splash
+    store.load(); 
+    router.navigate('home'); 
+});
