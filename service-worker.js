@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pro-gym-v1'; // Alterado para forçar atualização do cache
+const CACHE_NAME = 'pro-gym-v1.1'; // Atualizado para garantir que o navegador baixe a nova versão
 const ASSETS = [
     './',
     './index.html',
@@ -6,19 +6,18 @@ const ASSETS = [
     './js/script.js',
     './assets/img/icon.png',
     './assets/img/logo.png',
-    './loading.png', // Adicionado para garantir que o Splash funcione offline
     'https://cdn.tailwindcss.com',
     'https://unpkg.com/lucide@latest'
 ];
 
 self.addEventListener('install', (e) => {
-    // Força o SW a ativar imediatamente após instalar
+    // Força o SW a ativar imediatamente após instalar, sem esperar o usuário fechar a aba
     self.skipWaiting(); 
     e.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)));
 });
 
 self.addEventListener('activate', (e) => {
-    // Limpa caches antigos (como o 'zoro-app-v5') para não dar conflito
+    // Limpeza automática de caches antigos para evitar conflitos com versões anteriores
     e.waitUntil(
         caches.keys().then((keyList) => {
             return Promise.all(

@@ -5,20 +5,14 @@
  * Theme: Clean Dark & Technical
  */
 
-// --- TEMAS PROFISSIONAIS (Renomeados para Cores) ---
+// --- TEMAS PROFISSIONAIS (Mapeamento: Cor -> Hex) ---
 const THEMES = {
-    // Performance = Azul
-    azul:      { color: '#3b82f6', hover: '#2563eb', glow: 'rgba(59, 130, 246, 0.5)', bgSoft: 'rgba(59, 130, 246, 0.1)' },
-    // Hipertrofia = Vermelho
-    vermelho:  { color: '#ef4444', hover: '#dc2626', glow: 'rgba(239, 68, 68, 0.5)', bgSoft: 'rgba(239, 68, 68, 0.1)' },
-    // Resistência = Verde
-    verde:     { color: '#10b981', hover: '#059669', glow: 'rgba(16, 185, 129, 0.5)', bgSoft: 'rgba(16, 185, 129, 0.1)' },
-    // Força = Laranja
-    laranja:   { color: '#f97316', hover: '#ea580c', glow: 'rgba(249, 115, 22, 0.5)', bgSoft: 'rgba(249, 115, 22, 0.1)' },
-    // Energia = Rosa
-    rosa:      { color: '#FD0963', hover: '#D00750', glow: 'rgba(253, 9, 99, 0.6)', bgSoft: 'rgba(253, 9, 99, 0.15)' },
-    // Cósmico = Roxo (Tom Solicitado)
-    roxo:      { color: '#8A00c4', hover: '#6d009c', glow: 'rgba(138, 0, 196, 0.6)', bgSoft: 'rgba(138, 0, 196, 0.15)' }
+    azul:      { color: '#3b82f6', hover: '#2563eb', glow: 'rgba(59, 130, 246, 0.5)', bgSoft: 'rgba(59, 130, 246, 0.1)' }, // Performance
+    vermelho:  { color: '#ef4444', hover: '#dc2626', glow: 'rgba(239, 68, 68, 0.5)', bgSoft: 'rgba(239, 68, 68, 0.1)' }, // Hipertrofia
+    verde:     { color: '#10b981', hover: '#059669', glow: 'rgba(16, 185, 129, 0.5)', bgSoft: 'rgba(16, 185, 129, 0.1)' }, // Resistência
+    laranja:   { color: '#f97316', hover: '#ea580c', glow: 'rgba(249, 115, 22, 0.5)', bgSoft: 'rgba(249, 115, 22, 0.1)' }, // Força
+    rosa:      { color: '#FD0963', hover: '#D00750', glow: 'rgba(253, 9, 99, 0.6)', bgSoft: 'rgba(253, 9, 99, 0.15)' },   // Energia
+    roxo:      { color: '#8A00c4', hover: '#6d009c', glow: 'rgba(138, 0, 196, 0.6)', bgSoft: 'rgba(138, 0, 196, 0.15)' }  // Cósmico
 };
 
 // --- SISTEMA DE PROGRESSÃO ---
@@ -31,31 +25,31 @@ const RANKS = [
     { name: "Pro", minXP: 2000 }
 ];
 
-// --- PLANO DE TREINO (A-F) - Traduzido ---
+// --- PLANO DE TREINO (A-F) ---
 const WORKOUT_PLAN = [
     { id: 'day-a', letter: 'A', title: 'Peitoral & Abdômen', focus: 'Foco em Peito', exercises: [
         { id: 'a1', name: 'Supino Máquina', machine: 'Kikos Pro Concept II', sets: 4, reps: '8-10', rest: 45, youtube: 'UfYsjtao108' },
-        { id: 'a2', name: 'Peck Deck', machine: 'Kikos Pro Station TTMS25', sets: 4, reps: '8-10', rest: 45, youtube: 'a5XwjsD3AOI' },
-        { id: 'a3', name: 'Supino Inclinado', machine: 'Kikos Pro Titanium TTS12', sets: 4, reps: '8-10', rest: 45, youtube: '_OodPWexj_g' },
-        { id: 'a4', name: 'Cross Over', machine: 'Kikos Pro Titanium TTMS20', sets: 4, reps: '8-10', rest: 45, youtube: '7UC_8lsE2w0' },
-        { id: 'a5', name: 'Abdominal Máquina', machine: 'Kikos Pro Station TTFW60', sets: 4, reps: '15-20', rest: 45, youtube: 'qWtYjH0enBA' },
-        { id: 'a6', name: 'Rotação de Tronco', machine: 'Kikos Torso Rotation', sets: 4, reps: '15-20', rest: 45, youtube: 'tDBYMZxwXQ8' }
+        { id: 'a2', name: 'Peck Deck', machine: 'Kikos Pro Station TTMS25', sets: 4, reps: '10-12', rest: 45, youtube: '9GB1fOEmAPI' },
+        { id: 'a3', name: 'Supino Inclinado', machine: 'Halteres / Máquina', sets: 4, reps: '8-10', rest: 60, youtube: 'VQauxmUhw-Y' },
+        { id: 'a4', name: 'Cross Over', machine: 'Kikos Pro Titanium TTMS20', sets: 4, reps: '12-15', rest: 45, youtube: 'HC0424Xocow' },
+        { id: 'a5', name: 'Abdominal Máquina', machine: 'Kikos Pro Station TTFW60', sets: 4, reps: '15-20', rest: 45, youtube: '0R3qJeNgg8Y' },
+        { id: 'a6', name: 'Abdômen Infra', machine: 'Paralelas / Solo', sets: 4, reps: '15-20', rest: 45, youtube: 'HJGCQe6whLk' }
     ]},
     { id: 'day-b', letter: 'B', title: 'Dorsais & Lombar', focus: 'Foco em Costas', exercises: [
-        { id: 'b1', name: 'Puxada Alta', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: 'UO70dS2tTyQ' },
-        { id: 'b2', name: 'Puxada Triângulo', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: 'UO70dS2tTyQ' },
-        { id: 'b3', name: 'Remada Baixa', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: 'MwyrOd_vwB8' },
-        { id: 'b4', name: 'Remada Máquina', machine: 'Kikos Pro Plate Load', sets: 4, reps: '8-10', rest: 45, youtube: 'TeFo51Q_Nsc' },
-        { id: 'b5', name: 'Pulldown', machine: 'Kikos Crossover Polia', sets: 4, reps: '8-10', rest: 45, youtube: 'Jgei5V3dE48' },
-        { id: 'b6', name: 'Extensão Lombar', machine: 'Kikos Banco Lombar', sets: 4, reps: '12-15', rest: 60, youtube: 'ph3pddpKzzw' }
+        { id: 'b1', name: 'Puxada Alta', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 60, youtube: 'UO70dS2tTyQ' },
+        { id: 'b2', name: 'Remada Baixa', machine: 'Kikos Pro Station', sets: 4, reps: '10-12', rest: 45, youtube: 'MwyrOd_vwB8' },
+        { id: 'b3', name: 'Remada Máq. Articulada', machine: 'Kikos Plate Load', sets: 4, reps: '10-12', rest: 45, youtube: '8_fkWDLmURY' },
+        { id: 'b4', name: 'Puxada Art. Invertida', machine: 'Kikos Plate Load', sets: 4, reps: '10-12', rest: 45, youtube: '1vPX7VHR2Tw' },
+        { id: 'b5', name: 'Pulldown', machine: 'Kikos Crossover', sets: 4, reps: '12-15', rest: 45, youtube: 'G4B4YEVRQDg' },
+        { id: 'b6', name: 'Puxada Gráviton', machine: 'Kikos Graviton', sets: 4, reps: '10-12', rest: 45, youtube: 'KM0iEHUJEc4' }
     ]},
     { id: 'day-c', letter: 'C', title: 'Quadríceps & Pant.', focus: 'Foco em Pernas', exercises: [
-        { id: 'c1', name: 'Leg Press 45º', machine: 'Kikos Plate Load PR70', sets: 4, reps: '8-10', rest: 60, youtube: 'uJu3Yph10cI' },
-        { id: 'c2', name: 'Hack Machine', machine: 'Kikos Pro Station TTPL79', sets: 4, reps: '8-10', rest: 60, youtube: 'O8gOJu9ph2E' },
-        { id: 'c3', name: 'Cadeira Extensora', machine: 'Kikos Plate Load PR71', sets: 4, reps: '8-10', rest: 45, youtube: '46WfkM7rRF4' },
-        { id: 'c4', name: 'Leg Horizontal', machine: 'Kikos Pro Titanium TTS70', sets: 4, reps: '8-10', rest: 45, youtube: 'gTo0HfVcLxo' },
-        { id: 'c5', name: 'Panturrilha Sentado', machine: 'Kikos Pro Station TTPL77', sets: 4, reps: '15-20', rest: 30, youtube: 'JbyjNymZOt0' },
-        { id: 'c6', name: 'Panturrilha Leg', machine: 'Kikos Plate Load PR70', sets: 4, reps: '15-20', rest: 30, youtube: 'uJu3Yph10cI' }
+        { id: 'c1', name: 'Leg Press 45º', machine: 'Kikos Plate Load PR70', sets: 4, reps: '8-10', rest: 90, youtube: 'uJu3Yph10cI' },
+        { id: 'c2', name: 'Hack Machine', machine: 'Kikos Pro Station TTPL79', sets: 4, reps: '8-10', rest: 90, youtube: 'O8gOJu9ph2E' },
+        { id: 'c3', name: 'Cadeira Extensora', machine: 'Kikos Plate Load PR71', sets: 4, reps: '12-15', rest: 45, youtube: '_zwBamBQJzs' },
+        { id: 'c4', name: 'Leg Horizontal', machine: 'Kikos Pro Titanium TTS70', sets: 4, reps: '10-12', rest: 60, youtube: 'gTo0HfVcLxo' },
+        { id: 'c5', name: 'Panturrilha Sentado', machine: 'Kikos Pro Station TTPL77', sets: 4, reps: '15-20', rest: 30, youtube: 'E68mPsfrEw8' },
+        { id: 'c6', name: 'Panturrilha Leg Horiz.', machine: 'Kikos Plate Load PR70', sets: 4, reps: '15-20', rest: 30, youtube: 'VL-IRYEGxxg' }
     ]},
     { id: 'day-d', letter: 'D', title: 'Ombros & Trapézio', focus: 'Foco em Ombros', exercises: [
         { id: 'd1', name: 'Rotação Externa', machine: 'Polia / Crossover', sets: 3, reps: '12-15', rest: 45, youtube: 'z4sPEEIGmv4' },
@@ -65,20 +59,20 @@ const WORKOUT_PLAN = [
         { id: 'd5', name: 'Desenv. Barra Frente', machine: 'Kikos Smith Machine', sets: 4, reps: '10-12', rest: 60, youtube: 'SytpMErUoOU' }
     ]},
     { id: 'day-e', letter: 'E', title: 'Bíceps & Tríceps', focus: 'Foco em Braços', exercises: [
-        { id: 'e1', name: 'Tríceps Pulley', machine: 'Kikos Crossover', sets: 4, reps: '8-10', rest: 45, youtube: 'ga8dtLyTj1M' },
-        { id: 'e2', name: 'Tríceps Corda', machine: 'Kikos Crossover', sets: 4, reps: '8-10', rest: 45, youtube: 'vB5OHsJ3ECE' },
-        { id: 'e3', name: 'Tríceps Máquina', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: '3_9d1g7o_cM' },
-        { id: 'e4', name: 'Rosca Scott', machine: 'Kikos Pro Scott', sets: 4, reps: '8-10', rest: 45, youtube: '2jDrDoW1Z0o' },
-        { id: 'e5', name: 'Rosca Direta', machine: 'Kikos Crossover Baixo', sets: 4, reps: '8-10', rest: 45, youtube: 'vhcJP86SEos' },
-        { id: 'e6', name: 'Rosca Martelo', machine: 'Kikos Crossover Corda', sets: 4, reps: '8-10', rest: 45, youtube: 'zC3nLlEpt4w' }
+        { id: 'e1', name: 'Tríceps Pulley', machine: 'Kikos Crossover', sets: 4, reps: '10-12', rest: 45, youtube: 'ga8dtLyTj1M' },
+        { id: 'e2', name: 'Tríceps Press', machine: 'Kikos Press Machine', sets: 4, reps: '10-12', rest: 45, youtube: 'lFjhkFxKh48' },
+        { id: 'e3', name: 'Tríceps Coice Polia', machine: 'Kikos Crossover', sets: 4, reps: '12-15', rest: 45, youtube: '6DSDuaIiz8M' },
+        { id: 'e4', name: 'Rosca Scott', machine: 'Kikos Pro Scott', sets: 4, reps: '10-12', rest: 45, youtube: '88R82ardJr8' },
+        { id: 'e5', name: 'Bíceps Unilateral', machine: 'Kikos Crossover Baixo', sets: 4, reps: '10-12', rest: 45, youtube: 'vhcJP86SEos' },
+        { id: 'e6', name: 'Rosca Martelo', machine: 'Halteres', sets: 4, reps: '10-12', rest: 45, youtube: 'ZiasEcCg0wg' }
     ]},
     { id: 'day-f', letter: 'F', title: 'Posterior & Glúteos', focus: 'Foco em Glúteos', exercises: [
-        { id: 'f1', name: 'Mesa Flexora', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: '2piLtfoXX6k' },
-        { id: 'f2', name: 'Cadeira Flexora', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: 'Y1o8iPiBI7k' },
-        { id: 'f3', name: 'Cadeira Abdutora', machine: 'Kikos Pro Station', sets: 4, reps: '12-15', rest: 45, youtube: 'Hs-9c39_rjo' },
-        { id: 'f4', name: 'Glúteo Máquina', machine: 'Kikos Glute Machine', sets: 4, reps: '8-10', rest: 45, youtube: 'Z8gztZ1_t9A' },
-        { id: 'f5', name: 'Leg 45º Alto', machine: 'Kikos Plate Load PR70', sets: 4, reps: '8-10', rest: 60, youtube: 'uJu3Yph10cI' },
-        { id: 'f6', name: 'Cadeira Adutora', machine: 'Kikos Pro Station', sets: 4, reps: '12-15', rest: 45, youtube: 'p3g4wAsu0R4' }
+        { id: 'f1', name: 'Cadeira Flexora', machine: 'Kikos Pro Station', sets: 4, reps: '10-12', rest: 45, youtube: 'Y1o8iPiBI7k' },
+        { id: 'f2', name: 'Mesa Flexora', machine: 'Kikos Pro Station', sets: 4, reps: '10-12', rest: 45, youtube: 'sZw0r26ADYA' },
+        { id: 'f3', name: 'Cadeira Abdutora', machine: 'Kikos Pro Station', sets: 4, reps: '12-15', rest: 45, youtube: '93LxxfV-x34' },
+        { id: 'f4', name: 'Cadeira Adutora', machine: 'Kikos Pro Station', sets: 4, reps: '12-15', rest: 45, youtube: 'CwnbaDmScN0' },
+        { id: 'f5', name: 'Agachamento Articulado', machine: 'Kikos Plate Load', sets: 4, reps: '8-10', rest: 90, youtube: '2LFqiG5hWL8' },
+        { id: 'f6', name: 'Abdominal Máquina', machine: 'Kikos Pro Station', sets: 4, reps: '15-20', rest: 45, youtube: '0R3qJeNgg8Y' }
     ]}
 ];
 
