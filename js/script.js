@@ -5,15 +5,20 @@
  * Theme: Clean Dark & Technical
  */
 
-// --- TEMAS PROFISSIONAIS ---
+// --- TEMAS PROFISSIONAIS (Renomeados para Cores) ---
 const THEMES = {
-    performance: { color: '#3b82f6', hover: '#2563eb', glow: 'rgba(59, 130, 246, 0.5)', bgSoft: 'rgba(59, 130, 246, 0.1)' }, // Azul (Padrão)
-    hypertrophy: { color: '#ef4444', hover: '#dc2626', glow: 'rgba(239, 68, 68, 0.5)', bgSoft: 'rgba(239, 68, 68, 0.1)' }, // Vermelho
-    stamina:     { color: '#10b981', hover: '#059669', glow: 'rgba(16, 185, 129, 0.5)', bgSoft: 'rgba(16, 185, 129, 0.1)' }, // Verde
-    strength:    { color: '#f97316', hover: '#ea580c', glow: 'rgba(249, 115, 22, 0.5)', bgSoft: 'rgba(249, 115, 22, 0.1)' }, // Laranja
-    energy:      { color: '#FD0963', hover: '#D00750', glow: 'rgba(253, 9, 99, 0.6)', bgSoft: 'rgba(253, 9, 99, 0.15)' },   // Rosa Neon
-    // ATUALIZADO: Tema Cósmico agora é Roxo Neon Vibrante (#A855F7 - Purple 500/600 ajustado)
-    cosmos:      { color: '#A855F7', hover: '#9333EA', glow: 'rgba(168, 85, 247, 0.6)', bgSoft: 'rgba(168, 85, 247, 0.15)' } 
+    // Performance = Azul
+    azul:      { color: '#3b82f6', hover: '#2563eb', glow: 'rgba(59, 130, 246, 0.5)', bgSoft: 'rgba(59, 130, 246, 0.1)' },
+    // Hipertrofia = Vermelho
+    vermelho:  { color: '#ef4444', hover: '#dc2626', glow: 'rgba(239, 68, 68, 0.5)', bgSoft: 'rgba(239, 68, 68, 0.1)' },
+    // Resistência = Verde
+    verde:     { color: '#10b981', hover: '#059669', glow: 'rgba(16, 185, 129, 0.5)', bgSoft: 'rgba(16, 185, 129, 0.1)' },
+    // Força = Laranja
+    laranja:   { color: '#f97316', hover: '#ea580c', glow: 'rgba(249, 115, 22, 0.5)', bgSoft: 'rgba(249, 115, 22, 0.1)' },
+    // Energia = Rosa
+    rosa:      { color: '#FD0963', hover: '#D00750', glow: 'rgba(253, 9, 99, 0.6)', bgSoft: 'rgba(253, 9, 99, 0.15)' },
+    // Cósmico = Roxo (Tom Solicitado)
+    roxo:      { color: '#8A00c4', hover: '#6d009c', glow: 'rgba(138, 0, 196, 0.6)', bgSoft: 'rgba(138, 0, 196, 0.15)' }
 };
 
 // --- SISTEMA DE PROGRESSÃO ---
@@ -26,9 +31,9 @@ const RANKS = [
     { name: "Pro", minXP: 2000 }
 ];
 
-// --- PLANO DE TREINO (A-F) ---
+// --- PLANO DE TREINO (A-F) - Traduzido ---
 const WORKOUT_PLAN = [
-    { id: 'day-a', letter: 'A', title: 'Peitoral & Abdômen', focus: 'Chest Focus', exercises: [
+    { id: 'day-a', letter: 'A', title: 'Peitoral & Abdômen', focus: 'Foco em Peito', exercises: [
         { id: 'a1', name: 'Supino Máquina', machine: 'Kikos Pro Concept II', sets: 4, reps: '8-10', rest: 45, youtube: 'UfYsjtao108' },
         { id: 'a2', name: 'Peck Deck', machine: 'Kikos Pro Station TTMS25', sets: 4, reps: '8-10', rest: 45, youtube: 'a5XwjsD3AOI' },
         { id: 'a3', name: 'Supino Inclinado', machine: 'Kikos Pro Titanium TTS12', sets: 4, reps: '8-10', rest: 45, youtube: '_OodPWexj_g' },
@@ -36,7 +41,7 @@ const WORKOUT_PLAN = [
         { id: 'a5', name: 'Abdominal Máquina', machine: 'Kikos Pro Station TTFW60', sets: 4, reps: '15-20', rest: 45, youtube: 'qWtYjH0enBA' },
         { id: 'a6', name: 'Rotação de Tronco', machine: 'Kikos Torso Rotation', sets: 4, reps: '15-20', rest: 45, youtube: 'tDBYMZxwXQ8' }
     ]},
-    { id: 'day-b', letter: 'B', title: 'Dorsais & Lombar', focus: 'Back Focus', exercises: [
+    { id: 'day-b', letter: 'B', title: 'Dorsais & Lombar', focus: 'Foco em Costas', exercises: [
         { id: 'b1', name: 'Puxada Alta', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: 'UO70dS2tTyQ' },
         { id: 'b2', name: 'Puxada Triângulo', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: 'UO70dS2tTyQ' },
         { id: 'b3', name: 'Remada Baixa', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: 'MwyrOd_vwB8' },
@@ -44,7 +49,7 @@ const WORKOUT_PLAN = [
         { id: 'b5', name: 'Pulldown', machine: 'Kikos Crossover Polia', sets: 4, reps: '8-10', rest: 45, youtube: 'Jgei5V3dE48' },
         { id: 'b6', name: 'Extensão Lombar', machine: 'Kikos Banco Lombar', sets: 4, reps: '12-15', rest: 60, youtube: 'ph3pddpKzzw' }
     ]},
-    { id: 'day-c', letter: 'C', title: 'Quadríceps & Pant.', focus: 'Quads Focus', exercises: [
+    { id: 'day-c', letter: 'C', title: 'Quadríceps & Pant.', focus: 'Foco em Pernas', exercises: [
         { id: 'c1', name: 'Leg Press 45º', machine: 'Kikos Plate Load PR70', sets: 4, reps: '8-10', rest: 60, youtube: 'uJu3Yph10cI' },
         { id: 'c2', name: 'Hack Machine', machine: 'Kikos Pro Station TTPL79', sets: 4, reps: '8-10', rest: 60, youtube: 'O8gOJu9ph2E' },
         { id: 'c3', name: 'Cadeira Extensora', machine: 'Kikos Plate Load PR71', sets: 4, reps: '8-10', rest: 45, youtube: '46WfkM7rRF4' },
@@ -52,15 +57,14 @@ const WORKOUT_PLAN = [
         { id: 'c5', name: 'Panturrilha Sentado', machine: 'Kikos Pro Station TTPL77', sets: 4, reps: '15-20', rest: 30, youtube: 'JbyjNymZOt0' },
         { id: 'c6', name: 'Panturrilha Leg', machine: 'Kikos Plate Load PR70', sets: 4, reps: '15-20', rest: 30, youtube: 'uJu3Yph10cI' }
     ]},
-    { id: 'day-d', letter: 'D', title: 'Ombros & Trapézio', focus: 'Delts Focus', exercises: [
-        { id: 'd1', name: 'Desenv. Máquina', machine: 'Kikos Pro Station TTFW16', sets: 4, reps: '8-10', rest: 45, youtube: '7z31DogTlC8' },
-        { id: 'd2', name: 'Elevação Lateral', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: 'jMyZZJMlwSg' },
-        { id: 'd3', name: 'Elevação Frontal', machine: 'Kikos Crossover', sets: 4, reps: '8-10', rest: 45, youtube: 'hRJ6tz5_iSA' },
-        { id: 'd4', name: 'Crucifixo Inverso', machine: 'Kikos Peck Deck', sets: 4, reps: '8-10', rest: 45, youtube: '5_iV9Q5Q55g' },
-        { id: 'd5', name: 'Remada Alta', machine: 'Kikos Crossover', sets: 4, reps: '8-10', rest: 45, youtube: '2F8_gJ9o_cM' },
-        { id: 'd6', name: 'Encolhimento', machine: 'Kikos Smith Machine', sets: 4, reps: '12-15', rest: 45, youtube: '8j2Gj_6I5xI' }
+    { id: 'day-d', letter: 'D', title: 'Ombros & Trapézio', focus: 'Foco em Ombros', exercises: [
+        { id: 'd1', name: 'Rotação Externa', machine: 'Polia / Crossover', sets: 3, reps: '12-15', rest: 45, youtube: 'z4sPEEIGmv4' },
+        { id: 'd2', name: 'Elev. Lateral Cruzada', machine: 'Kikos Crossover', sets: 4, reps: '12-15', rest: 45, youtube: 'wbY6KTqZtEE' },
+        { id: 'd3', name: 'Desenv. Máquina', machine: 'Máquina Articulada', sets: 4, reps: '8-12', rest: 60, youtube: '3isQJHeZ5kI' },
+        { id: 'd4', name: 'Encolhimento Cross', machine: 'Kikos Crossover', sets: 4, reps: '12-15', rest: 45, youtube: 'WxjFE_zl9rA' },
+        { id: 'd5', name: 'Desenv. Barra Frente', machine: 'Kikos Smith Machine', sets: 4, reps: '10-12', rest: 60, youtube: 'SytpMErUoOU' }
     ]},
-    { id: 'day-e', letter: 'E', title: 'Bíceps & Tríceps', focus: 'Arms Focus', exercises: [
+    { id: 'day-e', letter: 'E', title: 'Bíceps & Tríceps', focus: 'Foco em Braços', exercises: [
         { id: 'e1', name: 'Tríceps Pulley', machine: 'Kikos Crossover', sets: 4, reps: '8-10', rest: 45, youtube: 'ga8dtLyTj1M' },
         { id: 'e2', name: 'Tríceps Corda', machine: 'Kikos Crossover', sets: 4, reps: '8-10', rest: 45, youtube: 'vB5OHsJ3ECE' },
         { id: 'e3', name: 'Tríceps Máquina', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: '3_9d1g7o_cM' },
@@ -68,7 +72,7 @@ const WORKOUT_PLAN = [
         { id: 'e5', name: 'Rosca Direta', machine: 'Kikos Crossover Baixo', sets: 4, reps: '8-10', rest: 45, youtube: 'vhcJP86SEos' },
         { id: 'e6', name: 'Rosca Martelo', machine: 'Kikos Crossover Corda', sets: 4, reps: '8-10', rest: 45, youtube: 'zC3nLlEpt4w' }
     ]},
-    { id: 'day-f', letter: 'F', title: 'Posterior & Glúteos', focus: 'Glutes Focus', exercises: [
+    { id: 'day-f', letter: 'F', title: 'Posterior & Glúteos', focus: 'Foco em Glúteos', exercises: [
         { id: 'f1', name: 'Mesa Flexora', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: '2piLtfoXX6k' },
         { id: 'f2', name: 'Cadeira Flexora', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: 'Y1o8iPiBI7k' },
         { id: 'f3', name: 'Cadeira Abdutora', machine: 'Kikos Pro Station', sets: 4, reps: '12-15', rest: 45, youtube: 'Hs-9c39_rjo' },
@@ -124,7 +128,7 @@ function checkMaxLoad(s) {
     return max;
 }
 
-// CORRIGIDO: Helper para gerar Gráfico de Radar SVG (Ajuste de ViewBox e Rótulos)
+// Helper para gerar Gráfico de Radar SVG
 function generateRadarChart(vol) {
     const categories = ['Peitoral', 'Costas', 'Pernas', 'Ombros', 'Braços'];
     const maxVal = 24; 
@@ -132,22 +136,15 @@ function generateRadarChart(vol) {
     const centerX = svgSize / 2, centerY = svgSize / 2;
     const radius = 80; 
 
-    // Calcula pontos do polígono
     const points = categories.map((cat, i) => {
         let val = vol[cat] || 0;
-        
-        // CORREÇÃO: Garante que normalized seja no mínimo 0, prevenindo NaN ou valores inesperados.
-        // Se val é 0, normalized é 0, e o ponto será no centro (centerX, centerY).
         const normalized = maxVal === 0 ? 0 : Math.min(val / maxVal, 1);
-        
-        // Ajusta o ângulo inicial para que 'Peitoral' (0º) aponte para CIMA (-Math.PI / 2)
         const angle = (Math.PI * 2 * i) / categories.length - Math.PI / 2;
         const x = centerX + radius * normalized * Math.cos(angle);
         const y = centerY + radius * normalized * Math.sin(angle);
         return `${x},${y}`;
     }).join(' ');
 
-    // Gera grid de fundo (teias)
     let grid = '';
     for(let r=0.2; r<=1; r+=0.2) {
         const gridPoints = categories.map((_, i) => {
@@ -159,17 +156,15 @@ function generateRadarChart(vol) {
         grid += `<polygon points="${gridPoints}" fill="none" stroke="#3f3f46" stroke-width="0.5" stroke-dasharray="2" />`;
     }
 
-    // Eixos e Rótulos (Ajustei o raio para os rótulos e o anchor para centralização)
-    const labelRadius = radius + 30; // Distância maior para rótulos
+    const labelRadius = radius + 30; 
     const axes = categories.map((cat, i) => {
         const angle = (Math.PI * 2 * i) / categories.length - Math.PI / 2;
         const x = centerX + radius * Math.cos(angle);
         const y = centerY + radius * Math.sin(angle);
         
-        // Ajuste fino do ponto de ancoragem do texto para centralizar o rótulo
         let textAnchor = 'middle';
-        if (i === 1) textAnchor = 'start'; // Costas (direita)
-        if (i === 3) textAnchor = 'end'; // Ombros (esquerda)
+        if (i === 1) textAnchor = 'start'; 
+        if (i === 3) textAnchor = 'end'; 
 
         const lx = centerX + labelRadius * Math.cos(angle);
         const ly = centerY + labelRadius * Math.sin(angle);
@@ -178,7 +173,6 @@ function generateRadarChart(vol) {
                 <text x="${lx}" y="${ly}" fill="#a1a1aa" font-size="9" text-anchor="${textAnchor}" alignment-baseline="middle" font-family="monospace" font-weight="bold">${cat}</text>`;
     }).join('');
     
-    // ViewBox corrigido para 250x250, que agora tem margem
     return `
     <svg viewBox="0 0 ${svgSize} ${svgSize}" class="w-full h-full drop-shadow-2xl animate-fade-in" style="overflow: visible;">
         ${grid}
@@ -186,7 +180,6 @@ function generateRadarChart(vol) {
         <polygon points="${points}" fill="var(--theme-glow)" stroke="var(--theme-color)" stroke-width="2" fill-opacity="0.4" />
         <circle cx="${centerX}" cy="${centerY}" r="3" fill="var(--theme-color)" />
         ${categories.map((cat, i) => {
-             // Pontos nos vértices
             let val = vol[cat] || 0;
             const normalized = maxVal === 0 ? 0 : Math.min(val / maxVal, 1);
             const angle = (Math.PI * 2 * i) / categories.length - Math.PI / 2;
@@ -199,41 +192,21 @@ function generateRadarChart(vol) {
 
 // Definição das 16 Conquistas (Badges)
 const BADGES = [
-    // 1. Início da Jornada
     { id: 'initiation', icon: 'play', title: 'Iniciação', desc: 'Primeiro treino registrado.', check: (s) => Object.keys(s.workoutHistory || {}).length >= 1 },
-    // 2. Consistência Inicial
     { id: 'bronze_club', icon: 'check-circle-2', title: 'Clube Bronze', desc: '10 treinos realizados.', check: (s) => Object.keys(s.workoutHistory || {}).length >= 10 },
-    // 3. Hábito Formado
     { id: 'silver_club', icon: 'star', title: 'Clube Prata', desc: '50 treinos realizados.', check: (s) => Object.keys(s.workoutHistory || {}).length >= 50 },
-    // 4. Dedicação Total
     { id: 'gold_club', icon: 'crown', title: 'Clube Ouro', desc: '100 treinos realizados.', check: (s) => Object.keys(s.workoutHistory || {}).length >= 100 },
-    
-    // 5. Frequência Base
     { id: 'frequency_3', icon: 'calendar-check', title: 'Frequência Base', desc: '3 treinos na semana.', check: (s) => checkWeeklyConsistency(s) >= 3 },
-    // 6. Frequência Alta
     { id: 'frequency_5', icon: 'trending-up', title: 'Alta Frequência', desc: '5 treinos na semana.', check: (s) => checkWeeklyConsistency(s) >= 5 },
-    // 7. Frequência Elite
     { id: 'frequency_6', icon: 'flame', title: 'Elite Semanal', desc: '6 dias na semana.', check: (s) => checkWeeklyConsistency(s) >= 6 },
-    
-    // 8. Cargas Iniciais
     { id: 'load_40', icon: 'disc', title: 'Força Inicial', desc: 'Carga de 40kg registrada.', check: (s) => checkMaxLoad(s) >= 40 },
-    // 9. Cargas Intermediárias
     { id: 'load_80', icon: 'disc', title: 'Força Média', desc: 'Carga de 80kg registrada.', check: (s) => checkMaxLoad(s) >= 80 },
-    // 10. Cargas Avançadas
     { id: 'load_100', icon: 'dumbbell', title: 'Força Avançada', desc: 'Carga de 100kg registrada.', check: (s) => checkMaxLoad(s) >= 100 },
-    // 11. Cargas Elite
     { id: 'load_140', icon: 'anchor', title: 'Força Elite', desc: 'Carga de 140kg registrada.', check: (s) => checkMaxLoad(s) >= 140 },
-    
-    // 12. Volume Inicial
     { id: 'xp_100', icon: 'layers', title: 'Volume I', desc: '100 séries concluídas.', check: (s) => (s.xp || 0) >= 100 },
-    // 13. Volume Intermediário
     { id: 'xp_500', icon: 'bar-chart-2', title: 'Volume II', desc: '500 séries concluídas.', check: (s) => (s.xp || 0) >= 500 },
-    // 14. Volume Avançado
     { id: 'xp_1000', icon: 'zap', title: 'Volume III', desc: '1.000 séries concluídas.', check: (s) => (s.xp || 0) >= 1000 },
-    // 15. Lenda do Volume
     { id: 'xp_5000', icon: 'award', title: 'Lenda', desc: '5.000 séries concluídas.', check: (s) => (s.xp || 0) >= 5000 },
-    
-    // 16. Analítico
     { id: 'analyst', icon: 'book-open', title: 'Analista', desc: '5 notas técnicas registradas.', check: (s) => Object.keys(s.notes || {}).length >= 5 }
 ];
 
@@ -241,7 +214,7 @@ const BADGES = [
 const store = {
     data: { 
         completedSets: {}, weights: {}, rpe: {}, prevWeights: {}, notes: {}, cardioHistory: {}, workoutHistory: {}, 
-        settings: { theme: 'performance', soundEnabled: true }, 
+        settings: { theme: 'azul', soundEnabled: true }, 
         xp: 0, visibleVideos: {} 
     },
     load() {
@@ -255,10 +228,10 @@ const store = {
                 
                 // Validações de Integridade
                 if (!this.data.visibleVideos) this.data.visibleVideos = {}; 
-                if (!this.data.settings) this.data.settings = { theme: 'performance', soundEnabled: true };
+                if (!this.data.settings) this.data.settings = { theme: 'azul', soundEnabled: true };
                 if (!this.data.prevWeights) this.data.prevWeights = {};
                 if (!this.data.weights) this.data.weights = {};
-                if (!this.data.rpe) this.data.rpe = {}; // Inicializa RPE
+                if (!this.data.rpe) this.data.rpe = {}; 
                 if (!this.data.workoutHistory) this.data.workoutHistory = {};
                 if (!this.data.completedSets || Array.isArray(this.data.completedSets)) this.data.completedSets = {};
                 if (typeof this.data.xp !== 'number') this.data.xp = 0;
@@ -267,7 +240,7 @@ const store = {
                 console.error("Erro no load (Reset):", e);
             }
         }
-        themeManager.apply(this.data.settings.theme || 'performance');
+        themeManager.apply(this.data.settings.theme || 'azul');
     },
     save() {
         const completedCount = Object.values(this.data.completedSets || {}).filter(Boolean).length;
@@ -279,7 +252,7 @@ const store = {
 
 const themeManager = {
     apply(key) {
-        const t = THEMES[key] || THEMES['performance'];
+        const t = THEMES[key] || THEMES['azul'];
         const r = document.documentElement.style;
         if(t) {
             r.setProperty('--theme-color', t.color);
@@ -630,11 +603,10 @@ const router = {
                                 </div>
                                 <select onchange="actions.setRPE('${ex.id}', this.value)" class="select-rpe w-16">
                                     <option value="" disabled ${currentRPE === 'RPE' ? 'selected' : ''}>RPE</option>
-                                    <option value="6" ${currentRPE == '6' ? 'selected' : ''}>6</option>
-                                    <option value="7" ${currentRPE == '7' ? 'selected' : ''}>7</option>
                                     <option value="8" ${currentRPE == '8' ? 'selected' : ''}>8</option>
-                                    <option value="9" ${currentRPE == '9' ? 'selected' : ''}>9</option>
                                     <option value="10" ${currentRPE == '10' ? 'selected' : ''}>10</option>
+                                    <option value="12" ${currentRPE == '12' ? 'selected' : ''}>12</option>
+                                    <option value="15" ${currentRPE == '15' ? 'selected' : ''}>15</option>
                                 </select>
                                 ${delta}
                             </div>
