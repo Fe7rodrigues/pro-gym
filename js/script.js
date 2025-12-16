@@ -1,7 +1,7 @@
 /**
- * PRO GYM APP V1.5 (ARCH: INDEXEDDB & ASYNC IO)
+ * PRO GYM APP V1.6 (ARCH: WORKER TIMER & INDEXEDDB)
  * Copyright (c) 2025 Fernando Rodrigues. Todos os direitos reservados.
- * Descrição: Sistema profissional com Persistência IDB, Gestão de Treinos e Biometria.
+ * Descrição: Sistema profissional com Persistência IDB e Timer em Background.
  */
 
 // --- PERSISTÊNCIA (INDEXEDDB WRAPPER) ---
@@ -13,9 +13,6 @@ class GymDatabase {
         this.version = 1;
     }
 
-    /**
-     * Inicializa o banco e migra dados do localStorage se existirem.
-     */
     async init() {
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(this.dbName, this.version);
@@ -37,9 +34,6 @@ class GymDatabase {
         });
     }
 
-    /**
-     * Verifica e migra dados legados do localStorage para o IndexedDB.
-     */
     async migrateFromLocalStorage() {
         const legacyKey = 'pro_gym_app_v1';
         const legacyData = localStorage.getItem(legacyKey);
@@ -49,7 +43,7 @@ class GymDatabase {
                 console.log('Sistema: Migrando dados legados para IndexedDB...');
                 const parsed = JSON.parse(legacyData);
                 await this.set('root', parsed);
-                // localStorage.removeItem(legacyKey); // Opcional: manter backup por segurança
+                // localStorage.removeItem(legacyKey); // Backup mantido por segurança
             } catch (err) {
                 console.error('Erro na migração de dados:', err);
             }
@@ -95,42 +89,12 @@ const db = new GymDatabase('ProGymDB', 'app_state');
 
 // --- TEMAS PROFISSIONAIS ---
 const THEMES = {
-    azul: {
-        color: '#3b82f6',
-        hover: '#2563eb',
-        glow: 'rgba(59, 130, 246, 0.5)',
-        bgSoft: 'rgba(59, 130, 246, 0.1)'
-    },
-    vermelho: {
-        color: '#ef4444',
-        hover: '#dc2626',
-        glow: 'rgba(239, 68, 68, 0.5)',
-        bgSoft: 'rgba(239, 68, 68, 0.1)'
-    },
-    verde: {
-        color: '#10b981',
-        hover: '#059669',
-        glow: 'rgba(16, 185, 129, 0.5)',
-        bgSoft: 'rgba(16, 185, 129, 0.1)'
-    },
-    laranja: {
-        color: '#f97316',
-        hover: '#ea580c',
-        glow: 'rgba(249, 115, 22, 0.5)',
-        bgSoft: 'rgba(249, 115, 22, 0.1)'
-    },
-    rosa: {
-        color: '#FD0963',
-        hover: '#D00750',
-        glow: 'rgba(253, 9, 99, 0.6)',
-        bgSoft: 'rgba(253, 9, 99, 0.15)'
-    },
-    roxo: {
-        color: '#8A00c4',
-        hover: '#6d009c',
-        glow: 'rgba(138, 0, 196, 0.6)',
-        bgSoft: 'rgba(138, 0, 196, 0.15)'
-    }
+    azul:      { color: '#3b82f6', hover: '#2563eb', glow: 'rgba(59, 130, 246, 0.5)', bgSoft: 'rgba(59, 130, 246, 0.1)' },
+    vermelho:  { color: '#ef4444', hover: '#dc2626', glow: 'rgba(239, 68, 68, 0.5)', bgSoft: 'rgba(239, 68, 68, 0.1)' },
+    verde:     { color: '#10b981', hover: '#059669', glow: 'rgba(16, 185, 129, 0.5)', bgSoft: 'rgba(16, 185, 129, 0.1)' },
+    laranja:   { color: '#f97316', hover: '#ea580c', glow: 'rgba(249, 115, 22, 0.5)', bgSoft: 'rgba(249, 115, 22, 0.1)' },
+    rosa:      { color: '#FD0963', hover: '#D00750', glow: 'rgba(253, 9, 99, 0.6)',  bgSoft: 'rgba(253, 9, 99, 0.15)' },
+    roxo:      { color: '#8A00c4', hover: '#6d009c', glow: 'rgba(138, 0, 196, 0.6)',  bgSoft: 'rgba(138, 0, 196, 0.15)' }
 };
 
 // --- SISTEMA DE PROGRESSÃO ---
@@ -148,10 +112,7 @@ const RANKS = [
 // --- PLANO DE TREINO (A-F) ---
 const WORKOUT_PLAN = [
     {
-        id: 'day-a',
-        letter: 'A',
-        title: 'Peitoral & Abdômen',
-        focus: 'Foco em Peito',
+        id: 'day-a', letter: 'A', title: 'Peitoral & Abdômen', focus: 'Foco em Peito',
         exercises: [
             { id: 'a1', name: 'Supino Máquina', machine: 'Kikos Pro Concept II', sets: 4, reps: '8-10', rest: 45, youtube: 'UfYsjtao108' },
             { id: 'a2', name: 'Peck Deck', machine: 'Kikos Pro Station TTMS25', sets: 4, reps: '10-12', rest: 45, youtube: '9GB1fOEmAPI' },
@@ -162,10 +123,7 @@ const WORKOUT_PLAN = [
         ]
     },
     {
-        id: 'day-b',
-        letter: 'B',
-        title: 'Dorsais & Lombar',
-        focus: 'Foco em Costas',
+        id: 'day-b', letter: 'B', title: 'Dorsais & Lombar', focus: 'Foco em Costas',
         exercises: [
             { id: 'b1', name: 'Puxada Alta', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 60, youtube: 'UO70dS2tTyQ' },
             { id: 'b2', name: 'Remada Baixa', machine: 'Kikos Pro Station', sets: 4, reps: '10-12', rest: 45, youtube: 'MwyrOd_vwB8' },
@@ -176,10 +134,7 @@ const WORKOUT_PLAN = [
         ]
     },
     {
-        id: 'day-c',
-        letter: 'C',
-        title: 'Quadríceps & Pant.',
-        focus: 'Foco em Pernas',
+        id: 'day-c', letter: 'C', title: 'Quadríceps & Pant.', focus: 'Foco em Pernas',
         exercises: [
             { id: 'c1', name: 'Leg Press 45º', machine: 'Kikos Plate Load PR70', sets: 4, reps: '8-10', rest: 90, youtube: 'uJu3Yph10cI' },
             { id: 'c2', name: 'Hack Machine', machine: 'Kikos Pro Station TTPL79', sets: 4, reps: '8-10', rest: 90, youtube: 'O8gOJu9ph2E' },
@@ -190,10 +145,7 @@ const WORKOUT_PLAN = [
         ]
     },
     {
-        id: 'day-d',
-        letter: 'D',
-        title: 'Ombros & Trapézio',
-        focus: 'Foco em Ombros',
+        id: 'day-d', letter: 'D', title: 'Ombros & Trapézio', focus: 'Foco em Ombros',
         exercises: [
             { id: 'd1', name: 'Rotação Externa', machine: 'Polia / Crossover', sets: 3, reps: '12-15', rest: 45, youtube: 'z4sPEEIGmv4' },
             { id: 'd2', name: 'Elev. Lateral Cruzada', machine: 'Kikos Crossover', sets: 4, reps: '12-15', rest: 45, youtube: 'wbY6KTqZtEE' },
@@ -203,10 +155,7 @@ const WORKOUT_PLAN = [
         ]
     },
     {
-        id: 'day-e',
-        letter: 'E',
-        title: 'Bíceps & Tríceps',
-        focus: 'Foco em Braços',
+        id: 'day-e', letter: 'E', title: 'Bíceps & Tríceps', focus: 'Foco em Braços',
         exercises: [
             { id: 'e1', name: 'Tríceps Pulley', machine: 'Kikos Crossover', sets: 4, reps: '10-12', rest: 45, youtube: 'ga8dtLyTj1M' },
             { id: 'e2', name: 'Tríceps Press', machine: 'Kikos Press Machine', sets: 4, reps: '10-12', rest: 45, youtube: 'lFjhkFxKh48' },
@@ -217,10 +166,7 @@ const WORKOUT_PLAN = [
         ]
     },
     {
-        id: 'day-f',
-        letter: 'F',
-        title: 'Posterior & Glúteos',
-        focus: 'Foco em Glúteos',
+        id: 'day-f', letter: 'F', title: 'Posterior & Glúteos', focus: 'Foco em Glúteos',
         exercises: [
             { id: 'f1', name: 'Mesa Flexora', machine: 'Kikos Pro Station', sets: 4, reps: '10-12', rest: 45, youtube: 'Y1o8iPiBI7k' },
             { id: 'f2', name: 'Cadeira Flexora', machine: 'Kikos Pro Station', sets: 4, reps: '10-12', rest: 45, youtube: 'sZw0r26ADYA' },
@@ -250,9 +196,7 @@ const utils = {
         try {
             const str = date.toLocaleDateString('pt-BR', options);
             return str.charAt(0).toUpperCase() + str.slice(1);
-        } catch (e) {
-            return "Hoje";
-        }
+        } catch (e) { return "Hoje"; }
     },
 
     getWeekDays: () => {
@@ -274,19 +218,13 @@ const utils = {
         return d;
     },
 
-    getRank(xp) {
-        return [...RANKS].reverse().find(r => (xp || 0) >= r.minXP) || RANKS[0];
-    },
-    
-    getNextRank(xp) {
-        return RANKS.find(r => r.minXP > (xp || 0));
-    },
+    getRank(xp) { return [...RANKS].reverse().find(r => (xp || 0) >= r.minXP) || RANKS[0]; },
+    getNextRank(xp) { return RANKS.find(r => r.minXP > (xp || 0)); },
 
     getDelta(exId) {
         const curr = parseFloat(store.data.weights[exId]) || 0;
         const prev = parseFloat(store.data.prevWeights[exId]) || 0;
         if (prev === 0 || curr === 0) return null;
-
         const diff = curr - prev;
         const roundedDiff = Math.round(diff * 10) / 10;
         if (diff === 0) return `<span class="delta-tag delta-neu">▬</span>`;
@@ -298,7 +236,6 @@ const utils = {
         const data = [];
         const today = new Date();
         const history = store.data.workoutHistory || {};
-
         for (let i = 100; i >= 0; i--) {
             const d = new Date(today);
             d.setDate(today.getDate() - i);
@@ -308,19 +245,14 @@ const utils = {
         return data;
     },
 
-    calculate1RM(w, r) {
-        return Math.round(w * (1 + r / 30));
-    },
+    calculate1RM(w, r) { return Math.round(w * (1 + r / 30)); },
 
     calculatePlates(target) {
         let rem = (target - 20) / 2;
         if (rem <= 0) return [];
         const plates = [25, 20, 15, 10, 5, 2.5, 1.25], res = [];
         for (let p of plates) {
-            while (rem >= p) {
-                res.push(p);
-                rem -= p;
-            }
+            while (rem >= p) { res.push(p); rem -= p; }
         }
         return res;
     },
@@ -366,7 +298,6 @@ const utils = {
         return max;
     },
 
-    // --- BMI Helper ---
     calcBMI(weight, heightCm) {
         if (!weight || !heightCm) return 0;
         const h = heightCm / 100;
@@ -383,39 +314,24 @@ const utils = {
 
 // --- STORE (Namespace: pro_gym_app_v1) ---
 const store = {
-    // Estrutura padrão inicial
     data: {
-        completedSets: {},
-        weights: {},
-        rpe: {},
-        prevWeights: {},
-        notes: {},
-        cardioHistory: {},
-        workoutHistory: {},
+        completedSets: {}, weights: {}, rpe: {}, prevWeights: {},
+        notes: {}, cardioHistory: {}, workoutHistory: {},
         settings: { theme: 'azul', soundEnabled: true },
-        xp: 0,
-        visibleVideos: {},
-        visibleGraphs: {},
-        loadHistory: {},
-        measurements: [],
-        userHeight: null,
-        lastResetWeek: null
+        xp: 0, visibleVideos: {}, visibleGraphs: {}, loadHistory: {},
+        measurements: [], userHeight: null, lastResetWeek: null
     },
 
-    /**
-     * Carrega os dados do IndexedDB de forma assíncrona.
-     */
     async load() {
         try {
-            await db.init(); // Garante que o banco está aberto
+            await db.init();
             const savedData = await db.get('root');
 
             if (savedData && typeof savedData === 'object') {
-                // Merge dos dados salvos com a estrutura padrão
                 this.data = { ...this.data, ...savedData };
             }
 
-            // Validações de Integridade
+            // Validações
             if (!this.data.visibleVideos) this.data.visibleVideos = {};
             if (!this.data.visibleGraphs) this.data.visibleGraphs = {};
             if (!this.data.loadHistory) this.data.loadHistory = {};
@@ -423,7 +339,6 @@ const store = {
             if (!this.data.settings) this.data.settings = { theme: 'azul', soundEnabled: true };
             if (typeof this.data.xp !== 'number') this.data.xp = 0;
 
-            // Lógica de Reset Semanal
             const currentWeekSignature = utils.getCurrentWeekSignature();
             if (this.data.lastResetWeek !== currentWeekSignature) {
                 console.log("Nova semana detectada. Resetando status dos treinos...");
@@ -439,9 +354,6 @@ const store = {
         }
     },
 
-    /**
-     * Salva o estado atual no IndexedDB (Non-blocking UI).
-     */
     async save() {
         const { visibleVideos, visibleGraphs, ...dataToSave } = this.data;
         try {
@@ -506,22 +418,18 @@ function generateRadarChart(vol) {
         const angle = (Math.PI * 2 * i) / categories.length - Math.PI / 2;
         const x = centerX + radius * Math.cos(angle);
         const y = centerY + radius * Math.sin(angle);
-
         let textAnchor = 'middle';
         if (i === 1) textAnchor = 'start';
         if (i === 3) textAnchor = 'end';
-
         const lx = centerX + labelRadius * Math.cos(angle);
         const ly = centerY + labelRadius * Math.sin(angle);
-
         return `<line x1="${centerX}" y1="${centerY}" x2="${x}" y2="${y}" stroke="#3f3f46" stroke-width="0.5" />
                 <text x="${lx}" y="${ly}" fill="#a1a1aa" font-size="9" text-anchor="${textAnchor}" alignment-baseline="middle" font-family="monospace" font-weight="bold">${cat}</text>`;
     }).join('');
 
     return `
     <svg viewBox="0 0 ${svgSize} ${svgSize}" class="w-full h-full drop-shadow-2xl animate-fade-in" style="overflow: visible;">
-        ${grid}
-        ${axes}
+        ${grid} ${axes}
         <polygon points="${points}" fill="var(--theme-glow)" stroke="var(--theme-color)" stroke-width="2" fill-opacity="0.4" />
         <circle cx="${centerX}" cy="${centerY}" r="3" fill="var(--theme-color)" />
         ${categories.map((cat, i) => {
@@ -541,12 +449,8 @@ function generateEvolutionChart(history) {
             <span class="text-[10px] text-zinc-600 font-mono">Dados insuficientes para gráfico</span>
         </div>`;
     }
-
     const data = history.slice(-10);
-    const width = 300;
-    const height = 100;
-    const padding = 15;
-
+    const width = 300, height = 100, padding = 15;
     const loads = data.map(d => parseFloat(d.load));
     const minLoad = Math.min(...loads) * 0.9;
     const maxLoad = Math.max(...loads) * 1.1;
@@ -559,28 +463,21 @@ function generateEvolutionChart(history) {
     });
 
     const pathD = points.map((p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`)).join(' ');
-
-    const circles = points.map(p =>
-        `<circle cx="${p.x}" cy="${p.y}" r="3" fill="#18181b" stroke="var(--theme-color)" stroke-width="2" />`
-    ).join('');
-
+    const circles = points.map(p => `<circle cx="${p.x}" cy="${p.y}" r="3" fill="#18181b" stroke="var(--theme-color)" stroke-width="2" />`).join('');
     const minLabel = `<text x="5" y="${height - 5}" fill="#52525b" font-size="9" font-family="monospace">${Math.round(minLoad)}kg</text>`;
     const maxLabel = `<text x="5" y="10" fill="#52525b" font-size="9" font-family="monospace">${Math.round(maxLoad)}kg</text>`;
 
     return `
     <svg viewBox="0 0 ${width} ${height}" class="w-full h-full animate-fade-in bg-zinc-950 rounded-lg border border-zinc-900">
-        <line x1="${padding}" y1="${padding}" x2="${width-padding}" y2="${padding}" stroke="#27272a" stroke-width="0.5" stroke-dasharray="2" />
-        <line x1="${padding}" y1="${height-padding}" x2="${width-padding}" y2="${height-padding}" stroke="#27272a" stroke-width="0.5" stroke-dasharray="2" />
+        <line x1="${padding}" y1="${padding}" x2="${width - padding}" y2="${padding}" stroke="#27272a" stroke-width="0.5" stroke-dasharray="2" />
+        <line x1="${padding}" y1="${height - padding}" x2="${width - padding}" y2="${height - padding}" stroke="#27272a" stroke-width="0.5" stroke-dasharray="2" />
         <path d="${pathD}" fill="none" stroke="var(--theme-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-draw-line" />
-        ${circles}
-        ${minLabel}
-        ${maxLabel}
+        ${circles} ${minLabel} ${maxLabel}
     </svg>`;
 }
 
 // --- CONQUISTAS ---
 const BADGES = [
-    // FÁCEIS (1-15)
     { id: 'start_1', icon: 'play', title: 'Iniciação', desc: '1 treino concluído.', check: (s) => Object.keys(s.workoutHistory || {}).length >= 1 },
     { id: 'start_5', icon: 'footprints', title: 'Aquecimento', desc: '5 treinos concluídos.', check: (s) => Object.keys(s.workoutHistory || {}).length >= 5 },
     { id: 'start_10', icon: 'check-circle', title: 'Ritmo', desc: '10 treinos concluídos.', check: (s) => Object.keys(s.workoutHistory || {}).length >= 10 },
@@ -596,8 +493,6 @@ const BADGES = [
     { id: 'sound_user', icon: 'volume-2', title: 'Foco', desc: 'Desative o som.', check: (s) => s.settings.soundEnabled === false },
     { id: 'load_50', icon: 'disc', title: 'Peso Médio', desc: 'Carga de 50kg.', check: (s) => utils.checkMaxLoad(s) >= 50 },
     { id: 'freq_3', icon: 'calendar-check', title: 'Frequência 3x', desc: '3 treinos na semana.', check: (s) => utils.checkWeeklyConsistency(s) >= 3 },
-
-    // MÉDIAS (16-35)
     { id: 'start_25', icon: 'star', title: 'Prata', desc: '25 treinos.', check: (s) => Object.keys(s.workoutHistory || {}).length >= 25 },
     { id: 'start_50', icon: 'award', title: 'Ouro', desc: '50 treinos.', check: (s) => Object.keys(s.workoutHistory || {}).length >= 50 },
     { id: 'freq_4', icon: 'trending-up', title: 'Frequência 4x', desc: '4 treinos na semana.', check: (s) => utils.checkWeeklyConsistency(s) >= 4 },
@@ -618,8 +513,6 @@ const BADGES = [
     { id: 'load_120', icon: 'biceps-flexed', title: 'Monster', desc: 'Carga de 120kg.', check: (s) => utils.checkMaxLoad(s) >= 120 },
     { id: 'load_130', icon: 'hammer', title: 'Elite Str', desc: 'Carga de 130kg.', check: (s) => utils.checkMaxLoad(s) >= 130 },
     { id: 'start_75', icon: 'crown', title: 'Veterano', desc: '75 treinos.', check: (s) => Object.keys(s.workoutHistory || {}).length >= 75 },
-
-    // DIFÍCEIS / ELITE (36-50)
     { id: 'start_100', icon: 'trophy', title: 'Centenário', desc: '100 treinos.', check: (s) => Object.keys(s.workoutHistory || {}).length >= 100 },
     { id: 'start_200', icon: 'gem', title: 'Platina', desc: '200 treinos.', check: (s) => Object.keys(s.workoutHistory || {}).length >= 200 },
     { id: 'start_365', icon: 'sun', title: 'Lendário', desc: '365 treinos.', check: (s) => Object.keys(s.workoutHistory || {}).length >= 365 },
@@ -638,16 +531,36 @@ const BADGES = [
 ];
 
 // --- MODULES ---
-const safeIcons = () => {
-    if (typeof lucide !== 'undefined') lucide.createIcons();
-};
+const safeIcons = () => { if (typeof lucide !== 'undefined') lucide.createIcons(); };
 
+// --- TIMER VIA WORKER & NOTIFICAÇÕES (v1.6) ---
 const timer = {
-    interval: null,
-    timeLeft: 0,
+    worker: null,
     defaultTime: 45,
+    currentTime: 0,
     isActive: false,
     audioCtx: null,
+
+    init() {
+        if (!this.worker) {
+            this.worker = new Worker('js/timer.worker.js');
+            this.worker.onmessage = (e) => {
+                const { status, timeLeft } = e.data;
+                if (status === 'TICK') {
+                    this.currentTime = timeLeft;
+                    this.render();
+                } else if (status === 'COMPLETE') {
+                    this.currentTime = 0;
+                    this.finish();
+                }
+            };
+        }
+        // Solicita permissão para notificações
+        if ("Notification" in window && Notification.permission === "default") {
+            Notification.requestPermission();
+        }
+        this.initAudio();
+    },
 
     initAudio() {
         if (!this.audioCtx && (window.AudioContext || window.webkitAudioContext)) {
@@ -686,68 +599,89 @@ const timer = {
         } catch (e) { }
     },
 
+    sendNotification() {
+        if (document.hidden && "Notification" in window && Notification.permission === "granted") {
+            try {
+                navigator.serviceWorker.ready.then(registration => {
+                    registration.showNotification("Pro Gym App", {
+                        body: "Descanso Finalizado! Hora de treinar.",
+                        icon: "assets/img/icon.png",
+                        vibrate: [200, 100, 200],
+                        tag: "timer-finished"
+                    });
+                });
+            } catch (e) {
+                new Notification("Descanso Finalizado!", { body: "Hora da próxima série.", icon: "assets/img/icon.png" });
+            }
+        }
+    },
+
     start(s) {
-        this.initAudio();
-        this.timeLeft = s;
+        this.init();
         this.defaultTime = s;
+        this.currentTime = s;
         this.isActive = true;
         document.getElementById('timer-modal').classList.remove('hidden');
         this.updateMuteIcon();
         this.render();
-        this.run();
+        this.worker.postMessage({ command: 'START', value: s });
+        this.updateBtn(true);
         safeIcons();
     },
 
-    run() {
-        clearInterval(this.interval);
-        this.interval = setInterval(() => {
-            if (this.timeLeft > 0) {
-                this.timeLeft--;
-                this.render();
-            } else {
-                this.beep();
-                if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
-                this.timeLeft = 0;
-                this.pause();
-                this.render();
-            }
-        }, 1000);
-        this.updateBtn(true);
+    finish() {
+        this.isActive = false;
+        this.render();
+        this.updateBtn(false);
+        this.beep();
+        if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+        this.sendNotification();
     },
 
     pause() {
         this.isActive = false;
-        clearInterval(this.interval);
+        if (this.worker) this.worker.postMessage({ command: 'PAUSE' });
         this.updateBtn(false);
     },
 
     toggle() {
-        this.isActive ? this.pause() : this.run();
+        if (this.isActive) {
+            this.pause();
+        } else {
+            this.isActive = true;
+            if (this.currentTime > 0) {
+                 this.worker.postMessage({ command: 'START', value: this.currentTime });
+                 this.updateBtn(true);
+            } else {
+                this.reset();
+            }
+        }
     },
 
     reset() {
-        this.timeLeft = this.defaultTime;
         this.isActive = true;
-        this.run();
+        this.currentTime = this.defaultTime;
+        if (this.worker) this.worker.postMessage({ command: 'RESET', value: this.defaultTime });
+        this.updateBtn(true);
     },
 
     addTime(s) {
-        this.timeLeft += s;
-        this.render();
+        if (this.worker) this.worker.postMessage({ command: 'ADD', value: s });
     },
 
     close() {
         this.pause();
+        if (this.worker) this.worker.postMessage({ command: 'STOP' });
         document.getElementById('timer-modal').classList.add('hidden');
     },
 
     render() {
         const el = document.getElementById('timer-display');
         if (!el) return;
-        const m = Math.floor(this.timeLeft / 60);
-        const s = this.timeLeft % 60;
+        const m = Math.floor(this.currentTime / 60);
+        const s = this.currentTime % 60;
         el.innerText = `${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
-        el.classList.toggle('text-theme', this.timeLeft === 0);
+        el.classList.toggle('text-theme', this.currentTime === 0);
     },
 
     updateBtn(p) {
@@ -765,7 +699,6 @@ const measurementsManager = {
     openModal() {
         document.getElementById('measurements-modal').classList.remove('hidden');
         if (store.data.userHeight) document.getElementById('meas-height').value = store.data.userHeight;
-
         const last = store.data.measurements && store.data.measurements.length > 0 ? store.data.measurements[0] : null;
         if (last) {
             document.getElementById('meas-weight').value = last.weight || '';
@@ -776,9 +709,7 @@ const measurementsManager = {
         }
     },
     
-    closeModal() {
-        document.getElementById('measurements-modal').classList.add('hidden');
-    },
+    closeModal() { document.getElementById('measurements-modal').classList.add('hidden'); },
 
     save() {
         const height = parseFloat(document.getElementById('meas-height').value);
@@ -795,7 +726,7 @@ const measurementsManager = {
         if (!store.data.measurements) store.data.measurements = [];
 
         store.data.measurements.unshift(entry);
-        store.save(); // Save is async, but we can fire-and-forget for UI responsiveness here
+        store.save();
         this.closeModal();
         router.renderMeasurements(document.getElementById('main-content'));
     },
@@ -810,38 +741,28 @@ const measurementsManager = {
 
 const notesManager = {
     cid: null,
-    
     open(id) {
         this.cid = id;
         document.getElementById('note-input').value = (store.data.notes && store.data.notes[id]) || '';
         document.getElementById('notes-modal').classList.remove('hidden');
     },
-    
     save() {
         store.data.notes[this.cid] = document.getElementById('note-input').value;
         store.save();
         this.close();
         router.renderDetail(document.getElementById('main-content'), router.currentParams);
     },
-    
-    close() {
-        document.getElementById('notes-modal').classList.add('hidden');
-    }
+    close() { document.getElementById('notes-modal').classList.add('hidden'); }
 };
 
 const settings = {
-    open() {
-        document.getElementById('settings-modal').classList.remove('hidden');
-    },
-    
-    close() {
-        document.getElementById('settings-modal').classList.add('hidden');
-    },
+    open() { document.getElementById('settings-modal').classList.remove('hidden'); },
+    close() { document.getElementById('settings-modal').classList.add('hidden'); },
     
     async clearAll() {
         if (confirm('ATENÇÃO: Deseja apagar todo o histórico e começar do zero?')) {
             await db.clear();
-            localStorage.removeItem('pro_gym_app_v1'); // Limpeza legado
+            localStorage.removeItem('pro_gym_app_v1');
             location.reload();
         }
     },
@@ -863,12 +784,10 @@ const settings = {
             try {
                 const importedData = JSON.parse(e.target.result);
                 store.data = importedData;
-                await store.save(); // Persiste no IDB
+                await store.save();
                 alert('Dados importados com sucesso.');
                 location.reload();
-            } catch (e) {
-                alert('Arquivo de dados inválido.');
-            }
+            } catch (e) { alert('Arquivo de dados inválido.'); }
         };
         r.readAsText(f);
     }
@@ -880,7 +799,6 @@ const tools = {
         const r = parseFloat(document.getElementById('rm-reps').value) || 0;
         document.getElementById('rm-result').innerText = w > 0 && r > 0 ? `${utils.calculate1RM(w, r)} kg` : '-- kg';
     },
-    
     calcPlates() {
         const t = parseFloat(document.getElementById('plate-target').value) || 0;
         const plates = utils.calculatePlates(t);
@@ -894,7 +812,6 @@ const tools = {
 // --- ROUTER & VIEWS ---
 const router = {
     currentParams: null,
-    
     navigate(route, params = {}) {
         this.currentParams = params;
         const app = document.getElementById('main-content');
@@ -903,33 +820,19 @@ const router = {
         if (!app) return;
 
         app.innerHTML = '';
-
         if (route === 'home') {
-            header.classList.add('hidden');
-            nav.classList.remove('hidden');
-            this.renderHome(app);
+            header.classList.add('hidden'); nav.classList.remove('hidden'); this.renderHome(app);
         } else if (route === 'detail') {
-            header.classList.remove('hidden');
-            nav.classList.add('hidden');
-            this.renderDetail(app, params);
+            header.classList.remove('hidden'); nav.classList.add('hidden'); this.renderDetail(app, params);
         } else if (route === 'stats') {
-            header.classList.add('hidden');
-            nav.classList.remove('hidden');
-            this.renderStats(app);
+            header.classList.add('hidden'); nav.classList.remove('hidden'); this.renderStats(app);
         } else if (route === 'tools') {
-            header.classList.add('hidden');
-            nav.classList.remove('hidden');
-            this.renderTools(app);
+            header.classList.add('hidden'); nav.classList.remove('hidden'); this.renderTools(app);
         } else if (route === 'measurements') {
-            header.classList.remove('hidden');
-            nav.classList.add('hidden');
-            this.renderMeasurements(app);
+            header.classList.remove('hidden'); nav.classList.add('hidden'); this.renderMeasurements(app);
         } else if (route === 'achievements') {
-            header.classList.add('hidden');
-            nav.classList.remove('hidden');
-            this.renderAchievements(app);
+            header.classList.add('hidden'); nav.classList.remove('hidden'); this.renderAchievements(app);
         }
-
         safeIcons();
     },
 
@@ -1002,7 +905,6 @@ const router = {
             day.exercises.forEach(ex => { for (let i = 0; i < 4; i++) if (sets[`${ex.id}-${i}`]) done++; });
             const p = Math.round((done / (day.exercises.length * 4)) * 100);
             const isComplete = p === 100;
-
             return `
                         <button onclick="router.navigate('detail', {id: '${day.id}'})" class="w-full group relative overflow-hidden bg-zinc-900 border ${isComplete ? 'border-[var(--theme-color)]' : 'border-zinc-800'} p-5 rounded-2xl text-left transition-all active:scale-[0.99] hover:border-zinc-700 shadow-sm">
                             <div class="absolute left-0 top-0 bottom-0 bg-[var(--theme-color)] opacity-5 transition-all duration-700" style="width: ${p}%"></div>
@@ -1079,9 +981,7 @@ const router = {
                             
                             <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap">
                                 <div class="stepper-wrapper">
-                                    <button onclick="actions.adjustWeight('${ex.id}', -5)" class="stepper-btn">
-                                        <i data-lucide="minus" class="w-3 h-3"></i>
-                                    </button>
+                                    <button onclick="actions.adjustWeight('${ex.id}', -5)" class="stepper-btn"><i data-lucide="minus" class="w-3 h-3"></i></button>
                                     <input 
                                         id="weight-input-${ex.id}"
                                         type="number" 
@@ -1092,10 +992,9 @@ const router = {
                                         class="stepper-input" 
                                         placeholder="kg"
                                     >
-                                    <button onclick="actions.adjustWeight('${ex.id}', 5)" class="stepper-btn">
-                                        <i data-lucide="plus" class="w-3 h-3"></i>
-                                    </button>
+                                    <button onclick="actions.adjustWeight('${ex.id}', 5)" class="stepper-btn"><i data-lucide="plus" class="w-3 h-3"></i></button>
                                 </div>
+
                                 <select onchange="actions.setRPE('${ex.id}', this.value)" class="select-rpe w-14 flex-shrink-0">
                                     <option value="" disabled ${currentRPE === 'RPE' ? 'selected' : ''}>RPE</option>
                                     <option value="5" ${currentRPE == '5' ? 'selected' : ''}>5</option>
@@ -1120,8 +1019,7 @@ const router = {
                             </div>
                         </div>
                     </div>
-                    ${videoContent}
-                    ${graphContent}
+                    ${videoContent} ${graphContent}
                     <div class="grid grid-cols-4 gap-2 mt-4 pt-4 border-t border-zinc-800/50">
                         ${[0, 1, 2, 3].map(j => {
                 const done = sets[`${ex.id}-${j}`];
@@ -1245,7 +1143,6 @@ const router = {
         c.innerHTML = `
         <div class="px-5 animate-fade-in pt-6">
             <h1 class="text-2xl font-bold text-white mb-6">Utilitários</h1>
-            
             <button onclick="router.navigate('measurements')" class="w-full bg-zinc-900 border border-zinc-800 rounded-2xl p-6 mb-4 shadow-sm hover:border-[var(--theme-color)] transition-all group text-left relative overflow-hidden">
                 <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><i data-lucide="scale" class="w-24 h-24 text-[var(--theme-color)]"></i></div>
                 <div class="relative z-10">
@@ -1256,7 +1153,6 @@ const router = {
                     <p class="text-xs text-zinc-500 leading-relaxed pr-10">Registre peso, percentual de gordura e circunferências corporais. Acompanhe a evolução física real.</p>
                 </div>
             </button>
-
             <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 mb-4 shadow-sm">
                 <div class="flex items-center gap-3 mb-5">
                     <div class="p-2 bg-zinc-800 rounded-lg"><i data-lucide="calculator" class="w-5 h-5 text-[var(--theme-color)]"></i></div>
@@ -1272,15 +1168,12 @@ const router = {
                         <input type="number" id="rm-reps" class="w-full input-dark rounded-lg p-3 text-sm font-mono" placeholder="0">
                     </div>
                 </div>
-                <button onclick="tools.calc1RM()" class="w-full bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-3 rounded-lg text-xs mb-4 border border-zinc-700 transition-colors">
-                    CALCULAR CARGA MÁXIMA
-                </button>
+                <button onclick="tools.calc1RM()" class="w-full bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-3 rounded-lg text-xs mb-4 border border-zinc-700 transition-colors">CALCULAR CARGA MÁXIMA</button>
                 <div class="bg-zinc-950 rounded-xl p-4 text-center border border-zinc-800">
                     <span class="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Estimativa Teórica</span>
                     <div id="rm-result" class="text-3xl font-bold text-white font-mono mt-1 tracking-tighter">-- kg</div>
                 </div>
             </div>
-
             <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-sm">
                 <div class="flex items-center gap-3 mb-5">
                     <div class="p-2 bg-zinc-800 rounded-lg"><i data-lucide="disc" class="w-5 h-5 text-[var(--theme-color)]"></i></div>
@@ -1291,9 +1184,7 @@ const router = {
                     <input type="number" id="plate-target" class="w-full input-dark rounded-lg p-3 text-sm mb-2 font-mono" placeholder="Ex: 60">
                     <p class="text-[10px] text-zinc-600 pl-1"><i data-lucide="info" class="w-3 h-3 inline mr-1"></i>Considerando barra olímpica de 20kg</p>
                 </div>
-                <button onclick="tools.calcPlates()" class="w-full bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-3 rounded-lg text-xs mb-4 border border-zinc-700 transition-colors">
-                    CALCULAR ANILHAS (LADO)
-                </button>
+                <button onclick="tools.calcPlates()" class="w-full bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-3 rounded-lg text-xs mb-4 border border-zinc-700 transition-colors">CALCULAR ANILHAS (LADO)</button>
                 <div id="plate-result" class="flex flex-wrap gap-2 justify-center bg-zinc-950 p-4 rounded-xl border border-zinc-800 min-h-[60px] items-center">
                     <span class="text-zinc-600 text-xs font-mono">Aguardando dados...</span>
                 </div>
@@ -1321,7 +1212,6 @@ const router = {
 
         const listHtml = history.map((item, index) => {
             const prev = history[index + 1];
-
             const getDeltaVal = (curr, prevVal, suffix = '') => {
                 if (!prevVal) return '';
                 const d = curr - prevVal;
@@ -1329,12 +1219,10 @@ const router = {
                 const arrow = d > 0 ? '▲' : '▼';
                 return `<span class="${d > 0 ? 'text-emerald-500' : 'text-red-500'} ml-1 font-mono text-[9px]">${arrow} ${Math.abs(d).toFixed(1)}${suffix}</span>`;
             };
-
             return `
             <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 mb-3 relative group">
                 <button onclick="measurementsManager.delete(${index})" class="absolute top-4 right-4 text-zinc-700 hover:text-red-500 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                 <div class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mb-3">${new Date(item.date).toLocaleDateString()}</div>
-                
                 <div class="grid grid-cols-2 gap-y-3 gap-x-4">
                     <div>
                         <span class="text-zinc-500 text-[10px] block">Peso</span>
@@ -1344,7 +1232,6 @@ const router = {
                         <span class="text-zinc-500 text-[10px] block">% Gordura</span>
                         <div class="text-white font-mono font-bold text-sm">${item.fat}% ${prev ? getDeltaVal(item.fat, prev.fat) : ''}</div>
                     </div>
-                    
                     ${item.waist ? `
                     <div class="col-span-2 border-t border-zinc-800/50 pt-2 mt-1 grid grid-cols-3 gap-2">
                         <div><span class="text-[9px] text-zinc-600 block">Braço</span><span class="text-xs text-zinc-300 font-mono">${item.arm}</span></div>
@@ -1369,12 +1256,10 @@ const router = {
                     <span class="text-[9px] font-bold uppercase tracking-wide mt-1 px-2 py-0.5 rounded-full bg-zinc-950 border border-zinc-800 ${bmiStatus.class} relative z-10">${bmiStatus.label}</span>
                 </div>
             </div>
-
             <div class="flex items-center justify-between mb-4 px-1">
                 <h3 class="text-xs font-bold text-zinc-500 uppercase tracking-widest">Histórico de Medidas</h3>
                 <span class="text-[10px] text-zinc-600 font-mono">${history.length} registros</span>
             </div>
-
             <div class="space-y-1">
                 ${history.length > 0 ? listHtml : '<div class="text-center py-10 text-zinc-600 text-xs">Nenhum registro encontrado.</div>'}
             </div>
@@ -1386,13 +1271,11 @@ const router = {
                     <h3 class="text-lg font-bold text-white">Nova Medição</h3>
                     <button onclick="measurementsManager.closeModal()" class="p-2 bg-zinc-800 rounded-full text-zinc-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
                 </div>
-                
                 <div class="space-y-4">
                     <div>
                         <label class="text-[10px] text-zinc-500 font-bold uppercase block mb-1.5 ml-1">Altura (cm) <span class="text-zinc-700 normal-case font-normal">- Apenas uma vez</span></label>
                         <input type="number" id="meas-height" class="w-full input-dark rounded-xl p-3 text-sm font-mono" placeholder="Ex: 175">
                     </div>
-                    
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="text-[10px] text-[var(--theme-color)] font-bold uppercase block mb-1.5 ml-1">Peso (kg)</label>
@@ -1403,10 +1286,8 @@ const router = {
                             <input type="number" id="meas-fat" class="w-full input-dark rounded-xl p-3 text-lg font-bold text-white font-mono" placeholder="0.0">
                         </div>
                     </div>
-
                     <div class="h-px bg-zinc-800 my-2"></div>
                     <p class="text-[10px] text-zinc-500 font-bold uppercase mb-2 ml-1">Circunferências (cm)</p>
-
                     <div class="grid grid-cols-3 gap-3">
                         <div>
                             <label class="text-[9px] text-zinc-600 block mb-1">Braço</label>
@@ -1421,14 +1302,10 @@ const router = {
                             <input type="number" id="meas-thigh" class="w-full input-dark rounded-lg p-2 text-sm font-mono text-center" placeholder="0">
                         </div>
                     </div>
-
-                    <button onclick="measurementsManager.save()" class="w-full mt-6 bg-[var(--theme-color)] text-white font-bold py-4 rounded-xl shadow-lg shadow-[var(--theme-glow)] transition-transform active:scale-[0.98]">
-                        SALVAR DADOS
-                    </button>
+                    <button onclick="measurementsManager.save()" class="w-full mt-6 bg-[var(--theme-color)] text-white font-bold py-4 rounded-xl shadow-lg shadow-[var(--theme-glow)] transition-transform active:scale-[0.98]">SALVAR DADOS</button>
                 </div>
             </div>
-        </div>
-        `;
+        </div>`;
         safeIcons();
     }
 };
@@ -1451,8 +1328,7 @@ const actions = {
         } else {
             store.data.xp = Math.max(0, (store.data.xp || 0) - 1);
         }
-
-        store.save(); // Persistência em background
+        store.save();
         const newParams = { ...router.currentParams, animSet: animId };
         router.renderDetail(document.getElementById('main-content'), newParams);
     },
@@ -1465,22 +1341,15 @@ const actions = {
 
         if (!store.data.loadHistory) store.data.loadHistory = {};
         if (!store.data.loadHistory[ex]) store.data.loadHistory[ex] = [];
-
         const today = utils.getTodayDate();
         const history = store.data.loadHistory[ex];
         const existingEntry = history.find(h => h.date === today);
 
-        if (existingEntry) {
-            existingEntry.load = v;
-        } else {
-            history.push({ date: today, load: v });
-        }
-
+        if (existingEntry) { existingEntry.load = v; } else { history.push({ date: today, load: v }); }
         store.save();
         router.renderDetail(document.getElementById('main-content'), router.currentParams);
     },
     
-    // NOVO MÉTODO STEPPER
     adjustWeight(exId, delta) {
         const inputEl = document.getElementById(`weight-input-${exId}`);
         let currentVal = parseFloat(store.data.weights[exId]) || 0;
@@ -1527,11 +1396,7 @@ const actions = {
         if (!confirm('Reiniciar esta sessão? (Seu XP será mantido)')) return;
         const w = WORKOUT_PLAN.find(x => x.id === id);
         if (w && store.data.completedSets) {
-            w.exercises.forEach(ex => {
-                for (let i = 0; i < 4; i++) {
-                    delete store.data.completedSets[`${ex.id}-${i}`];
-                }
-            });
+            w.exercises.forEach(ex => { for (let i = 0; i < 4; i++) { delete store.data.completedSets[`${ex.id}-${i}`]; } });
             store.save();
             router.renderDetail(document.getElementById('main-content'), router.currentParams);
         }
@@ -1558,38 +1423,24 @@ function celebrateCompletion() {
         const delay = Math.random() * 0.5 + 's';
         const duration = Math.random() * 2 + 1 + 's';
         const color = ['#3b82f6', '#ef4444', '#10b981', '#f97316', '#FD0963', '#8A00c4'][Math.floor(Math.random() * 6)];
-
-        particle.style.cssText = `
-            position: fixed;
-            bottom: -20px;
-            left: ${left};
-            width: ${size};
-            height: ${size};
-            background-color: ${color};
-            border-radius: 50%;
-            z-index: 9999;
-            pointer-events: none;
-            opacity: 0;
-            box-shadow: 0 0 10px ${color};
-            animation: riseAndFade ${duration} ease-out ${delay} forwards;
-        `;
+        particle.style.cssText = `position: fixed; bottom: -20px; left: ${left}; width: ${size}; height: ${size}; background-color: ${color}; border-radius: 50%; z-index: 9999; pointer-events: none; opacity: 0; box-shadow: 0 0 10px ${color}; animation: riseAndFade ${duration} ease-out ${delay} forwards;`;
         document.body.appendChild(particle);
         setTimeout(() => particle.remove(), 3000);
     }
 }
 
 function initApp() {
-    // Inicialização visual e de eventos
+    const splash = document.getElementById('splash-screen');
+    setTimeout(() => {
+        if (splash) {
+            splash.classList.add('splash-hidden');
+            setTimeout(() => { splash.style.display = 'none'; }, 500);
+        }
+    }, 1500);
     if (!document.getElementById('confetti-style')) {
         const style = document.createElement('style');
         style.id = 'confetti-style';
-        style.textContent = `
-            @keyframes riseAndFade {
-                0% { transform: translateY(0) scale(1); opacity: 1; }
-                50% { opacity: 1; }
-                100% { transform: translateY(-100vh) scale(0.5); opacity: 0; }
-            }
-        `;
+        style.textContent = `@keyframes riseAndFade { 0% { transform: translateY(0) scale(1); opacity: 1; } 50% { opacity: 1; } 100% { transform: translateY(-100vh) scale(0.5); opacity: 0; } }`;
         document.head.appendChild(style);
     }
 }
@@ -1602,19 +1453,14 @@ if ('serviceWorker' in navigator) {
 
 document.addEventListener('DOMContentLoaded', async () => {
     const splash = document.getElementById('splash-screen');
-    
     try {
-        // Carregamento Assíncrono dos Dados (Bloqueia UI inicial para evitar glitch)
         await store.load();
-        
         initApp();
         router.navigate('home');
-        
     } catch (error) {
         console.error("Critical: Failed to load application data.", error);
         alert("Erro ao carregar dados do sistema. Tente recarregar.");
     } finally {
-        // Remove Splash Screen
         setTimeout(() => {
             if (splash) {
                 splash.classList.add('splash-hidden');

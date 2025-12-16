@@ -1,9 +1,10 @@
-const CACHE_NAME = 'pro-gym-v1.5-idb'; // NOME ATUALIZADO PARA FORÇAR REFRESH
+const CACHE_NAME = 'pro-gym-v1.6-idb'; // NOME ATUALIZADO PARA FORÇAR REFRESH
 const ASSETS = [
     './',
     './index.html',
     './css/style.css',
     './js/script.js',
+    './js/timer.worker.js',
     './assets/img/icon.png',
     './assets/img/logo.png',
     'https://cdn.tailwindcss.com',
