@@ -1,7 +1,7 @@
 /**
- * PRO GYM APP V1.3 (EVOLUTION CHARTS)
+ * PRO GYM APP V1.4.1 (FIX: BADGES RESTORED)
  * Copyright (c) 2025 Fernando Rodrigues. Todos os direitos reservados.
- * Descrição: Sistema profissional de gestão de treinos com RPE, Radar Chart e Gráficos de Evolução.
+ * Descrição: Sistema profissional com Gestão de Treinos, Gráficos de Evolução, Biometria e Conquistas.
  */
 
 // --- TEMAS PROFISSIONAIS ---
@@ -191,6 +191,20 @@ const utils = {
             });
         }
         return max;
+    },
+
+    // --- BMI Helper ---
+    calcBMI(weight, heightCm) {
+        if(!weight || !heightCm) return 0;
+        const h = heightCm / 100;
+        return (weight / (h * h)).toFixed(1);
+    },
+    
+    getBMIStatus(bmi) {
+        if(bmi < 18.5) return { label: 'Abaixo', class: 'bmi-under' };
+        if(bmi < 25) return { label: 'Normal', class: 'bmi-normal' };
+        if(bmi < 30) return { label: 'Sobrepeso', class: 'bmi-over' };
+        return { label: 'Obesidade', class: 'bmi-obese' };
     }
 };
 
@@ -202,8 +216,10 @@ const store = {
         settings: { theme: 'azul', soundEnabled: true }, 
         xp: 0, 
         visibleVideos: {},
-        visibleGraphs: {}, // NOVO: Controle de visibilidade dos gráficos
-        loadHistory: {},   // NOVO: Histórico de cargas [{date, load}]
+        visibleGraphs: {}, 
+        loadHistory: {},
+        measurements: [], // NOVO: Array de biometria
+        userHeight: null, // NOVO: Altura do usuário
         lastResetWeek: null 
     },
     load() {
@@ -217,8 +233,9 @@ const store = {
                 
                 // Validações de Integridade
                 if (!this.data.visibleVideos) this.data.visibleVideos = {};
-                if (!this.data.visibleGraphs) this.data.visibleGraphs = {}; // Init NOVO
-                if (!this.data.loadHistory) this.data.loadHistory = {};     // Init NOVO
+                if (!this.data.visibleGraphs) this.data.visibleGraphs = {};
+                if (!this.data.loadHistory) this.data.loadHistory = {};
+                if (!this.data.measurements) this.data.measurements = []; // Init NOVO
                 if (!this.data.settings) this.data.settings = { theme: 'azul', soundEnabled: true };
                 if (typeof this.data.xp !== 'number') this.data.xp = 0;
                 
@@ -238,7 +255,7 @@ const store = {
         themeManager.apply(this.data.settings.theme || 'azul');
     },
     save() {
-        const { visibleVideos, visibleGraphs, ...dataToSave } = this.data; // Não persiste estado UI temporário
+        const { visibleVideos, visibleGraphs, ...dataToSave } = this.data; 
         localStorage.setItem('pro_gym_app_v1', JSON.stringify(dataToSave));
     }
 };
@@ -265,8 +282,6 @@ const themeManager = {
 };
 
 // --- CHART GENERATORS ---
-
-// 1. Radar Chart (Equilíbrio Muscular)
 function generateRadarChart(vol) {
     const categories = ['Peitoral', 'Costas', 'Pernas', 'Ombros', 'Braços'];
     const maxVal = 24; 
@@ -328,65 +343,50 @@ function generateRadarChart(vol) {
     </svg>`;
 }
 
-// 2. Evolution Chart (Evolução de Carga - NOVO)
 function generateEvolutionChart(history) {
-    // Se não houver histórico suficiente, retorna mensagem
     if (!history || history.length < 2) {
         return `<div class="h-32 flex items-center justify-center border border-dashed border-zinc-800 rounded-lg bg-zinc-900/50">
             <span class="text-[10px] text-zinc-600 font-mono">Dados insuficientes para gráfico</span>
         </div>`;
     }
 
-    // Pega os últimos 10 pontos para não poluir
     const data = history.slice(-10);
     const width = 300;
     const height = 100;
     const padding = 15;
 
-    // Achar min/max para normalização
     const loads = data.map(d => parseFloat(d.load));
-    const minLoad = Math.min(...loads) * 0.9; // Margem inferior
-    const maxLoad = Math.max(...loads) * 1.1; // Margem superior
+    const minLoad = Math.min(...loads) * 0.9; 
+    const maxLoad = Math.max(...loads) * 1.1; 
     const range = maxLoad - minLoad;
 
-    // Mapear pontos (X, Y)
     const points = data.map((d, i) => {
         const x = padding + (i / (data.length - 1)) * (width - (padding * 2));
         const y = height - padding - ((d.load - minLoad) / range) * (height - (padding * 2));
         return { x, y, val: d.load, date: d.date };
     });
 
-    // Criar caminho SVG (Path)
     const pathD = points.map((p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`)).join(' ');
 
-    // Criar Pontos (Circles)
     const circles = points.map(p => 
         `<circle cx="${p.x}" cy="${p.y}" r="3" fill="#18181b" stroke="var(--theme-color)" stroke-width="2" />`
     ).join('');
 
-    // Labels Min/Max
     const minLabel = `<text x="5" y="${height - 5}" fill="#52525b" font-size="9" font-family="monospace">${Math.round(minLoad)}kg</text>`;
     const maxLabel = `<text x="5" y="10" fill="#52525b" font-size="9" font-family="monospace">${Math.round(maxLoad)}kg</text>`;
 
     return `
     <svg viewBox="0 0 ${width} ${height}" class="w-full h-full animate-fade-in bg-zinc-950 rounded-lg border border-zinc-900">
-        <!-- Linhas de Grade -->
         <line x1="${padding}" y1="${padding}" x2="${width-padding}" y2="${padding}" stroke="#27272a" stroke-width="0.5" stroke-dasharray="2" />
         <line x1="${padding}" y1="${height-padding}" x2="${width-padding}" y2="${height-padding}" stroke="#27272a" stroke-width="0.5" stroke-dasharray="2" />
-        
-        <!-- Caminho da Linha -->
         <path d="${pathD}" fill="none" stroke="var(--theme-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-draw-line" />
-        
-        <!-- Pontos -->
         ${circles}
-        
-        <!-- Labels -->
         ${minLabel}
         ${maxLabel}
     </svg>`;
 }
 
-// --- CONQUISTAS ---
+// --- CONQUISTAS (RESTAURADO) ---
 const BADGES = [
     // FÁCEIS (1-15)
     { id: 'start_1', icon: 'play', title: 'Iniciação', desc: '1 treino concluído.', check: (s) => Object.keys(s.workoutHistory||{}).length >= 1 },
@@ -504,6 +504,53 @@ const timer = {
     }
 };
 
+const measurementsManager = {
+    openModal() {
+        document.getElementById('measurements-modal').classList.remove('hidden');
+        // Pre-fill height
+        if(store.data.userHeight) document.getElementById('meas-height').value = store.data.userHeight;
+        
+        // Pre-fill fields with last values for convenience
+        const last = store.data.measurements && store.data.measurements.length > 0 ? store.data.measurements[0] : null;
+        if(last) {
+            document.getElementById('meas-weight').value = last.weight || '';
+            document.getElementById('meas-fat').value = last.fat || '';
+            document.getElementById('meas-arm').value = last.arm || '';
+            document.getElementById('meas-waist').value = last.waist || '';
+            document.getElementById('meas-thigh').value = last.thigh || '';
+        }
+    },
+    closeModal() {
+        document.getElementById('measurements-modal').classList.add('hidden');
+    },
+    save() {
+        const height = parseFloat(document.getElementById('meas-height').value);
+        const entry = {
+            date: utils.getTodayDate(),
+            weight: parseFloat(document.getElementById('meas-weight').value) || 0,
+            fat: parseFloat(document.getElementById('meas-fat').value) || 0,
+            arm: parseFloat(document.getElementById('meas-arm').value) || 0,
+            waist: parseFloat(document.getElementById('meas-waist').value) || 0,
+            thigh: parseFloat(document.getElementById('meas-thigh').value) || 0
+        };
+
+        if(height) store.data.userHeight = height;
+        if(!store.data.measurements) store.data.measurements = [];
+        
+        // Unshift to add to top
+        store.data.measurements.unshift(entry);
+        store.save();
+        this.closeModal();
+        router.renderMeasurements(document.getElementById('main-content'));
+    },
+    delete(index) {
+        if(!confirm('Excluir este registro?')) return;
+        store.data.measurements.splice(index, 1);
+        store.save();
+        router.renderMeasurements(document.getElementById('main-content'));
+    }
+};
+
 const notesManager = {
     cid: null,
     open(id) { this.cid = id; document.getElementById('note-input').value = (store.data.notes && store.data.notes[id]) || ''; document.getElementById('notes-modal').classList.remove('hidden'); },
@@ -558,6 +605,7 @@ const router = {
         else if (route === 'detail') { header.classList.remove('hidden'); nav.classList.add('hidden'); this.renderDetail(app, params); }
         else if (route === 'stats') { header.classList.add('hidden'); nav.classList.remove('hidden'); this.renderStats(app); }
         else if (route === 'tools') { header.classList.add('hidden'); nav.classList.remove('hidden'); this.renderTools(app); }
+        else if (route === 'measurements') { header.classList.remove('hidden'); nav.classList.add('hidden'); this.renderMeasurements(app); }
         else if (route === 'achievements') { header.classList.add('hidden'); nav.classList.remove('hidden'); this.renderAchievements(app); }
         
         safeIcons();
@@ -581,19 +629,16 @@ const router = {
 
         c.innerHTML = `
             <div class="px-5 animate-fade-in pb-10">
-                <!-- Icon Main no Topo com Neon -->
                 <div class="flex justify-center mb-6 pt-2 relative">
                     <div class="absolute w-16 h-16 bg-[var(--theme-color)] rounded-full blur-[20px] opacity-40 animate-pulse"></div>
                     <img src="assets/img/icon-main.png" class="w-16 h-16 drop-shadow-lg animate-pulse-hover relative z-10" alt="Pro Gym Icon" onerror="this.style.display='none'"/>
                 </div>
 
-                <!-- Header Info -->
                 <div class="mb-6 mt-2">
                     <h2 class="text-2xl font-bold text-white leading-tight tracking-tight">${utils.getFormattedDate()}</h2>
                     <p class="text-xs text-zinc-500 font-medium uppercase tracking-widest mt-1">Painel de Controle</p>
                 </div>
 
-                <!-- Rank Card -->
                 <div class="bg-zinc-900/50 border border-zinc-800 p-5 rounded-2xl mb-6 backdrop-blur-md shadow-lg">
                     <div class="flex justify-between items-end mb-3">
                         <div>
@@ -611,7 +656,6 @@ const router = {
                     </div>
                 </div>
 
-                <!-- Frequency -->
                 <div class="mb-6">
                     <div class="flex justify-between items-center mb-3 px-1">
                         <h3 class="text-xs font-bold text-zinc-500 uppercase tracking-widest">Frequência Semanal</h3>
@@ -621,7 +665,6 @@ const router = {
                     </div>
                 </div>
                 
-                <!-- Supplements Reminder -->
                 <div class="bg-gradient-to-r from-orange-900/10 to-transparent border border-orange-500/20 p-4 rounded-xl flex items-center gap-4 mb-8">
                     <div class="bg-orange-500/10 p-2 rounded-lg border border-orange-500/20"><i data-lucide="zap" class="w-5 h-5 text-orange-500"></i></div>
                     <div>
@@ -685,19 +728,13 @@ const router = {
         c.innerHTML = `<div class="px-4 space-y-4 animate-slide-up pb-10">
             ${w.exercises.map((ex, i) => {
                 const hasNote = (store.data.notes && store.data.notes[ex.id]||'').trim().length > 0;
-                
-                // Estados de visibilidade
                 const isVideoVisible = store.data.visibleVideos && store.data.visibleVideos[ex.id];
                 const isGraphVisible = store.data.visibleGraphs && store.data.visibleGraphs[ex.id];
-                
-                // Classes de botão
                 const vidBtnClass = isVideoVisible ? 'text-[var(--theme-color)] border-[var(--theme-color)] bg-[var(--theme-bg-soft)]' : 'text-zinc-500 border-zinc-700 hover:text-white hover:border-zinc-500';
                 const graphBtnClass = isGraphVisible ? 'text-[var(--theme-color)] border-[var(--theme-color)] bg-[var(--theme-bg-soft)]' : 'text-zinc-500 border-zinc-700 hover:text-white hover:border-zinc-500';
-
                 const delta = utils.getDelta(ex.id) || ''; 
                 const currentRPE = (store.data.rpe && store.data.rpe[ex.id]) || 'RPE';
 
-                // Conteúdos Expansíveis
                 const videoContent = isVideoVisible ? `
                     <div class="mt-4 w-full rounded-lg overflow-hidden bg-black aspect-video border border-zinc-800 animate-fade-in relative shadow-lg">
                          <iframe class="w-full h-full" src="https://www.youtube.com/embed/${ex.youtube}?rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -734,13 +771,8 @@ const router = {
                         
                         <div class="flex flex-col gap-2 items-end">
                             <div class="flex gap-2 mb-1">
-                                <!-- Botão Notas -->
                                 <button onclick="notesManager.open('${ex.id}')" class="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center ${hasNote?'text-[var(--theme-color)] border-[var(--theme-color)]':'text-zinc-500'} transition-all hover:bg-zinc-800"><i data-lucide="file-text" class="w-4 h-4"></i>${hasNote?'<span class="has-note-indicator"></span>':''}</button>
-                                
-                                <!-- Botão Vídeo -->
                                 <button onclick="actions.toggleVideo('${ex.id}')" class="w-8 h-8 rounded-lg bg-zinc-900 border flex items-center justify-center transition-all ${vidBtnClass}"><i data-lucide="play" class="w-4 h-4 fill-current"></i></button>
-                                
-                                <!-- Botão Gráfico (NOVO) -->
                                 <button onclick="actions.toggleGraph('${ex.id}')" class="w-8 h-8 rounded-lg bg-zinc-900 border flex items-center justify-center transition-all ${graphBtnClass}"><i data-lucide="trending-up" class="w-4 h-4"></i></button>
                             </div>
                             <div class="flex gap-2">
@@ -749,10 +781,8 @@ const router = {
                             </div>
                         </div>
                     </div>
-                    
                     ${videoContent}
                     ${graphContent}
-                    
                     <div class="grid grid-cols-4 gap-2 mt-4 pt-4 border-t border-zinc-800/50">
                         ${[0,1,2,3].map(j => {
                             const done = sets[`${ex.id}-${j}`];
@@ -805,8 +835,6 @@ const router = {
         c.innerHTML = `
         <div class="px-5 animate-fade-in pt-6">
             <h1 class="text-2xl font-bold text-white mb-6">Estatísticas</h1>
-            
-            <!-- INOVAÇÃO: RADAR CHART (SVG PURO) -->
             <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 mb-4 shadow-sm relative overflow-hidden">
                 <div class="flex justify-between items-start mb-2 relative z-10">
                     <div>
@@ -815,24 +843,13 @@ const router = {
                     </div>
                     <div class="p-1.5 bg-zinc-800 rounded text-[var(--theme-color)]"><i data-lucide="radar" class="w-4 h-4"></i></div>
                 </div>
-                
-                <div class="h-64 w-full flex items-center justify-center -my-4">
-                    ${radarSvg}
-                </div>
-                
-                <div class="text-center">
-                    <p class="text-[9px] text-zinc-600 mt-1">*O gráfico reinicia semanalmente.</p>
-                </div>
+                <div class="h-64 w-full flex items-center justify-center -my-4">${radarSvg}</div>
+                <div class="text-center"><p class="text-[9px] text-zinc-600 mt-1">*O gráfico reinicia semanalmente.</p></div>
             </div>
-
-            <!-- Heatmap Clássico -->
             <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 mb-4 shadow-sm">
                 <h3 class="text-xs font-bold text-zinc-500 uppercase mb-4 tracking-widest flex items-center gap-2"><i data-lucide="calendar" class="w-3 h-3"></i> Histórico (100 dias)</h3>
-                <div class="heatmap-grid pb-2">
-                    ${cells}
-                </div>
+                <div class="heatmap-grid pb-2">${cells}</div>
             </div>
-
             <div class="grid grid-cols-2 gap-4">
                 <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
                     <span class="text-xs text-zinc-500 block mb-1 font-bold uppercase">Treinos Concluídos</span>
@@ -852,7 +869,6 @@ const router = {
         const total = BADGES.length;
         const unlockedCount = BADGES.filter(b => b.check(store.data)).length;
         const percent = Math.round((unlockedCount / total) * 100);
-
         const badgesHtml = BADGES.map(b => {
             const unlocked = b.check(store.data);
             return `
@@ -870,8 +886,6 @@ const router = {
         <div class="px-5 animate-fade-in pt-6">
             <div class="mb-6">
                 <h1 class="text-2xl font-bold text-white mb-2">Conquistas</h1>
-                
-                <!-- Barra de Progresso no Topo -->
                 <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 shadow-sm">
                     <div class="flex justify-between items-end mb-2">
                         <span class="text-xs font-bold text-zinc-500 uppercase tracking-widest">Progresso Total</span>
@@ -882,10 +896,7 @@ const router = {
                     </div>
                 </div>
             </div>
-
-            <div class="grid grid-cols-2 gap-3">
-                ${badgesHtml}
-            </div>
+            <div class="grid grid-cols-2 gap-3">${badgesHtml}</div>
             <div class="h-10"></div>
         </div>`;
         safeIcons();
@@ -896,6 +907,17 @@ const router = {
         <div class="px-5 animate-fade-in pt-6">
             <h1 class="text-2xl font-bold text-white mb-6">Utilitários</h1>
             
+            <button onclick="router.navigate('measurements')" class="w-full bg-zinc-900 border border-zinc-800 rounded-2xl p-6 mb-4 shadow-sm hover:border-[var(--theme-color)] transition-all group text-left relative overflow-hidden">
+                <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><i data-lucide="scale" class="w-24 h-24 text-[var(--theme-color)]"></i></div>
+                <div class="relative z-10">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="p-2 bg-zinc-800 rounded-lg group-hover:bg-[var(--theme-color)] transition-colors"><i data-lucide="activity" class="w-6 h-6 text-[var(--theme-color)] group-hover:text-white"></i></div>
+                        <h3 class="font-bold text-white text-lg">Biometria & Medidas</h3>
+                    </div>
+                    <p class="text-xs text-zinc-500 leading-relaxed pr-10">Registre peso, percentual de gordura e circunferências corporais. Acompanhe a evolução física real.</p>
+                </div>
+            </button>
+
             <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 mb-4 shadow-sm">
                 <div class="flex items-center gap-3 mb-5">
                     <div class="p-2 bg-zinc-800 rounded-lg"><i data-lucide="calculator" class="w-5 h-5 text-[var(--theme-color)]"></i></div>
@@ -940,6 +962,135 @@ const router = {
             <div class="h-10"></div>
         </div>`;
         safeIcons();
+    },
+
+    renderMeasurements(c) {
+        document.getElementById('main-header').innerHTML = `
+            <div class="flex items-center gap-4 w-full">
+                <button onclick="router.navigate('tools')" class="p-2 -ml-2 text-zinc-400 hover:text-white transition-colors rounded-full hover:bg-zinc-800"><i data-lucide="arrow-left" class="w-6 h-6"></i></button>
+                <div class="flex-1">
+                    <h2 class="text-white font-bold text-sm tracking-wide uppercase">Biometria</h2>
+                    <span class="text-[10px] text-zinc-500 font-mono">Controle Corporal</span>
+                </div>
+                <button onclick="measurementsManager.openModal()" class="p-2 -mr-2 bg-[var(--theme-color)] text-white hover:brightness-110 transition-colors rounded-full shadow-[0_0_15px_var(--theme-glow)]"><i data-lucide="plus" class="w-5 h-5"></i></button>
+            </div>`;
+
+        const history = store.data.measurements || [];
+        const current = history[0] || {};
+        const bmi = utils.calcBMI(current.weight, store.data.userHeight);
+        const bmiStatus = utils.getBMIStatus(bmi);
+
+        const listHtml = history.map((item, index) => {
+            const prev = history[index + 1];
+            
+            const getDeltaVal = (curr, prevVal, suffix = '') => {
+                if(!prevVal) return '';
+                const d = curr - prevVal;
+                if(d === 0) return '<span class="text-zinc-600 ml-1 font-mono text-[9px]">=</span>';
+                const arrow = d > 0 ? '▲' : '▼';
+                return `<span class="${d > 0 ? 'text-emerald-500' : 'text-red-500'} ml-1 font-mono text-[9px]">${arrow} ${Math.abs(d).toFixed(1)}${suffix}</span>`;
+            };
+
+            return `
+            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 mb-3 relative group">
+                <button onclick="measurementsManager.delete(${index})" class="absolute top-4 right-4 text-zinc-700 hover:text-red-500 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                <div class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mb-3">${new Date(item.date).toLocaleDateString()}</div>
+                
+                <div class="grid grid-cols-2 gap-y-3 gap-x-4">
+                    <div>
+                        <span class="text-zinc-500 text-[10px] block">Peso</span>
+                        <div class="text-white font-mono font-bold text-sm">${item.weight}kg ${prev ? getDeltaVal(item.weight, prev.weight) : ''}</div>
+                    </div>
+                    <div>
+                        <span class="text-zinc-500 text-[10px] block">% Gordura</span>
+                        <div class="text-white font-mono font-bold text-sm">${item.fat}% ${prev ? getDeltaVal(item.fat, prev.fat) : ''}</div>
+                    </div>
+                    
+                    ${item.waist ? `
+                    <div class="col-span-2 border-t border-zinc-800/50 pt-2 mt-1 grid grid-cols-3 gap-2">
+                        <div><span class="text-[9px] text-zinc-600 block">Braço</span><span class="text-xs text-zinc-300 font-mono">${item.arm}</span></div>
+                        <div><span class="text-[9px] text-zinc-600 block">Cintura</span><span class="text-xs text-zinc-300 font-mono">${item.waist}</span></div>
+                        <div><span class="text-[9px] text-zinc-600 block">Coxa</span><span class="text-xs text-zinc-300 font-mono">${item.thigh}</span></div>
+                    </div>` : ''}
+                </div>
+            </div>`;
+        }).join('');
+
+        c.innerHTML = `
+        <div class="px-5 animate-fade-in pt-6 pb-20">
+            <div class="flex gap-3 mb-6">
+                <div class="flex-1 bg-zinc-900 border border-zinc-800 rounded-2xl p-4 flex flex-col items-center justify-center text-center">
+                    <span class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mb-1">Peso Atual</span>
+                    <span class="text-3xl font-bold text-white font-mono tracking-tighter">${current.weight || '--'} <span class="text-sm text-zinc-600 font-normal">kg</span></span>
+                </div>
+                <div class="flex-1 bg-zinc-900 border border-zinc-800 rounded-2xl p-4 flex flex-col items-center justify-center text-center relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-transparent to-zinc-950/50"></div>
+                    <span class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mb-1">IMC</span>
+                    <span class="text-2xl font-bold text-white font-mono tracking-tighter relative z-10">${bmi > 0 ? bmi : '--'}</span>
+                    <span class="text-[9px] font-bold uppercase tracking-wide mt-1 px-2 py-0.5 rounded-full bg-zinc-950 border border-zinc-800 ${bmiStatus.class} relative z-10">${bmiStatus.label}</span>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between mb-4 px-1">
+                <h3 class="text-xs font-bold text-zinc-500 uppercase tracking-widest">Histórico de Medidas</h3>
+                <span class="text-[10px] text-zinc-600 font-mono">${history.length} registros</span>
+            </div>
+
+            <div class="space-y-1">
+                ${history.length > 0 ? listHtml : '<div class="text-center py-10 text-zinc-600 text-xs">Nenhum registro encontrado.</div>'}
+            </div>
+        </div>
+
+        <div id="measurements-modal" class="hidden modal-overlay animate-fade-in fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/90">
+            <div class="bg-[#18181b] w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl border-t sm:border border-zinc-800 p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-bold text-white">Nova Medição</h3>
+                    <button onclick="measurementsManager.closeModal()" class="p-2 bg-zinc-800 rounded-full text-zinc-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-[10px] text-zinc-500 font-bold uppercase block mb-1.5 ml-1">Altura (cm) <span class="text-zinc-700 normal-case font-normal">- Apenas uma vez</span></label>
+                        <input type="number" id="meas-height" class="w-full input-dark rounded-xl p-3 text-sm font-mono" placeholder="Ex: 175">
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[10px] text-[var(--theme-color)] font-bold uppercase block mb-1.5 ml-1">Peso (kg)</label>
+                            <input type="number" id="meas-weight" class="w-full input-dark rounded-xl p-3 text-lg font-bold text-white font-mono border-[var(--theme-color)]" placeholder="0.0">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-zinc-500 font-bold uppercase block mb-1.5 ml-1">Gordura (%)</label>
+                            <input type="number" id="meas-fat" class="w-full input-dark rounded-xl p-3 text-lg font-bold text-white font-mono" placeholder="0.0">
+                        </div>
+                    </div>
+
+                    <div class="h-px bg-zinc-800 my-2"></div>
+                    <p class="text-[10px] text-zinc-500 font-bold uppercase mb-2 ml-1">Circunferências (cm)</p>
+
+                    <div class="grid grid-cols-3 gap-3">
+                        <div>
+                            <label class="text-[9px] text-zinc-600 block mb-1">Braço</label>
+                            <input type="number" id="meas-arm" class="w-full input-dark rounded-lg p-2 text-sm font-mono text-center" placeholder="0">
+                        </div>
+                        <div>
+                            <label class="text-[9px] text-zinc-600 block mb-1">Cintura</label>
+                            <input type="number" id="meas-waist" class="w-full input-dark rounded-lg p-2 text-sm font-mono text-center" placeholder="0">
+                        </div>
+                        <div>
+                            <label class="text-[9px] text-zinc-600 block mb-1">Coxa</label>
+                            <input type="number" id="meas-thigh" class="w-full input-dark rounded-lg p-2 text-sm font-mono text-center" placeholder="0">
+                        </div>
+                    </div>
+
+                    <button onclick="measurementsManager.save()" class="w-full mt-6 bg-[var(--theme-color)] text-white font-bold py-4 rounded-xl shadow-lg shadow-[var(--theme-glow)] transition-transform active:scale-[0.98]">
+                        SALVAR DADOS
+                    </button>
+                </div>
+            </div>
+        </div>
+        `;
+        safeIcons();
     }
 };
 
@@ -967,13 +1118,11 @@ const actions = {
         router.renderDetail(document.getElementById('main-content'), newParams);
     },
     weight(ex, v) { 
-        // 1. Atualiza pesos atuais e anteriores
         if(!store.data.weights) store.data.weights = {};
         if(!store.data.prevWeights) store.data.prevWeights = {};
         if(!store.data.prevWeights[ex]) store.data.prevWeights[ex] = store.data.weights[ex] || 0;
         store.data.weights[ex] = v; 
 
-        // 2. Atualiza Histórico de Evolução (NOVO)
         if(!store.data.loadHistory) store.data.loadHistory = {};
         if(!store.data.loadHistory[ex]) store.data.loadHistory[ex] = [];
         
@@ -982,9 +1131,9 @@ const actions = {
         const existingEntry = history.find(h => h.date === today);
 
         if (existingEntry) {
-            existingEntry.load = v; // Atualiza se já existir hoje
+            existingEntry.load = v; 
         } else {
-            history.push({ date: today, load: v }); // Cria novo
+            history.push({ date: today, load: v }); 
         }
 
         store.save(); 
@@ -1005,14 +1154,12 @@ const actions = {
     toggleVideo(exId) {
         if(!store.data.visibleVideos) store.data.visibleVideos = {};
         store.data.visibleVideos[exId] = !store.data.visibleVideos[exId];
-        // Fecha gráfico se abrir vídeo (opcional, para limpar UI)
         if(store.data.visibleGraphs[exId]) store.data.visibleGraphs[exId] = false;
         router.renderDetail(document.getElementById('main-content'), router.currentParams);
     },
-    toggleGraph(exId) { // NOVO
+    toggleGraph(exId) { 
         if(!store.data.visibleGraphs) store.data.visibleGraphs = {};
         store.data.visibleGraphs[exId] = !store.data.visibleGraphs[exId];
-        // Fecha vídeo se abrir gráfico
         if(store.data.visibleVideos[exId]) store.data.visibleVideos[exId] = false;
         router.renderDetail(document.getElementById('main-content'), router.currentParams);
     },
@@ -1042,7 +1189,6 @@ const actions = {
     }
 };
 
-// Funções de Efeito Visual (Confete)
 function celebrateCompletion() {
     for (let i = 0; i < 50; i++) {
         const particle = document.createElement('div');
