@@ -163,6 +163,68 @@ body {
   color: white;
 }
 
+/* --- Stepper Component (UX Mobile Ultra Compact v2) --- */
+.stepper-wrapper {
+  display: flex;
+  align-items: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 6px; /* Bordas mais sutis para economizar espaço visual */
+  overflow: hidden;
+  height: 32px;
+  flex-shrink: 0;
+  margin-right: 2px; /* Margem mínima */
+}
+
+.stepper-btn {
+  width: 26px; /* Reduzido de 30px para 26px */
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--theme-color);
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+  padding: 0; /* Garante zero padding */
+}
+
+.stepper-btn:active {
+  background: var(--theme-bg-soft);
+  color: white;
+}
+
+.stepper-btn i {
+  width: 14px;
+  height: 14px;
+}
+
+.stepper-input {
+  width: 42px; /* Reduzido de 48px para 42px */
+  height: 100%;
+  text-align: center;
+  border: none;
+  background: transparent;
+  color: white;
+  font-weight: 700;
+  font-size: 13px;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 0;
+  -moz-appearance: textfield;
+}
+
+.stepper-input::-webkit-outer-spin-button,
+.stepper-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.stepper-input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.05);
+}
+
 /* --- Components --- */
 .text-theme { color: var(--theme-color); }
 .bg-theme { background-color: var(--theme-color); }

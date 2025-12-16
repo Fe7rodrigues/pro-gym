@@ -1,7 +1,7 @@
 /**
- * PRO GYM APP V1.4.1 (FIX: BADGES RESTORED)
+ * PRO GYM APP V1.4.3 (FIX: RESPONSIVE STEPPER & RPE)
  * Copyright (c) 2025 Fernando Rodrigues. Todos os direitos reservados.
- * Descrição: Sistema profissional com Gestão de Treinos, Gráficos de Evolução, Biometria e Conquistas.
+ * Descrição: Sistema profissional com Gestão de Treinos, Stepper UX e Biometria.
  */
 
 // --- TEMAS PROFISSIONAIS ---
@@ -218,8 +218,8 @@ const store = {
         visibleVideos: {},
         visibleGraphs: {}, 
         loadHistory: {},
-        measurements: [], // NOVO: Array de biometria
-        userHeight: null, // NOVO: Altura do usuário
+        measurements: [], // Array de biometria
+        userHeight: null, // Altura do usuário
         lastResetWeek: null 
     },
     load() {
@@ -235,7 +235,7 @@ const store = {
                 if (!this.data.visibleVideos) this.data.visibleVideos = {};
                 if (!this.data.visibleGraphs) this.data.visibleGraphs = {};
                 if (!this.data.loadHistory) this.data.loadHistory = {};
-                if (!this.data.measurements) this.data.measurements = []; // Init NOVO
+                if (!this.data.measurements) this.data.measurements = [];
                 if (!this.data.settings) this.data.settings = { theme: 'azul', soundEnabled: true };
                 if (typeof this.data.xp !== 'number') this.data.xp = 0;
                 
@@ -386,7 +386,7 @@ function generateEvolutionChart(history) {
     </svg>`;
 }
 
-// --- CONQUISTAS (RESTAURADO) ---
+// --- CONQUISTAS ---
 const BADGES = [
     // FÁCEIS (1-15)
     { id: 'start_1', icon: 'play', title: 'Iniciação', desc: '1 treino concluído.', check: (s) => Object.keys(s.workoutHistory||{}).length >= 1 },
@@ -507,10 +507,8 @@ const timer = {
 const measurementsManager = {
     openModal() {
         document.getElementById('measurements-modal').classList.remove('hidden');
-        // Pre-fill height
         if(store.data.userHeight) document.getElementById('meas-height').value = store.data.userHeight;
         
-        // Pre-fill fields with last values for convenience
         const last = store.data.measurements && store.data.measurements.length > 0 ? store.data.measurements[0] : null;
         if(last) {
             document.getElementById('meas-weight').value = last.weight || '';
@@ -537,7 +535,6 @@ const measurementsManager = {
         if(height) store.data.userHeight = height;
         if(!store.data.measurements) store.data.measurements = [];
         
-        // Unshift to add to top
         store.data.measurements.unshift(entry);
         store.save();
         this.closeModal();
@@ -754,12 +751,31 @@ const router = {
                             <h3 class="text-white font-bold text-sm leading-snug mb-2">${ex.name}</h3>
                             <p class="text-zinc-600 text-[10px] font-mono mb-3 truncate max-w-[200px]">${ex.machine || 'Peso Livre'}</p>
                             
-                            <div class="flex items-center gap-2">
-                                <div class="relative flex items-center">
-                                    <input type="number" value="${(store.data.weights && store.data.weights[ex.id])||''}" onchange="actions.weight('${ex.id}',this.value)" class="input-dark w-16 py-1.5 px-2 text-sm font-bold rounded-lg text-center" placeholder="kg">
+                            <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                                <!-- Stepper Component -->
+                                <div class="stepper-wrapper">
+                                    <button onclick="actions.adjustWeight('${ex.id}', -5)" class="stepper-btn">
+                                        <i data-lucide="minus" class="w-3 h-3"></i>
+                                    </button>
+                                    <input 
+                                        id="weight-input-${ex.id}"
+                                        type="number" 
+                                        inputmode="decimal" 
+                                        step="0.5"
+                                        value="${(store.data.weights && store.data.weights[ex.id])||''}" 
+                                        onchange="actions.weight('${ex.id}', this.value)" 
+                                        class="stepper-input" 
+                                        placeholder="kg"
+                                    >
+                                    <button onclick="actions.adjustWeight('${ex.id}', 5)" class="stepper-btn">
+                                        <i data-lucide="plus" class="w-3 h-3"></i>
+                                    </button>
                                 </div>
-                                <select onchange="actions.setRPE('${ex.id}', this.value)" class="select-rpe w-16">
+                                <!-- Fim Stepper -->
+
+                                <select onchange="actions.setRPE('${ex.id}', this.value)" class="select-rpe w-14 flex-shrink-0">
                                     <option value="" disabled ${currentRPE === 'RPE' ? 'selected' : ''}>RPE</option>
+                                    <option value="5" ${currentRPE == '5' ? 'selected' : ''}>5</option>
                                     <option value="8" ${currentRPE == '8' ? 'selected' : ''}>8</option>
                                     <option value="10" ${currentRPE == '10' ? 'selected' : ''}>10</option>
                                     <option value="12" ${currentRPE == '12' ? 'selected' : ''}>12</option>
@@ -1138,6 +1154,20 @@ const actions = {
 
         store.save(); 
         router.renderDetail(document.getElementById('main-content'), router.currentParams); 
+    },
+    // NOVO MÉTODO STEPPER
+    adjustWeight(exId, delta) {
+        const inputEl = document.getElementById(`weight-input-${exId}`);
+        let currentVal = parseFloat(store.data.weights[exId]) || 0;
+        let newVal = currentVal + delta;
+        if (newVal < 0) newVal = 0;
+        newVal = Math.round(newVal * 10) / 10;
+        this.weight(exId, newVal);
+        if (inputEl) {
+            inputEl.value = newVal;
+            inputEl.style.color = 'var(--theme-color)';
+            setTimeout(() => inputEl.style.color = 'white', 300);
+        }
     },
     setRPE(ex, v) {
         if (!store.data.rpe) store.data.rpe = {};
