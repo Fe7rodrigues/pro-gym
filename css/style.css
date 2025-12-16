@@ -230,6 +230,15 @@ body {
 @keyframes pop-check { 0% { transform: scale(1); } 50% { transform: scale(0.9); } 100% { transform: scale(1); } }
 @keyframes progress-indet { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
 
+/* --- NEW CHART ANIMATIONS --- */
+@keyframes draw-line {
+  from { stroke-dasharray: 1000; stroke-dashoffset: 1000; }
+  to { stroke-dasharray: 1000; stroke-dashoffset: 0; }
+}
+.animate-draw-line {
+    animation: draw-line 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
 /* --- ORBITAL TECH LOADERS (Splash v1.1) --- */
 @keyframes reactor-spin-fast {
   0% { transform: rotate(0deg); }

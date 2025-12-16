@@ -1,8 +1,7 @@
 /**
- * PRO GYM APP V1.2 (XP PERMANENTE & AUTO-RESET)
+ * PRO GYM APP V1.3 (EVOLUTION CHARTS)
  * Copyright (c) 2025 Fernando Rodrigues. Todos os direitos reservados.
- * Descrição: Sistema profissional de gestão de treinos com RPE e Radar Chart.
- * Update: Lógica de XP cumulativo e reset semanal automático.
+ * Descrição: Sistema profissional de gestão de treinos com RPE, Radar Chart e Gráficos de Evolução.
  */
 
 // --- TEMAS PROFISSIONAIS ---
@@ -82,15 +81,12 @@ const WORKOUT_PLAN = [
 const utils = {
     getTodayDate: () => new Date().toISOString().split('T')[0],
     
-    // Calcula a "assinatura" da semana atual (baseado em Segunda-feira)
     getCurrentWeekSignature: () => {
         const d = new Date();
         const day = d.getDay();
-        // Ajusta para a segunda-feira da semana atual (Monday = 1)
-        // Se for Domingo (0), volta 6 dias. Se for outro dia, volta (day - 1).
         const diff = d.getDate() - day + (day === 0 ? -6 : 1);
         const monday = new Date(d.setDate(diff));
-        return monday.toDateString(); // Retorna ex: "Mon Dec 16 2025"
+        return monday.toDateString(); 
     },
 
     getFormattedDate: () => {
@@ -124,7 +120,6 @@ const utils = {
     getRank(xp) { return [...RANKS].reverse().find(r => (xp || 0) >= r.minXP) || RANKS[0]; },
     getNextRank(xp) { return RANKS.find(r => r.minXP > (xp || 0)); },
     
-    // Comparativo de pesos
     getDelta(exId) {
         const curr = parseFloat(store.data.weights[exId]) || 0;
         const prev = parseFloat(store.data.prevWeights[exId]) || 0;
@@ -171,7 +166,6 @@ const utils = {
 
     calculateWeeklyVolume(s) {
         const volume = { 'Peitoral': 0, 'Costas': 0, 'Pernas': 0, 'Ombros': 0, 'Braços': 0 };
-        // Calcula baseado nos sets marcados na semana atual
         if (s.completedSets) {
             Object.keys(s.completedSets).forEach(key => {
                 if(s.completedSets[key]) {
@@ -208,7 +202,9 @@ const store = {
         settings: { theme: 'azul', soundEnabled: true }, 
         xp: 0, 
         visibleVideos: {},
-        lastResetWeek: null // Rastreia a semana para o reset automático
+        visibleGraphs: {}, // NOVO: Controle de visibilidade dos gráficos
+        loadHistory: {},   // NOVO: Histórico de cargas [{date, load}]
+        lastResetWeek: null 
     },
     load() {
         const saved = localStorage.getItem('pro_gym_app_v1');
@@ -220,7 +216,9 @@ const store = {
                 }
                 
                 // Validações de Integridade
-                if (!this.data.visibleVideos) this.data.visibleVideos = {}; 
+                if (!this.data.visibleVideos) this.data.visibleVideos = {};
+                if (!this.data.visibleGraphs) this.data.visibleGraphs = {}; // Init NOVO
+                if (!this.data.loadHistory) this.data.loadHistory = {};     // Init NOVO
                 if (!this.data.settings) this.data.settings = { theme: 'azul', soundEnabled: true };
                 if (typeof this.data.xp !== 'number') this.data.xp = 0;
                 
@@ -229,11 +227,9 @@ const store = {
             }
         }
 
-        // --- LÓGICA DE RESET SEMANAL (SEGUNDA-FEIRA) ---
         const currentWeekSignature = utils.getCurrentWeekSignature();
         if (this.data.lastResetWeek !== currentWeekSignature) {
             console.log("Nova semana detectada. Resetando status dos treinos...");
-            // Limpa apenas os "checks" visuais, MANTENDO o XP
             this.data.completedSets = {}; 
             this.data.lastResetWeek = currentWeekSignature; 
             this.save();
@@ -242,9 +238,7 @@ const store = {
         themeManager.apply(this.data.settings.theme || 'azul');
     },
     save() {
-        // NÃO sobrescrevemos mais o XP com completedSets.length.
-        // O XP agora é cumulativo e persistente.
-        const { visibleVideos, ...dataToSave } = this.data;
+        const { visibleVideos, visibleGraphs, ...dataToSave } = this.data; // Não persiste estado UI temporário
         localStorage.setItem('pro_gym_app_v1', JSON.stringify(dataToSave));
     }
 };
@@ -270,7 +264,9 @@ const themeManager = {
     }
 };
 
-// --- CHART GENERATOR ---
+// --- CHART GENERATORS ---
+
+// 1. Radar Chart (Equilíbrio Muscular)
 function generateRadarChart(vol) {
     const categories = ['Peitoral', 'Costas', 'Pernas', 'Ombros', 'Braços'];
     const maxVal = 24; 
@@ -329,6 +325,64 @@ function generateRadarChart(vol) {
             const y = centerY + radius * normalized * Math.sin(angle);
             return `<circle cx="${x}" cy="${y}" r="3" fill="#fff" stroke="var(--theme-color)" stroke-width="1"/>`;
         }).join('')}
+    </svg>`;
+}
+
+// 2. Evolution Chart (Evolução de Carga - NOVO)
+function generateEvolutionChart(history) {
+    // Se não houver histórico suficiente, retorna mensagem
+    if (!history || history.length < 2) {
+        return `<div class="h-32 flex items-center justify-center border border-dashed border-zinc-800 rounded-lg bg-zinc-900/50">
+            <span class="text-[10px] text-zinc-600 font-mono">Dados insuficientes para gráfico</span>
+        </div>`;
+    }
+
+    // Pega os últimos 10 pontos para não poluir
+    const data = history.slice(-10);
+    const width = 300;
+    const height = 100;
+    const padding = 15;
+
+    // Achar min/max para normalização
+    const loads = data.map(d => parseFloat(d.load));
+    const minLoad = Math.min(...loads) * 0.9; // Margem inferior
+    const maxLoad = Math.max(...loads) * 1.1; // Margem superior
+    const range = maxLoad - minLoad;
+
+    // Mapear pontos (X, Y)
+    const points = data.map((d, i) => {
+        const x = padding + (i / (data.length - 1)) * (width - (padding * 2));
+        const y = height - padding - ((d.load - minLoad) / range) * (height - (padding * 2));
+        return { x, y, val: d.load, date: d.date };
+    });
+
+    // Criar caminho SVG (Path)
+    const pathD = points.map((p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`)).join(' ');
+
+    // Criar Pontos (Circles)
+    const circles = points.map(p => 
+        `<circle cx="${p.x}" cy="${p.y}" r="3" fill="#18181b" stroke="var(--theme-color)" stroke-width="2" />`
+    ).join('');
+
+    // Labels Min/Max
+    const minLabel = `<text x="5" y="${height - 5}" fill="#52525b" font-size="9" font-family="monospace">${Math.round(minLoad)}kg</text>`;
+    const maxLabel = `<text x="5" y="10" fill="#52525b" font-size="9" font-family="monospace">${Math.round(maxLoad)}kg</text>`;
+
+    return `
+    <svg viewBox="0 0 ${width} ${height}" class="w-full h-full animate-fade-in bg-zinc-950 rounded-lg border border-zinc-900">
+        <!-- Linhas de Grade -->
+        <line x1="${padding}" y1="${padding}" x2="${width-padding}" y2="${padding}" stroke="#27272a" stroke-width="0.5" stroke-dasharray="2" />
+        <line x1="${padding}" y1="${height-padding}" x2="${width-padding}" y2="${height-padding}" stroke="#27272a" stroke-width="0.5" stroke-dasharray="2" />
+        
+        <!-- Caminho da Linha -->
+        <path d="${pathD}" fill="none" stroke="var(--theme-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-draw-line" />
+        
+        <!-- Pontos -->
+        ${circles}
+        
+        <!-- Labels -->
+        ${minLabel}
+        ${maxLabel}
     </svg>`;
 }
 
@@ -631,14 +685,28 @@ const router = {
         c.innerHTML = `<div class="px-4 space-y-4 animate-slide-up pb-10">
             ${w.exercises.map((ex, i) => {
                 const hasNote = (store.data.notes && store.data.notes[ex.id]||'').trim().length > 0;
+                
+                // Estados de visibilidade
                 const isVideoVisible = store.data.visibleVideos && store.data.visibleVideos[ex.id];
+                const isGraphVisible = store.data.visibleGraphs && store.data.visibleGraphs[ex.id];
+                
+                // Classes de botão
                 const vidBtnClass = isVideoVisible ? 'text-[var(--theme-color)] border-[var(--theme-color)] bg-[var(--theme-bg-soft)]' : 'text-zinc-500 border-zinc-700 hover:text-white hover:border-zinc-500';
+                const graphBtnClass = isGraphVisible ? 'text-[var(--theme-color)] border-[var(--theme-color)] bg-[var(--theme-bg-soft)]' : 'text-zinc-500 border-zinc-700 hover:text-white hover:border-zinc-500';
+
                 const delta = utils.getDelta(ex.id) || ''; 
                 const currentRPE = (store.data.rpe && store.data.rpe[ex.id]) || 'RPE';
 
+                // Conteúdos Expansíveis
                 const videoContent = isVideoVisible ? `
                     <div class="mt-4 w-full rounded-lg overflow-hidden bg-black aspect-video border border-zinc-800 animate-fade-in relative shadow-lg">
                          <iframe class="w-full h-full" src="https://www.youtube.com/embed/${ex.youtube}?rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>` : '';
+
+                const graphContent = isGraphVisible ? `
+                    <div class="mt-4 w-full h-32 rounded-lg bg-zinc-950 border border-zinc-800 animate-fade-in relative p-2 shadow-inner">
+                        <div class="absolute top-2 left-2 text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Evolução de Carga (kg)</div>
+                        ${generateEvolutionChart(store.data.loadHistory ? store.data.loadHistory[ex.id] : [])}
                     </div>` : '';
 
                 return `
@@ -666,8 +734,14 @@ const router = {
                         
                         <div class="flex flex-col gap-2 items-end">
                             <div class="flex gap-2 mb-1">
+                                <!-- Botão Notas -->
                                 <button onclick="notesManager.open('${ex.id}')" class="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center ${hasNote?'text-[var(--theme-color)] border-[var(--theme-color)]':'text-zinc-500'} transition-all hover:bg-zinc-800"><i data-lucide="file-text" class="w-4 h-4"></i>${hasNote?'<span class="has-note-indicator"></span>':''}</button>
+                                
+                                <!-- Botão Vídeo -->
                                 <button onclick="actions.toggleVideo('${ex.id}')" class="w-8 h-8 rounded-lg bg-zinc-900 border flex items-center justify-center transition-all ${vidBtnClass}"><i data-lucide="play" class="w-4 h-4 fill-current"></i></button>
+                                
+                                <!-- Botão Gráfico (NOVO) -->
+                                <button onclick="actions.toggleGraph('${ex.id}')" class="w-8 h-8 rounded-lg bg-zinc-900 border flex items-center justify-center transition-all ${graphBtnClass}"><i data-lucide="trending-up" class="w-4 h-4"></i></button>
                             </div>
                             <div class="flex gap-2">
                                 <div class="px-2 py-1 bg-zinc-950 border border-zinc-800 rounded text-[10px] font-mono text-zinc-400 font-bold">${ex.reps} reps</div>
@@ -677,6 +751,7 @@ const router = {
                     </div>
                     
                     ${videoContent}
+                    ${graphContent}
                     
                     <div class="grid grid-cols-4 gap-2 mt-4 pt-4 border-t border-zinc-800/50">
                         ${[0,1,2,3].map(j => {
@@ -876,7 +951,6 @@ const actions = {
         store.data.completedSets[k] = d;
         const animId = d ? k : null;
         
-        // XP incremental: Ganha ao fazer, perde ao desfazer (mas só manualmente)
         if(d) {
             if(navigator.vibrate) navigator.vibrate(50);
             store.data.xp = (store.data.xp || 0) + 1;
@@ -885,7 +959,6 @@ const actions = {
             if (!store.data.workoutHistory) store.data.workoutHistory = {};
             store.data.workoutHistory[today] = (store.data.workoutHistory[today] || 0) + 1; 
         } else {
-            // Se desmarcar manualmente, perde o XP daquela série
             store.data.xp = Math.max(0, (store.data.xp || 0) - 1);
         }
         
@@ -894,10 +967,26 @@ const actions = {
         router.renderDetail(document.getElementById('main-content'), newParams);
     },
     weight(ex, v) { 
+        // 1. Atualiza pesos atuais e anteriores
         if(!store.data.weights) store.data.weights = {};
         if(!store.data.prevWeights) store.data.prevWeights = {};
         if(!store.data.prevWeights[ex]) store.data.prevWeights[ex] = store.data.weights[ex] || 0;
         store.data.weights[ex] = v; 
+
+        // 2. Atualiza Histórico de Evolução (NOVO)
+        if(!store.data.loadHistory) store.data.loadHistory = {};
+        if(!store.data.loadHistory[ex]) store.data.loadHistory[ex] = [];
+        
+        const today = utils.getTodayDate();
+        const history = store.data.loadHistory[ex];
+        const existingEntry = history.find(h => h.date === today);
+
+        if (existingEntry) {
+            existingEntry.load = v; // Atualiza se já existir hoje
+        } else {
+            history.push({ date: today, load: v }); // Cria novo
+        }
+
         store.save(); 
         router.renderDetail(document.getElementById('main-content'), router.currentParams); 
     },
@@ -916,6 +1005,15 @@ const actions = {
     toggleVideo(exId) {
         if(!store.data.visibleVideos) store.data.visibleVideos = {};
         store.data.visibleVideos[exId] = !store.data.visibleVideos[exId];
+        // Fecha gráfico se abrir vídeo (opcional, para limpar UI)
+        if(store.data.visibleGraphs[exId]) store.data.visibleGraphs[exId] = false;
+        router.renderDetail(document.getElementById('main-content'), router.currentParams);
+    },
+    toggleGraph(exId) { // NOVO
+        if(!store.data.visibleGraphs) store.data.visibleGraphs = {};
+        store.data.visibleGraphs[exId] = !store.data.visibleGraphs[exId];
+        // Fecha vídeo se abrir gráfico
+        if(store.data.visibleVideos[exId]) store.data.visibleVideos[exId] = false;
         router.renderDetail(document.getElementById('main-content'), router.currentParams);
     },
     reset(id) {
@@ -924,31 +1022,23 @@ const actions = {
         if(w && store.data.completedSets) {
             w.exercises.forEach(ex => { 
                 for(let i=0;i<4;i++) {
-                    // Apenas deleta a marcação visual, NÃO subtrai XP
                     delete store.data.completedSets[`${ex.id}-${i}`]; 
                 }
             });
-            // O XP permanece intacto aqui
             store.save(); 
             router.renderDetail(document.getElementById('main-content'), router.currentParams);
         }
     },
     finish() { 
-        // Efeito visual de confete
         const btn = document.getElementById('btn-finish-session');
         if (btn) {
             btn.innerHTML = '<i data-lucide="check" class="w-6 h-6 animate-bounce"></i> TREINO CONCLUÍDO!';
             btn.classList.add('bg-green-600', 'scale-105');
             safeIcons();
         }
-        
         celebrateCompletion();
-        
         if(navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 200]);
-
-        setTimeout(() => {
-            router.navigate('home');
-        }, 3000);
+        setTimeout(() => { router.navigate('home'); }, 3000);
     }
 };
 
@@ -981,7 +1071,6 @@ function celebrateCompletion() {
     }
 }
 
-// Inicialização
 function initApp() {
     const splash = document.getElementById('splash-screen');
     setTimeout(() => {
@@ -991,7 +1080,6 @@ function initApp() {
         }
     }, 1500);
     
-    // Injeta CSS do confete se não existir
     if (!document.getElementById('confetti-style')) {
         const style = document.createElement('style');
         style.id = 'confetti-style';
