@@ -1,5 +1,5 @@
 /**
- * PRO GYM APP V1.9 (ARCH: IDB + WORKER + 70 BADGES RPG)
+ * PRO GYM APP V2.0 (ARCH: IDB + WORKER + MONTHLY RESET + 70 BADGES)
  * Copyright (c) 2025 Fernando Rodrigues. Todos os direitos reservados.
  * Descrição: Sistema profissional com Persistência IDB, Timer Background e Gamificação Avançada.
  */
@@ -89,36 +89,36 @@ const db = new GymDatabase('ProGymDB', 'app_state');
 // --- TEMAS GAMIFICADOS (2 POR NÍVEL) ---
 const THEMES = {
     // NÍVEL 0: INICIANTE (0 XP)
-    'iniciante_azul':   { name: 'Iniciante (Azul)',   minXP: 0,     color: '#3b82f6', hover: '#2563eb', glow: 'rgba(59, 130, 246, 0.5)', bgSoft: 'rgba(59, 130, 246, 0.1)' },
-    'iniciante_slate':  { name: 'Iniciante (Furtivo)',minXP: 0,     color: '#64748b', hover: '#475569', glow: 'rgba(100, 116, 139, 0.5)', bgSoft: 'rgba(100, 116, 139, 0.15)' },
+    'iniciante_azul': { name: 'Iniciante (Azul)', minXP: 0, color: '#3b82f6', hover: '#2563eb', glow: 'rgba(59, 130, 246, 0.5)', bgSoft: 'rgba(59, 130, 246, 0.1)' },
+    'iniciante_slate': { name: 'Iniciante (Furtivo)', minXP: 0, color: '#64748b', hover: '#475569', glow: 'rgba(100, 116, 139, 0.5)', bgSoft: 'rgba(100, 116, 139, 0.15)' },
 
     // NÍVEL 1: PRATICANTE (50 XP)
-    'praticante_red':   { name: 'Praticante (Red)',   minXP: 50,    color: '#ef4444', hover: '#dc2626', glow: 'rgba(239, 68, 68, 0.5)', bgSoft: 'rgba(239, 68, 68, 0.1)' },
-    'praticante_vinho': { name: 'Praticante (Vinho)', minXP: 50,    color: '#be123c', hover: '#9f1239', glow: 'rgba(190, 18, 60, 0.5)',  bgSoft: 'rgba(190, 18, 60, 0.15)' },
+    'praticante_red': { name: 'Praticante (Red)', minXP: 50, color: '#ef4444', hover: '#dc2626', glow: 'rgba(239, 68, 68, 0.5)', bgSoft: 'rgba(239, 68, 68, 0.1)' },
+    'praticante_vinho': { name: 'Praticante (Vinho)', minXP: 50, color: '#be123c', hover: '#9f1239', glow: 'rgba(190, 18, 60, 0.5)', bgSoft: 'rgba(190, 18, 60, 0.15)' },
 
     // NÍVEL 2: INTERMEDIÁRIO (200 XP)
-    'inter_verde':      { name: 'Intermediário (Eco)',minXP: 200,   color: '#10b981', hover: '#059669', glow: 'rgba(16, 185, 129, 0.5)', bgSoft: 'rgba(16, 185, 129, 0.1)' },
-    'inter_teal':       { name: 'Intermediário (Mar)',minXP: 200,   color: '#14b8a6', hover: '#0d9488', glow: 'rgba(20, 184, 166, 0.5)', bgSoft: 'rgba(20, 184, 166, 0.15)' },
+    'inter_verde': { name: 'Intermediário (Eco)', minXP: 200, color: '#10b981', hover: '#059669', glow: 'rgba(16, 185, 129, 0.5)', bgSoft: 'rgba(16, 185, 129, 0.1)' },
+    'inter_teal': { name: 'Intermediário (Mar)', minXP: 200, color: '#14b8a6', hover: '#0d9488', glow: 'rgba(20, 184, 166, 0.5)', bgSoft: 'rgba(20, 184, 166, 0.15)' },
 
     // NÍVEL 3: AVANÇADO (500 XP)
-    'avancado_laranja': { name: 'Avançado (Fogo)',    minXP: 500,   color: '#f97316', hover: '#ea580c', glow: 'rgba(249, 115, 22, 0.5)', bgSoft: 'rgba(249, 115, 22, 0.1)' },
-    'avancado_amber':   { name: 'Avançado (Âmbar)',   minXP: 500,   color: '#f59e0b', hover: '#d97706', glow: 'rgba(245, 158, 11, 0.5)', bgSoft: 'rgba(245, 158, 11, 0.15)' },
+    'avancado_laranja': { name: 'Avançado (Fogo)', minXP: 500, color: '#f97316', hover: '#ea580c', glow: 'rgba(249, 115, 22, 0.5)', bgSoft: 'rgba(249, 115, 22, 0.1)' },
+    'avancado_amber': { name: 'Avançado (Âmbar)', minXP: 500, color: '#f59e0b', hover: '#d97706', glow: 'rgba(245, 158, 11, 0.5)', bgSoft: 'rgba(245, 158, 11, 0.15)' },
 
     // NÍVEL 4: ELITE (1000 XP)
-    'elite_roxo':       { name: 'Elite (Real)',       minXP: 1000,  color: '#8b5cf6', hover: '#7c3aed', glow: 'rgba(139, 92, 246, 0.6)', bgSoft: 'rgba(139, 92, 246, 0.15)' },
-    'elite_indigo':     { name: 'Elite (Noite)',      minXP: 1000,  color: '#6366f1', hover: '#4f46e5', glow: 'rgba(99, 102, 241, 0.6)', bgSoft: 'rgba(99, 102, 241, 0.15)' },
+    'elite_roxo': { name: 'Elite (Real)', minXP: 1000, color: '#8b5cf6', hover: '#7c3aed', glow: 'rgba(139, 92, 246, 0.6)', bgSoft: 'rgba(139, 92, 246, 0.15)' },
+    'elite_indigo': { name: 'Elite (Noite)', minXP: 1000, color: '#6366f1', hover: '#4f46e5', glow: 'rgba(99, 102, 241, 0.6)', bgSoft: 'rgba(99, 102, 241, 0.15)' },
 
     // NÍVEL 5: PRO (2000 XP)
-    'pro_rosa':         { name: 'Pro (Neon)',         minXP: 2000,  color: '#ec4899', hover: '#db2777', glow: 'rgba(236, 72, 153, 0.6)', bgSoft: 'rgba(236, 72, 153, 0.15)' },
-    'pro_crimson':      { name: 'Pro (Intenso)',      minXP: 2000,  color: '#f43f5e', hover: '#e11d48', glow: 'rgba(244, 63, 94, 0.6)',  bgSoft: 'rgba(244, 63, 94, 0.15)' },
+    'pro_rosa': { name: 'Pro (Neon)', minXP: 2000, color: '#ec4899', hover: '#db2777', glow: 'rgba(236, 72, 153, 0.6)', bgSoft: 'rgba(236, 72, 153, 0.15)' },
+    'pro_crimson': { name: 'Pro (Intenso)', minXP: 2000, color: '#f43f5e', hover: '#e11d48', glow: 'rgba(244, 63, 94, 0.6)', bgSoft: 'rgba(244, 63, 94, 0.15)' },
 
     // NÍVEL 6: LENDA (5000 XP)
-    'lenda_cyber':      { name: 'Lenda (Tóxico)',     minXP: 5000,  color: '#ccff00', hover: '#a3cc00', glow: 'rgba(204, 255, 0, 0.6)',  bgSoft: 'rgba(204, 255, 0, 0.1)' },
-    'lenda_cyan':       { name: 'Lenda (Gelo)',       minXP: 5000,  color: '#06b6d4', hover: '#0891b2', glow: 'rgba(6, 182, 212, 0.6)',  bgSoft: 'rgba(6, 182, 212, 0.15)' },
+    'lenda_cyber': { name: 'Lenda (Tóxico)', minXP: 5000, color: '#ccff00', hover: '#a3cc00', glow: 'rgba(204, 255, 0, 0.6)', bgSoft: 'rgba(204, 255, 0, 0.1)' },
+    'lenda_cyan': { name: 'Lenda (Gelo)', minXP: 5000, color: '#06b6d4', hover: '#0891b2', glow: 'rgba(6, 182, 212, 0.6)', bgSoft: 'rgba(6, 182, 212, 0.15)' },
 
     // NÍVEL 7: MESTRE (10000 XP)
-    'mestre_ouro':      { name: 'Mestre (Ouro)',      minXP: 10000, color: '#fbbf24', hover: '#d97706', glow: 'rgba(251, 191, 36, 0.8)', bgSoft: 'rgba(251, 191, 36, 0.2)' },
-    'mestre_platina':   { name: 'Mestre (Platina)',   minXP: 10000, color: '#cbd5e1', hover: '#94a3b8', glow: 'rgba(203, 213, 225, 0.8)', bgSoft: 'rgba(203, 213, 225, 0.15)' }
+    'mestre_ouro': { name: 'Mestre (Ouro)', minXP: 10000, color: '#fbbf24', hover: '#d97706', glow: 'rgba(251, 191, 36, 0.8)', bgSoft: 'rgba(251, 191, 36, 0.2)' },
+    'mestre_platina': { name: 'Mestre (Platina)', minXP: 10000, color: '#cbd5e1', hover: '#94a3b8', glow: 'rgba(203, 213, 225, 0.8)', bgSoft: 'rgba(203, 213, 225, 0.15)' }
 };
 
 // --- SISTEMA DE PROGRESSÃO ---
@@ -206,12 +206,12 @@ const WORKOUT_PLAN = [
 const utils = {
     getTodayDate: () => new Date().toISOString().split('T')[0],
 
-    getCurrentWeekSignature: () => {
+    // Gera assinatura Mensal (YYYY-MM) para controle de reset
+    getCurrentMonthSignature: () => {
         const d = new Date();
-        const day = d.getDay();
-        const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-        const monday = new Date(d.setDate(diff));
-        return monday.toDateString();
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        return `${year}-${month}`;
     },
 
     getFormattedDate: () => {
@@ -255,7 +255,7 @@ const utils = {
         if (diff > 0) return `<span class="delta-tag delta-pos">▲ +${roundedDiff}kg</span>`;
         return `<span class="delta-tag delta-neg">▼ ${roundedDiff}kg</span>`;
     },
-    
+
     getGhostLog(exId) {
         if (!store.data.loadHistory || !store.data.loadHistory[exId]) return null;
         const history = store.data.loadHistory[exId];
@@ -265,7 +265,7 @@ const utils = {
         const date1 = new Date(today);
         const date2 = new Date(prevLog.date);
         const diffTime = Math.abs(date1 - date2);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         let timeLabel = `${diffDays}d atrás`;
         if (diffDays === 1) timeLabel = 'Ontem';
         if (diffDays > 30) timeLabel = '>30d';
@@ -309,7 +309,8 @@ const utils = {
         return count;
     },
 
-    calculateWeeklyVolume(s) {
+    // Cálculo de Volume (Agora Mensal/Periódico)
+    calculateVolume(s) {
         const volume = { 'Peitoral': 0, 'Costas': 0, 'Pernas': 0, 'Ombros': 0, 'Braços': 0 };
         if (s.completedSets) {
             Object.keys(s.completedSets).forEach(key => {
@@ -359,7 +360,7 @@ const store = {
         notes: {}, cardioHistory: {}, workoutHistory: {},
         settings: { theme: 'iniciante_azul', soundEnabled: true },
         xp: 0, visibleVideos: {}, visibleGraphs: {}, loadHistory: {},
-        measurements: [], userHeight: null, lastResetWeek: null
+        measurements: [], userHeight: null, lastResetMonth: null
     },
 
     async load() {
@@ -379,15 +380,20 @@ const store = {
             if (!this.data.settings) this.data.settings = { theme: 'iniciante_azul', soundEnabled: true };
             if (typeof this.data.xp !== 'number') this.data.xp = 0;
 
-            const currentWeekSignature = utils.getCurrentWeekSignature();
-            if (this.data.lastResetWeek !== currentWeekSignature) {
-                console.log("Nova semana detectada. Resetando status dos treinos...");
+            // --- Lógica de Reset MENSAL ---
+            const currentMonthSignature = utils.getCurrentMonthSignature();
+
+            if (!this.data.lastResetMonth) {
+                this.data.lastResetMonth = currentMonthSignature;
+            }
+
+            if (this.data.lastResetMonth !== currentMonthSignature) {
+                console.log("Novo mês detectado. Resetando status dos treinos...");
                 this.data.completedSets = {};
-                this.data.lastResetWeek = currentWeekSignature;
+                this.data.lastResetMonth = currentMonthSignature;
                 this.save();
             }
 
-            // Fallback se o tema salvo não existir mais
             if (!THEMES[this.data.settings.theme]) {
                 this.data.settings.theme = 'iniciante_azul';
             }
@@ -423,9 +429,9 @@ const themeManager = {
     setTheme(key) {
         const theme = THEMES[key];
         const currentXP = store.data.xp || 0;
-        
+
         if (theme && currentXP < theme.minXP) {
-            if(navigator.vibrate) navigator.vibrate(200);
+            if (navigator.vibrate) navigator.vibrate(200);
             alert(`🔒 Nível Insuficiente!\n\nVocê precisa atingir o rank correspondente (${theme.minXP} XP) para desbloquear o tema "${theme.name}".`);
             return;
         }
@@ -433,13 +439,13 @@ const themeManager = {
         store.data.settings.theme = key;
         this.apply(key);
         store.save();
-        
+
         settings.renderThemes();
-        
+
         if (document.getElementById('main-header') && !document.getElementById('main-header').classList.contains('hidden')) {
             const currentRoute = router.currentParams ? 'detail' : 'home';
-            if(currentRoute === 'detail') router.renderDetail(document.getElementById('main-content'), router.currentParams);
-            if(currentRoute === 'home') router.renderHome(document.getElementById('main-content'));
+            if (currentRoute === 'detail') router.renderDetail(document.getElementById('main-content'), router.currentParams);
+            if (currentRoute === 'home') router.renderHome(document.getElementById('main-content'));
         }
     }
 };
@@ -447,7 +453,7 @@ const themeManager = {
 // --- CHART GENERATORS ---
 function generateRadarChart(vol) {
     const categories = ['Peitoral', 'Costas', 'Pernas', 'Ombros', 'Braços'];
-    const maxVal = 24;
+    const maxVal = 80;
     const svgSize = 250;
     const centerX = svgSize / 2, centerY = svgSize / 2;
     const radius = 80;
@@ -492,13 +498,13 @@ function generateRadarChart(vol) {
         <polygon points="${points}" fill="var(--theme-glow)" stroke="var(--theme-color)" stroke-width="2" fill-opacity="0.4" />
         <circle cx="${centerX}" cy="${centerY}" r="3" fill="var(--theme-color)" />
         ${categories.map((cat, i) => {
-            let val = vol[cat] || 0;
-            const normalized = maxVal === 0 ? 0 : Math.min(val / maxVal, 1);
-            const angle = (Math.PI * 2 * i) / categories.length - Math.PI / 2;
-            const x = centerX + radius * normalized * Math.cos(angle);
-            const y = centerY + radius * normalized * Math.sin(angle);
-            return `<circle cx="${x}" cy="${y}" r="3" fill="#fff" stroke="var(--theme-color)" stroke-width="1"/>`;
-        }).join('')}
+        let val = vol[cat] || 0;
+        const normalized = maxVal === 0 ? 0 : Math.min(val / maxVal, 1);
+        const angle = (Math.PI * 2 * i) / categories.length - Math.PI / 2;
+        const x = centerX + radius * normalized * Math.cos(angle);
+        const y = centerY + radius * normalized * Math.sin(angle);
+        return `<circle cx="${x}" cy="${y}" r="3" fill="#fff" stroke="var(--theme-color)" stroke-width="1"/>`;
+    }).join('')}
     </svg>`;
 }
 
@@ -535,9 +541,9 @@ function generateEvolutionChart(history) {
     </svg>`;
 }
 
-// --- CONQUISTAS (70 BADGES - SISTEMA TIER) ---
+// --- CONQUISTAS (70 BADGES - SISTEMA COMPLETO) ---
 const BADGES = [
-    // --- TIER 1: FÁCIL (Iniciação e Setup) ---
+    // --- TIER 1: FÁCIL (15 Badges - Iniciação) ---
     { id: 't1_start', tier: 'Fácil', icon: 'play', title: 'O Começo', desc: 'Conclua o seu 1º treino.', check: (s) => Object.keys(s.workoutHistory || {}).length >= 1 },
     { id: 't1_warmup', tier: 'Fácil', icon: 'flame', title: 'Aquecimento', desc: '5 treinos concluídos.', check: (s) => Object.keys(s.workoutHistory || {}).length >= 5 },
     { id: 't1_freq2', tier: 'Fácil', icon: 'calendar', title: 'Compromisso', desc: 'Treine 2x na mesma semana.', check: (s) => utils.checkWeeklyConsistency(s) >= 2 },
@@ -551,68 +557,69 @@ const BADGES = [
     { id: 't1_meas', tier: 'Fácil', icon: 'scale', title: 'Check-up', desc: 'Registe 1 medida corporal.', check: (s) => s.measurements.length >= 1 },
     { id: 't1_sets10', tier: 'Fácil', icon: 'layers', title: 'Repetição', desc: 'Complete 10 séries totais.', check: (s) => (s.xp || 0) >= 10 },
     { id: 't1_w40', tier: 'Fácil', icon: 'dumbbell', title: 'Carga Base', desc: 'Registe 40kg.', check: (s) => utils.checkMaxLoad(s) >= 40 },
-    { id: 't1_streak3', tier: 'Fácil', icon: 'zap', title: 'Tríade', desc: '3 treinos seguidos (histórico).', check: (s) => Object.keys(s.workoutHistory || {}).length >= 3 },
+    { id: 't1_streak3', tier: 'Fácil', icon: 'zap', title: 'Tríade', desc: '3 dias de treino no histórico.', check: (s) => Object.keys(s.workoutHistory || {}).length >= 3 },
     { id: 't1_bio', tier: 'Fácil', icon: 'user', title: 'Identidade', desc: 'Defina a sua altura.', check: (s) => s.userHeight > 0 },
 
-    // --- TIER 2: MÉDIA (Consistência e Evolução) ---
+    // --- TIER 2: MÉDIA (20 Badges - Consistência) ---
     { id: 't2_start10', tier: 'Média', icon: 'check-circle', title: 'Hábito', desc: '10 treinos concluídos.', check: (s) => Object.keys(s.workoutHistory || {}).length >= 10 },
     { id: 't2_start25', tier: 'Média', icon: 'star', title: 'Frequente', desc: '25 treinos concluídos.', check: (s) => Object.keys(s.workoutHistory || {}).length >= 25 },
     { id: 't2_freq3', tier: 'Média', icon: 'calendar-check', title: 'Rotina', desc: 'Treine 3x na semana.', check: (s) => utils.checkWeeklyConsistency(s) >= 3 },
     { id: 't2_freq4', tier: 'Média', icon: 'trending-up', title: 'Dedicado', desc: 'Treine 4x na semana.', check: (s) => utils.checkWeeklyConsistency(s) >= 4 },
     { id: 't2_xp500', tier: 'Média', icon: 'bar-chart-2', title: 'Novato XP', desc: 'Acumule 500 XP.', check: (s) => (s.xp || 0) >= 500 },
     { id: 't2_xp1000', tier: 'Média', icon: 'bar-chart-2', title: 'Soldado XP', desc: 'Acumule 1.000 XP.', check: (s) => (s.xp || 0) >= 1000 },
+    { id: 't2_xp2000', tier: 'Média', icon: 'bar-chart-2', title: 'Guerreiro XP', desc: 'Acumule 2.000 XP.', check: (s) => (s.xp || 0) >= 2000 },
     { id: 't2_w50', tier: 'Média', icon: 'disc', title: 'Meio Cento', desc: 'Carga de 50kg.', check: (s) => utils.checkMaxLoad(s) >= 50 },
     { id: 't2_w60', tier: 'Média', icon: 'dumbbell', title: 'Força Real', desc: 'Carga de 60kg.', check: (s) => utils.checkMaxLoad(s) >= 60 },
     { id: 't2_w70', tier: 'Média', icon: 'dumbbell', title: 'Pesado', desc: 'Carga de 70kg.', check: (s) => utils.checkMaxLoad(s) >= 70 },
+    { id: 't2_w80', tier: 'Média', icon: 'anchor', title: 'Sólido', desc: 'Carga de 80kg.', check: (s) => utils.checkMaxLoad(s) >= 80 },
+    { id: 't2_w90', tier: 'Média', icon: 'anchor', title: 'Quase lá', desc: 'Carga de 90kg.', check: (s) => utils.checkMaxLoad(s) >= 90 },
     { id: 't2_cardio10', tier: 'Média', icon: 'wind', title: 'Corredor', desc: '10 sessões de cardio.', check: (s) => Object.keys(s.cardioHistory || {}).length >= 10 },
+    { id: 't2_cardio20', tier: 'Média', icon: 'wind', title: 'Pumão de Aço', desc: '20 sessões de cardio.', check: (s) => Object.keys(s.cardioHistory || {}).length >= 20 },
     { id: 't2_note5', tier: 'Média', icon: 'book-open', title: 'Analista', desc: '5 notas técnicas.', check: (s) => Object.keys(s.notes || {}).length >= 5 },
     { id: 't2_meas5', tier: 'Média', icon: 'ruler', title: 'Metrologia', desc: '5 registos de medidas.', check: (s) => s.measurements.length >= 5 },
     { id: 't2_sets100', tier: 'Média', icon: 'layers', title: 'Volume 100', desc: '100 séries totais.', check: (s) => (s.xp || 0) >= 100 },
     { id: 't2_sets500', tier: 'Média', icon: 'layers', title: 'Volume 500', desc: '500 séries totais.', check: (s) => (s.xp || 0) >= 500 },
-    { id: 't2_w80', tier: 'Média', icon: 'anchor', title: 'Sólido', desc: 'Carga de 80kg.', check: (s) => utils.checkMaxLoad(s) >= 80 },
-    { id: 't2_w90', tier: 'Média', icon: 'anchor', title: 'Quase lá', desc: 'Carga de 90kg.', check: (s) => utils.checkMaxLoad(s) >= 90 },
     { id: 't2_fullweek', tier: 'Média', icon: 'sun', title: 'Semana Cheia', desc: 'Treinou Segunda a Sexta (5 dias).', check: (s) => utils.checkWeeklyConsistency(s) >= 5 },
+    { id: 't2_bmi', tier: 'Média', icon: 'activity', title: 'Saudável', desc: 'IMC na faixa Normal.', check: (s) => { const m = s.measurements[0]; if (!m) return false; const bmi = utils.calcBMI(m.weight, s.userHeight); return bmi >= 18.5 && bmi < 25; } },
 
-    // --- TIER 3: DIFÍCIL (Performance e Força) ---
+    // --- TIER 3: DIFÍCIL (20 Badges - Performance) ---
     { id: 't3_start50', tier: 'Difícil', icon: 'award', title: 'Veterano', desc: '50 treinos concluídos.', check: (s) => Object.keys(s.workoutHistory || {}).length >= 50 },
     { id: 't3_start75', tier: 'Difícil', icon: 'crown', title: 'Sênior', desc: '75 treinos concluídos.', check: (s) => Object.keys(s.workoutHistory || {}).length >= 75 },
     { id: 't3_freq5', tier: 'Difícil', icon: 'zap', title: 'Atleta', desc: '5 treinos na semana.', check: (s) => utils.checkWeeklyConsistency(s) >= 5 },
     { id: 't3_freq6', tier: 'Difícil', icon: 'flame', title: 'Hardcore', desc: '6 treinos na semana.', check: (s) => utils.checkWeeklyConsistency(s) >= 6 },
-    { id: 't3_xp2500', tier: 'Difícil', icon: 'activity', title: 'Capitão XP', desc: '2.500 XP.', check: (s) => (s.xp || 0) >= 2500 },
     { id: 't3_xp5000', tier: 'Difícil', icon: 'activity', title: 'Major XP', desc: '5.000 XP.', check: (s) => (s.xp || 0) >= 5000 },
+    { id: 't3_xp7500', tier: 'Difícil', icon: 'activity', title: 'Coronel XP', desc: '7.500 XP.', check: (s) => (s.xp || 0) >= 7500 },
+    { id: 't3_xp10000', tier: 'Difícil', icon: 'shield', title: 'General XP', desc: '10.000 XP.', check: (s) => (s.xp || 0) >= 10000 },
     { id: 't3_w100', tier: 'Difícil', icon: 'medal', title: '3 Dígitos', desc: 'Carga de 100kg (Marco).', check: (s) => utils.checkMaxLoad(s) >= 100 },
     { id: 't3_w110', tier: 'Difícil', icon: 'biceps-flexed', title: 'Beast', desc: 'Carga de 110kg.', check: (s) => utils.checkMaxLoad(s) >= 110 },
     { id: 't3_w120', tier: 'Difícil', icon: 'biceps-flexed', title: 'Monster', desc: 'Carga de 120kg.', check: (s) => utils.checkMaxLoad(s) >= 120 },
     { id: 't3_w130', tier: 'Difícil', icon: 'hammer', title: 'Esmagador', desc: 'Carga de 130kg.', check: (s) => utils.checkMaxLoad(s) >= 130 },
-    { id: 't3_cardio25', tier: 'Difícil', icon: 'bike', title: 'Maratonista', desc: '25 sessões de cardio.', check: (s) => Object.keys(s.cardioHistory || {}).length >= 25 },
+    { id: 't3_w140', tier: 'Difícil', icon: 'mountain', title: 'Titan', desc: 'Carga de 140kg.', check: (s) => utils.checkMaxLoad(s) >= 140 },
     { id: 't3_cardio50', tier: 'Difícil', icon: 'timer', title: 'Iron Man', desc: '50 sessões de cardio.', check: (s) => Object.keys(s.cardioHistory || {}).length >= 50 },
+    { id: 't3_cardio75', tier: 'Difícil', icon: 'timer', title: 'Triatleta', desc: '75 sessões de cardio.', check: (s) => Object.keys(s.cardioHistory || {}).length >= 75 },
     { id: 't3_note20', tier: 'Difícil', icon: 'library', title: 'Professor', desc: '20 notas técnicas.', check: (s) => Object.keys(s.notes || {}).length >= 20 },
     { id: 't3_meas15', tier: 'Difícil', icon: 'clipboard-list', title: 'Cientista', desc: '15 registos de medidas.', check: (s) => s.measurements.length >= 15 },
     { id: 't3_sets1000', tier: 'Difícil', icon: 'database', title: 'Volume 1k', desc: '1.000 séries totais.', check: (s) => (s.xp || 0) >= 1000 },
     { id: 't3_sets2500', tier: 'Difícil', icon: 'server', title: 'Volume 2.5k', desc: '2.500 séries totais.', check: (s) => (s.xp || 0) >= 2500 },
-    { id: 't3_bmi_opt', tier: 'Difícil', icon: 'smile', title: 'Forma Física', desc: 'IMC na faixa Normal.', check: (s) => { 
-        const m = s.measurements[0]; if(!m) return false;
-        const bmi = utils.calcBMI(m.weight, s.userHeight); return bmi >= 18.5 && bmi < 25; 
-    }},
+    { id: 't3_w150', tier: 'Difícil', icon: 'mountain', title: 'Hércules', desc: 'Carga de 150kg.', check: (s) => utils.checkMaxLoad(s) >= 150 },
+    { id: 't3_meas30', tier: 'Difícil', icon: 'user-check', title: 'Bio Hacker', desc: '30 registos de medidas.', check: (s) => s.measurements.length >= 30 },
 
-    // --- TIER 4: MUITO DIFÍCIL (Lenda/Elite) ---
+    // --- TIER 4: MUITO DIFÍCIL (15 Badges - Elite) ---
     { id: 't4_start100', tier: 'Muito Difícil', icon: 'trophy', title: 'Centenário', desc: '100 treinos concluídos.', check: (s) => Object.keys(s.workoutHistory || {}).length >= 100 },
     { id: 't4_start200', tier: 'Muito Difícil', icon: 'gem', title: 'Platina', desc: '200 treinos concluídos.', check: (s) => Object.keys(s.workoutHistory || {}).length >= 200 },
     { id: 't4_start365', tier: 'Muito Difícil', icon: 'sun', title: 'Um Ano', desc: '365 treinos concluídos.', check: (s) => Object.keys(s.workoutHistory || {}).length >= 365 },
     { id: 't4_freq7', tier: 'Muito Difícil', icon: 'zap-off', title: 'No Days Off', desc: '7 dias na semana.', check: (s) => utils.checkWeeklyConsistency(s) >= 7 },
-    { id: 't4_xp10000', tier: 'Muito Difícil', icon: 'shield-alert', title: 'General XP', desc: '10.000 XP.', check: (s) => (s.xp || 0) >= 10000 },
     { id: 't4_xp25000', tier: 'Muito Difícil', icon: 'radio', title: 'Lenda XP', desc: '25.000 XP.', check: (s) => (s.xp || 0) >= 25000 },
-    { id: 't4_w140', tier: 'Muito Difícil', icon: 'mountain', title: 'Titan', desc: 'Carga de 140kg.', check: (s) => utils.checkMaxLoad(s) >= 140 },
+    { id: 't4_xp50000', tier: 'Muito Difícil', icon: 'radio', title: 'Mítico XP', desc: '50.000 XP.', check: (s) => (s.xp || 0) >= 50000 },
     { id: 't4_w160', tier: 'Muito Difícil', icon: 'mountain', title: 'Colossus', desc: 'Carga de 160kg.', check: (s) => utils.checkMaxLoad(s) >= 160 },
     { id: 't4_w180', tier: 'Muito Difícil', icon: 'swords', title: 'Olímpico', desc: 'Carga de 180kg.', check: (s) => utils.checkMaxLoad(s) >= 180 },
     { id: 't4_w200', tier: 'Muito Difícil', icon: 'skull', title: 'Godlike', desc: 'Carga de 200kg.', check: (s) => utils.checkMaxLoad(s) >= 200 },
     { id: 't4_cardio100', tier: 'Muito Difícil', icon: 'infinity', title: 'Ultra', desc: '100 sessões de cardio.', check: (s) => Object.keys(s.cardioHistory || {}).length >= 100 },
     { id: 't4_sets5000', tier: 'Muito Difícil', icon: 'box', title: 'Volume Max', desc: '5.000 séries totais.', check: (s) => (s.xp || 0) >= 5000 },
-    { id: 't4_theme_master', tier: 'Muito Difícil', icon: 'palette', title: 'Style Master', desc: 'Desbloqueie o tema Olympia.', check: (s) => (s.xp || 0) >= 10000 },
-    { id: 't4_measure_pro', tier: 'Muito Difícil', icon: 'trending-up', title: 'Bodybuilder', desc: '50 registos de medidas.', check: (s) => s.measurements.length >= 50 },
-    { id: 't4_notes_doc', tier: 'Muito Difícil', icon: 'graduation-cap', title: 'Doutorado', desc: '50 notas técnicas.', check: (s) => Object.keys(s.notes || {}).length >= 50 },
-    { id: 't4_consistency_god', tier: 'Muito Difícil', icon: 'repeat', title: 'Disciplina', desc: '4 semanas consecutivas de 4x+ treinos.', check: (s) => false }, // Placeholder para lógica futura complexa
-    { id: 't4_completionist', tier: 'Muito Difícil', icon: 'check-check', title: 'Completista', desc: 'Todas as conquistas Fáceis.', check: (s) => BADGES.filter(b => b.tier === 'Fácil').every(b => b.check(s)) }
+    { id: 't4_sets10000', tier: 'Muito Difícil', icon: 'box', title: 'Volume Insano', desc: '10.000 séries totais.', check: (s) => (s.xp || 0) >= 10000 },
+    { id: 't4_meas50', tier: 'Muito Difícil', icon: 'trending-up', title: 'Bodybuilder', desc: '50 registos de medidas.', check: (s) => s.measurements.length >= 50 },
+    { id: 't4_notes50', tier: 'Muito Difícil', icon: 'graduation-cap', title: 'Doutorado', desc: '50 notas técnicas.', check: (s) => Object.keys(s.notes || {}).length >= 50 },
+    { id: 't4_completionist', tier: 'Muito Difícil', icon: 'check-check', title: 'Completista', desc: 'Todas as conquistas Fáceis desbloqueadas.', check: (s) => BADGES.filter(b => b.tier === 'Fácil').every(b => b.check(s)) }
 ];
 
 // --- MODULES ---
@@ -734,8 +741,8 @@ const timer = {
         } else {
             this.isActive = true;
             if (this.currentTime > 0) {
-                 this.worker.postMessage({ command: 'START', value: this.currentTime });
-                 this.updateBtn(true);
+                this.worker.postMessage({ command: 'START', value: this.currentTime });
+                this.updateBtn(true);
             } else {
                 this.reset();
             }
@@ -792,7 +799,7 @@ const measurementsManager = {
             document.getElementById('meas-thigh').value = last.thigh || '';
         }
     },
-    
+
     closeModal() { document.getElementById('measurements-modal').classList.add('hidden'); },
 
     save() {
@@ -844,7 +851,7 @@ const settings = {
         this.renderThemes();
         document.getElementById('settings-modal').classList.remove('hidden');
     },
-    
+
     close() {
         document.getElementById('settings-modal').classList.add('hidden');
     },
@@ -852,16 +859,16 @@ const settings = {
     renderThemes() {
         const container = document.getElementById('theme-grid-container');
         const xpDisplay = document.getElementById('settings-xp-display');
-        
+
         if (xpDisplay) xpDisplay.innerText = store.data.xp || 0;
         if (!container) return;
 
         const currentXP = store.data.xp || 0;
-        
+
         container.innerHTML = Object.entries(THEMES).map(([key, theme]) => {
             const isLocked = currentXP < theme.minXP;
             const isSelected = store.data.settings.theme === key;
-            
+
             if (isLocked) {
                 return `
                 <button onclick="themeManager.setTheme('${key}')" class="relative flex items-center gap-3 p-3 rounded-lg border border-zinc-800 bg-zinc-900/40 cursor-not-allowed overflow-hidden group">
@@ -886,10 +893,10 @@ const settings = {
                 ${isSelected ? `<div class="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--theme-color)]"><i data-lucide="check-circle-2" class="w-4 h-4"></i></div>` : ''}
             </button>`;
         }).join('');
-        
+
         safeIcons();
     },
-    
+
     async clearAll() {
         if (confirm('ATENÇÃO: Deseja apagar todo o histórico e começar do zero?')) {
             await db.clear();
@@ -897,7 +904,7 @@ const settings = {
             location.reload();
         }
     },
-    
+
     exportData() {
         const blob = new Blob([JSON.stringify(store.data)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
@@ -906,7 +913,7 @@ const settings = {
         a.download = `progym_backup_${utils.getTodayDate()}.json`;
         a.click();
     },
-    
+
     importData(i) {
         const f = i.files[0];
         if (!f) return;
@@ -1021,12 +1028,18 @@ const router = {
                     </div>
                 </div>
                 
-                <div class="bg-gradient-to-r from-orange-900/10 to-transparent border border-orange-500/20 p-4 rounded-xl flex items-center gap-4 mb-8">
+                <div class="bg-gradient-to-r from-orange-900/10 to-transparent border border-orange-500/20 p-4 rounded-xl flex items-center gap-4 mb-4 neon-orange-pulse">
                     <div class="bg-orange-500/10 p-2 rounded-lg border border-orange-500/20"><i data-lucide="zap" class="w-5 h-5 text-orange-500"></i></div>
                     <div>
                         <h4 class="text-orange-200 font-bold text-sm">Pré-Treino</h4>
                         <p class="text-orange-200/50 text-xs">Thermo Flame: Ingerir 30min antes.</p>
                     </div>
+                </div>
+
+                <div class="flex items-center justify-center gap-2 mb-8">
+                    <div class="h-px bg-zinc-800 w-12"></div>
+                    <span class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Criado em: <span class="font-mono text-[var(--theme-color)] text-xs border-b border-dashed border-[var(--theme-color)] pb-0.5">18/12/2025</span></span>
+                    <div class="h-px bg-zinc-800 w-12"></div>
                 </div>
 
                 <div class="space-y-3">
@@ -1096,7 +1109,7 @@ const router = {
             const currentWeight = parseFloat(store.data.weights && store.data.weights[ex.id]) || 0;
             const isRecord = ghost && currentWeight > ghost.load;
             const ghostClass = isRecord ? 'ghost-tag beat-record' : 'ghost-tag';
-            const ghostHtml = ghost 
+            const ghostHtml = ghost
                 ? `<div class="${ghostClass}"><i data-lucide="ghost" class="w-3 h-3"></i> <span>${ghost.load}kg (${ghost.label})</span></div>`
                 : `<div class="ghost-tag opacity-50"><span>--</span></div>`;
 
@@ -1209,7 +1222,7 @@ const router = {
             return `<div class="heatmap-cell ${lvl}" title="${d.date.toLocaleDateString()}"></div>`;
         }).join('');
 
-        const vol = utils.calculateWeeklyVolume(store.data);
+        const vol = utils.calculateVolume(store.data);
         const radarSvg = generateRadarChart(vol);
 
         c.innerHTML = `
@@ -1219,12 +1232,12 @@ const router = {
                 <div class="flex justify-between items-start mb-2 relative z-10">
                     <div>
                         <h3 class="text-xs font-bold text-white uppercase tracking-widest">Equilíbrio Físico</h3>
-                        <p class="text-[9px] text-zinc-500 font-mono">Análise de volume da semana atual</p>
+                        <p class="text-[9px] text-zinc-500 font-mono">Análise de volume mensal</p>
                     </div>
                     <div class="p-1.5 bg-zinc-800 rounded text-[var(--theme-color)]"><i data-lucide="radar" class="w-4 h-4"></i></div>
                 </div>
                 <div class="h-64 w-full flex items-center justify-center -my-4">${radarSvg}</div>
-                <div class="text-center"><p class="text-[9px] text-zinc-600 mt-1">*O gráfico reinicia semanalmente.</p></div>
+                <div class="text-center"><p class="text-[9px] text-zinc-600 mt-1">*O gráfico reinicia mensalmente.</p></div>
             </div>
             <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 mb-4 shadow-sm">
                 <h3 class="text-xs font-bold text-zinc-500 uppercase mb-4 tracking-widest flex items-center gap-2"><i data-lucide="calendar" class="w-3 h-3"></i> Histórico (100 dias)</h3>
@@ -1263,7 +1276,7 @@ const router = {
         const categoriesHtml = categories.map(cat => {
             const catBadges = BADGES.filter(b => b.tier === cat.id);
             const catUnlocked = catBadges.filter(b => b.check(store.data)).length;
-            
+
             if (catBadges.length === 0) return '';
 
             const gridHtml = catBadges.map(b => {
@@ -1324,7 +1337,7 @@ const router = {
             
             <div class="h-10"></div>
         </div>`;
-        
+
         safeIcons();
     },
 
@@ -1538,7 +1551,7 @@ const actions = {
         store.save();
         router.renderDetail(document.getElementById('main-content'), router.currentParams);
     },
-    
+
     adjustWeight(exId, delta) {
         const inputEl = document.getElementById(`weight-input-${exId}`);
         let currentVal = parseFloat(store.data.weights[exId]) || 0;
@@ -1552,13 +1565,13 @@ const actions = {
             setTimeout(() => inputEl.style.color = 'white', 300);
         }
     },
-    
+
     setRPE(ex, v) {
         if (!store.data.rpe) store.data.rpe = {};
         store.data.rpe[ex] = v;
         store.save();
     },
-    
+
     cardio() {
         if (!store.data.cardioHistory) store.data.cardioHistory = {};
         const d = utils.getTodayDate();
@@ -1566,21 +1579,21 @@ const actions = {
         store.save();
         router.renderDetail(document.getElementById('main-content'), router.currentParams);
     },
-    
+
     toggleVideo(exId) {
         if (!store.data.visibleVideos) store.data.visibleVideos = {};
         store.data.visibleVideos[exId] = !store.data.visibleVideos[exId];
         if (store.data.visibleGraphs[exId]) store.data.visibleGraphs[exId] = false;
         router.renderDetail(document.getElementById('main-content'), router.currentParams);
     },
-    
+
     toggleGraph(exId) {
         if (!store.data.visibleGraphs) store.data.visibleGraphs = {};
         store.data.visibleGraphs[exId] = !store.data.visibleGraphs[exId];
         if (store.data.visibleVideos[exId]) store.data.visibleVideos[exId] = false;
         router.renderDetail(document.getElementById('main-content'), router.currentParams);
     },
-    
+
     reset(id) {
         if (!confirm('Reiniciar esta sessão? (Seu XP será mantido)')) return;
         const w = WORKOUT_PLAN.find(x => x.id === id);
@@ -1590,7 +1603,7 @@ const actions = {
             router.renderDetail(document.getElementById('main-content'), router.currentParams);
         }
     },
-    
+
     finish() {
         const btn = document.getElementById('btn-finish-session');
         if (btn) {
@@ -1645,6 +1658,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
         await store.load();
         initApp();
+        // Garante que o usuário vá para a HOME se não houver rota salva (opcional) ou segue padrão
         router.navigate('home');
     } catch (error) {
         console.error("Critical: Failed to load application data.", error);

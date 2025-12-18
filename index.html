@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content"
     />
-    <title>Pro Gym App v1.9</title>
+    <title>Pro Gym App v2.0</title>
 
     <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#09090b" />
@@ -17,7 +17,6 @@
     />
 
     <link rel="apple-touch-icon" href="assets/img/icon.png" />
-
     <link rel="icon" type="image/png" href="assets/img/logo.png" />
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -30,7 +29,7 @@
       rel="stylesheet"
     />
 
-    <link rel="stylesheet" href="css/style.css?v=1.8" />
+    <link rel="stylesheet" href="css/style.css?v=2.0" />
   </head>
   <body class="selection:bg-blue-900 selection:text-white">
     <div
@@ -70,7 +69,7 @@
           class="text-white text-xl font-black tracking-[0.2em] uppercase animate-glitch"
           data-text="SYSTEM_INIT"
         >
-          PRO GYM v1.8
+          PRO GYM v2.0
         </h2>
         <div class="flex items-center gap-2">
           <div
@@ -95,17 +94,19 @@
       <main id="main-content"></main>
 
       <nav id="bottom-nav" class="flex justify-around items-center">
-        <button onclick="router.navigate('home')" class="nav-btn group">
-          <i data-lucide="layout-grid" class="icon-nav"></i>
-          <span class="label-nav">PAINEL</span>
+        <button onclick="router.navigate('tools')" class="nav-btn group">
+          <i data-lucide="calculator" class="icon-nav"></i>
+          <span class="label-nav">UTILIT.</span>
         </button>
+
         <button onclick="router.navigate('stats')" class="nav-btn group">
           <i data-lucide="activity" class="icon-nav"></i>
           <span class="label-nav">STATS</span>
         </button>
+
         <div class="relative -top-6">
           <button
-            onclick="router.navigate('tools')"
+            onclick="router.navigate('home')"
             class="h-14 w-14 rounded-full flex items-center justify-center bg-zinc-900 border-2 border-[var(--theme-color)] shadow-lg active:scale-95 transition-all group"
           >
             <i
@@ -114,10 +115,12 @@
             ></i>
           </button>
         </div>
+
         <button onclick="router.navigate('achievements')" class="nav-btn group">
           <i data-lucide="award" class="icon-nav"></i>
           <span class="label-nav">META</span>
         </button>
+
         <button onclick="settings.open()" class="nav-btn group">
           <i data-lucide="sliders-horizontal" class="icon-nav"></i>
           <span class="label-nav">CONFIG</span>
@@ -297,15 +300,13 @@
                   >Fernando Rodrigues</span
                 >
               </p>
-              <p class="text-zinc-600 text-[9px] font-mono">
-                Pro Gym App v1.8 • Database: IDB
-              </p>
+              <p class="text-zinc-600 text-[9px] font-mono">Pro Gym App v2.0</p>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <script src="js/script.js?v=1.8"></script>
+    <script src="js/script.js?v=2.0"></script>
   </body>
 </html>

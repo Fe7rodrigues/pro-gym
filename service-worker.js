@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pro-gym-v1.9-idb'; // NOME ATUALIZADO PARA FORÇAR REFRESH
+const CACHE_NAME = 'pro-gym-v2.0-idb';
 const ASSETS = [
     './',
     './index.html',
@@ -22,7 +22,7 @@ self.addEventListener('activate', (e) => {
             return Promise.all(
                 keyList.map((key) => {
                     if (key !== CACHE_NAME) {
-                        return caches.delete(key); // Limpa o cache antigo (v1.2)
+                        return caches.delete(key); // Limpa o cache antigo
                     }
                 })
             );

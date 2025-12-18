@@ -590,3 +590,24 @@ body {
   justify-content: center;
   padding: 20px;
 }
+
+/* --- Efeito Neon Pulsante Laranja (Pré-Treino) --- */
+@keyframes neon-pulse-orange {
+  0%,
+  100% {
+    box-shadow: 0 0 5px rgba(249, 115, 22, 0.1),
+      inset 0 0 5px rgba(249, 115, 22, 0.05);
+    border-color: rgba(249, 115, 22, 0.2);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(249, 115, 22, 0.4),
+      inset 0 0 15px rgba(249, 115, 22, 0.1);
+    border-color: rgba(249, 115, 22, 0.7);
+    transform: scale(1.01); /* Leve aumento para dar sensação de "vida" */
+  }
+}
+
+.neon-orange-pulse {
+  animation: neon-pulse-orange 2.5s ease-in-out infinite;
+}
