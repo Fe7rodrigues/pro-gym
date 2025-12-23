@@ -1,5 +1,5 @@
 /**
- * PRO GYM APP V2.0 (ARCH: IDB + WORKER + MONTHLY RESET + 70 BADGES)
+ * PRO GYM APP V2.0 (FULL VERSION)
  * Copyright (c) 2025 Fernando Rodrigues. Todos os direitos reservados.
  * Descrição: Sistema profissional com Persistência IDB, Timer Background e Gamificação Avançada.
  */
@@ -987,7 +987,18 @@ const router = {
         const days = utils.getWeekDays().map(d => {
             const history = store.data.workoutHistory || {};
             const done = history[d.iso];
-            return `<div class="flex flex-col items-center gap-1"><div class="w-9 h-11 rounded-lg border flex items-center justify-center text-xs font-bold transition-all ${done ? 'bg-theme border-theme text-white shadow-md' : 'bg-zinc-900 border-zinc-800 text-zinc-600'}">${done ? '<i data-lucide="check" class="w-4 h-4"></i>' : d.lbl}</div></div>`;
+
+            // Se 'done' for verdadeiro, aplica a classe 'fire-active'
+            const activeClass = done
+                ? 'fire-active border-transparent'
+                : 'bg-zinc-900 border-zinc-800 text-zinc-600';
+
+            return `
+            <div class="flex flex-col items-center gap-1">
+                <div class="w-9 h-11 rounded-lg border flex items-center justify-center text-xs font-bold transition-all ${activeClass}">
+                    ${done ? '<i data-lucide="flame" class="w-4 h-4 fill-current"></i>' : d.lbl}
+                </div>
+            </div>`;
         }).join('');
 
         c.innerHTML = `
@@ -1611,14 +1622,14 @@ const actions = {
             btn.classList.add('bg-green-600', 'scale-105');
             safeIcons();
         }
-        
+
         celebrateCompletion();
         if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 200]);
 
         // --- NOVA LÓGICA DE RESET GLOBAL ---
         // Verifica se TODOS os exercícios de TODOS os dias foram feitos
         let allWorkoutsDone = true;
-        
+
         // Itera sobre o plano completo (A, B, C, D, E, F)
         WORKOUT_PLAN.forEach(day => {
             day.exercises.forEach(ex => {
