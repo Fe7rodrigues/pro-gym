@@ -1,5 +1,5 @@
 /**
- * PRO GYM APP V2.0 (FULL VERSION)
+ * PRO GYM APP V2.0 (FINAL VERSION)
  * Copyright (c) 2025 Fernando Rodrigues. Todos os direitos reservados.
  * Descrição: Sistema profissional com Persistência IDB, Timer Background e Gamificação Avançada.
  */
@@ -987,10 +987,10 @@ const router = {
         const days = utils.getWeekDays().map(d => {
             const history = store.data.workoutHistory || {};
             const done = history[d.iso];
-
+            
             // Se 'done' for verdadeiro, aplica a classe 'fire-active'
-            const activeClass = done
-                ? 'fire-active border-transparent'
+            const activeClass = done 
+                ? 'fire-active border-transparent' 
                 : 'bg-zinc-900 border-zinc-800 text-zinc-600';
 
             return `
@@ -1003,9 +1003,10 @@ const router = {
 
         c.innerHTML = `
             <div class="px-5 animate-fade-in pb-10">
-                <div class="flex justify-center mb-6 pt-2 relative">
-                    <div class="absolute w-16 h-16 bg-[var(--theme-color)] rounded-full blur-[20px] opacity-40 animate-pulse"></div>
-                    <img src="assets/img/icon-main.png" class="w-16 h-16 drop-shadow-lg animate-pulse-hover relative z-10" alt="Pro Gym Icon" onerror="this.style.display='none'"/>
+                <div class="flex justify-center mb-6 pt-4">
+                    <h1 class="text-4xl font-black text-white tracking-tighter italic">
+                        PRO <span class="text-[var(--theme-color)]">GYM</span>
+                    </h1>
                 </div>
 
                 <div class="mb-6 mt-2">
@@ -1622,14 +1623,14 @@ const actions = {
             btn.classList.add('bg-green-600', 'scale-105');
             safeIcons();
         }
-
+        
         celebrateCompletion();
         if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 200]);
 
         // --- NOVA LÓGICA DE RESET GLOBAL ---
         // Verifica se TODOS os exercícios de TODOS os dias foram feitos
         let allWorkoutsDone = true;
-
+        
         // Itera sobre o plano completo (A, B, C, D, E, F)
         WORKOUT_PLAN.forEach(day => {
             day.exercises.forEach(ex => {
