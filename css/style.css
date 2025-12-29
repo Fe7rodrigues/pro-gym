@@ -138,16 +138,12 @@ body {
 
 /* Select RPE */
 .select-rpe {
-  background: #18181b;
+background: #18181b;
   border: 1px solid #27272a;
   color: #e4e4e7;
   border-radius: 0.5rem;
   font-size: 0.75rem;
   font-weight: bold;
-  text-align: center;
-  height: 2.5rem;
-  outline: none;
-  appearance: none;
 }
 
 /* Botões de Série */
