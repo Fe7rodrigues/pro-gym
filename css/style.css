@@ -136,14 +136,33 @@ body {
   margin: 0;
 }
 
-/* Select RPE */
+/* Select RPE (COM CORREÇÃO PARA IOS) */
 .select-rpe {
-background: #18181b;
+  background: #18181b;
   border: 1px solid #27272a;
   color: #e4e4e7;
   border-radius: 0.5rem;
   font-size: 0.75rem;
   font-weight: bold;
+  height: 2.5rem;
+  outline: none;
+  
+  /* --- FORÇAR CENTRALIZAÇÃO NO SAFARI/iOS --- */
+  text-align: center;
+  text-align-last: center;           /* Padrão moderno */
+  -webkit-text-align-last: center;   /* Webkit Legacy */
+  -moz-text-align-last: center;      /* Firefox */
+  
+  padding: 0 !important;             /* Remove padding geral */
+  padding-right: 0 !important;       /* Remove espaço da seta nativa */
+  padding-left: 0 !important;        /* Garante simetria */
+  
+  appearance: none;
+  -webkit-appearance: none;          /* Remove UI nativa do iOS */
+  
+  /* Hacks para renderização de texto no Safari */
+  text-indent: 0.01px;
+  text-overflow: '';
 }
 
 /* Botões de Série */
